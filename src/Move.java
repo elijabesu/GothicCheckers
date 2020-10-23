@@ -1,10 +1,10 @@
 public class Move {
-    private int originalRow;
-    private int originalColumn;
-    private int movingMan;
-    private int newRow;
-    private int newColumn;
-    private int newPositionOriginalMan;
+    protected int originalRow;
+    protected int originalColumn;
+    protected int movingMan;
+    protected int newRow;
+    protected int newColumn;
+    protected int newPositionOriginalMan;
 
     public Move(int originalRow, int originalColumn, int movingMan,
                 int newRow, int newColumn, int newMan) {
@@ -28,7 +28,7 @@ public class Move {
         return false;
     }
 
-    private boolean basicValidation(boolean player) {
+    protected boolean basicValidation(boolean player) {
         if (newPositionOriginalMan != 0) return false; // if the position is occupied -> NOPE
 
         if (player) {
@@ -67,16 +67,15 @@ public class Move {
         return newColumn;
     }
 
-    public int getPositionOriginalMan() {
-        return newPositionOriginalMan;
-    }
-
     @Override
     public String toString() {
         StringBuilder s = new StringBuilder();
+
         s.append(Columns.values()[originalColumn]);
         s.append(originalRow);
+
         s.append(" -> ");
+
         s.append(Columns.values()[newColumn]);
         s.append(newRow);
 

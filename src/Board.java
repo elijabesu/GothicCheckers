@@ -78,4 +78,10 @@ public class Board {
         //board[move.getNewRow()][move.getNewColumn()] = move.getMan();
         coordinates.placeMan(move.getNewRow(), move.getNewColumn(), move.getMan());
     }
+
+    public void jumpedOver(Jump jump) {
+        coordinates.removeMan(jump.getOriginalRow(), jump.getOriginalColumn());
+        coordinates.removeMan(jump.getJumpedRow(), jump.getJumpedColumn());
+        coordinates.placeMan(jump.getNewRow(), jump.getNewColumn(), jump.getMan());
+    }
 }
