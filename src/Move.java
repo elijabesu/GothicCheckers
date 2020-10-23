@@ -16,6 +16,18 @@ public class Move {
     }
 
     public boolean isValid(boolean player) {
+        if (!basicValidation(player)) return false;
+
+        int rowDifference = Math.abs(originalRow - newRow);
+        int columnDifference = Math.abs(originalColumn - newColumn);
+
+        if (rowDifference == 0 && columnDifference == 1) return true; // left and right
+        if (rowDifference == 1 && (columnDifference == 0 | columnDifference == 1)) return true; // rest
+
+        return false;
+    }
+
+    private boolean basicValidation(boolean player) {
         if (newPositionOriginalMan != 0) return false; // if the position is occupied -> NOPE
 
         if (player) {
@@ -27,12 +39,8 @@ public class Move {
         if (movingMan == 2 || movingMan == -2) return true; // if it's a King -> YEP
 
         // if they are trying to move backwards -> NOPE
-        if (movingMan == -1) {
-            if (newRow > originalRow) return false;
-        }
-        if (movingMan == 1) {
-            if (newRow < originalRow) return false;
-        }
+        if (movingMan == -1 && newRow > originalRow) return false;
+        if (movingMan == 1 && newRow < originalRow) return false;
 
         // everything else:
         return true;
