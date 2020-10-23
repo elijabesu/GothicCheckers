@@ -1,13 +1,11 @@
 public class Board {
     private StringBuilder boardString;
     private int size;
-    //private int[][] board;
     private Positions coordinates;
 
     public Board(int size) {
         this.size = size;
         this.boardString = new StringBuilder();
-        //this.board = new int[size][size];
         coordinates = new Positions(size);
     }
 
@@ -63,19 +61,15 @@ public class Board {
     }
 
     public void placeMan(Man man) {
-        //board[man.getRow()][man.getColumn()] = man.getValue();
         coordinates.placeMan(man.getRow(), man.getColumn(), man.getValue());
     }
 
     public int getCoordinate(int row, int column) {
-        //return board[row][column];
         return coordinates.getValue(row, column);
     }
 
     public void moved(Move move) {
-        //board[move.getOriginalRow()][move.getOriginalColumn()] = 0;
         coordinates.removeMan(move.getOriginalRow(), move.getOriginalColumn());
-        //board[move.getNewRow()][move.getNewColumn()] = move.getMan();
         coordinates.placeMan(move.getNewRow(), move.getNewColumn(), move.getMan());
     }
 

@@ -19,8 +19,8 @@ public class Move {
     public boolean isValid(boolean player) {
         if (!basicValidation(player)) return false;
 
-        int rowDifference = Math.abs(originalRow - newRow);
-        int columnDifference = Math.abs(originalColumn - newColumn);
+        int rowDifference = Utils.getDifference(originalRow, newRow);
+        int columnDifference = Utils.getDifference(originalColumn, newColumn);
 
         if (rowDifference == 0 && columnDifference == 1) return true; // left and right
         if (rowDifference == 1 && (columnDifference == 0 | columnDifference == 1)) return true; // rest

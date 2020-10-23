@@ -16,8 +16,8 @@ public class Jump extends Move {
     public boolean isValid(boolean player) {
         if (!basicValidation(player)) return false;
 
-        int rowDifference = Math.abs(originalRow - newRow);
-        int columnDifference = Math.abs(originalColumn - newColumn);
+        int rowDifference = Utils.getDifference(originalRow, newRow);
+        int columnDifference = Utils.getDifference(originalColumn, newColumn);
 
         if (player) {
             if (jumpedMan < 0) return false; // if the WHITE player is trying to jump over another WHITE man -> NOPE
