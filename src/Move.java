@@ -6,7 +6,8 @@ public class Move {
     private int newColumn;
     private int newPositionOriginalMan;
 
-    public Move(int originalRow, int originalColumn, int movingMan, int newRow, int newColumn, int newMan) {
+    public Move(int originalRow, int originalColumn, int movingMan,
+                int newRow, int newColumn, int newMan) {
         this.originalRow = originalRow;
         this.originalColumn = originalColumn;
         this.movingMan = movingMan;
