@@ -2,9 +2,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class Game {
-    private Board board;
-    private List<Man> men;
-    private History history;
+    private final Board board;
+    private final List<Man> men;
+    private final History history;
 
     public Game() {
         board = new Board(8);
@@ -33,7 +33,7 @@ public class Game {
     }
 
     public void placeAllMenOnBoard() {
-        men.stream().forEach(man -> board.placeMan(man));
+        men.forEach(board::placeMan);
     }
 
     public boolean move(boolean player, Man man, int row, int column) {
@@ -67,15 +67,16 @@ public class Game {
         man.setColumn(column);
         board.jumpedOver(jump);
         history.add(jump);
+        men.remove(jump.getJumpedMan());
         return true;
     }
 
     public Man getManByPosition(int row, int column) {
-        if (board.getCoordinate(row, column) == 0) return null;
+        //if (board.getCoordinate(row, column) == 0) return null;
         return men.stream()
                 .filter(man -> man.getRow() == row)
                 .filter(man -> man.getColumn() == column)
-                .findFirst().get();
+                .findFirst().orElse(null);
     }
 
     public String getHistory() {

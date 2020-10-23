@@ -1,7 +1,7 @@
 public class Jump extends Move {
-    private int jumpedRow;
-    private int jumpedColumn;
-    private int jumpedMan;
+    private final int jumpedRow;
+    private final int jumpedColumn;
+    private final int jumpedMan;
 
     public Jump(int originalRow, int originalColumn, int movingMan,
                 int jumpedRow, int jumpedColumn, int jumpedMan,

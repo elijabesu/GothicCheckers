@@ -7,7 +7,7 @@ public enum Symbols {
     LINE("\n      -------------------------------------------------\n"),
     VERTICAL("|");
 
-    private String symbol;
+    private final String symbol;
 
     Symbols(String symbol) {
         this.symbol = symbol;

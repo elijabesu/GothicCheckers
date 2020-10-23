@@ -1,7 +1,7 @@
 public class Player {
     private int points;
-    private String name;
-    private boolean white; // true == white, false == black
+    private final String name;
+    private final boolean white; // true == white, false == black
 
     public Player(String name, boolean white) {
         this.name = name;

@@ -1,6 +1,6 @@
 public class Positions {
     private boolean occupied;
-    private int[][] coordinates;
+    private final int[][] coordinates;
 
     public Positions(int size) {
         coordinates = new int[size][size];

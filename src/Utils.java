@@ -8,7 +8,7 @@ public class Utils {
     }
 
     public static int getRow(char row) {
-        return Integer.valueOf(String.valueOf(row)) - 1;
+        return Integer.parseInt(String.valueOf(row)) - 1;
     }
 
     public static int getJumpedColumn(int original, int next) {

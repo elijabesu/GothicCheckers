@@ -2,7 +2,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class History {
-    private List<Move> history;
+    private final List<Move> history;
 
     public History() {
         history = new ArrayList<>();

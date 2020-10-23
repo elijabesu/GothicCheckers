@@ -1,7 +1,7 @@
 public class Board {
-    private StringBuilder boardString;
-    private int size;
-    private Positions coordinates;
+    private final StringBuilder boardString;
+    private final int size;
+    private final Positions coordinates;
 
     public Board(int size) {
         this.size = size;
@@ -26,23 +26,12 @@ public class Board {
     private void appendColumns(int row) {
         for (int column = 0; column < size; column++) {
             boardString.append(Symbols.VERTICAL.getSymbol());
-            //switch (board[row][column]) {
             switch (coordinates.getValue(row, column)) {
-                case 0:
-                    boardString.append(Symbols.EMPTY.getSymbol());
-                    break;
-                case -1:
-                    boardString.append(Symbols.WHITE.getSymbol());
-                    break;
-                case -2:
-                    boardString.append(Symbols.WHITE_KING.getSymbol());
-                    break;
-                case 1:
-                    boardString.append(Symbols.BLACK.getSymbol());
-                    break;
-                case 2:
-                    boardString.append(Symbols.BLACK_KING.getSymbol());
-                    break;
+                case 0 -> boardString.append(Symbols.EMPTY.getSymbol());
+                case -1 -> boardString.append(Symbols.WHITE.getSymbol());
+                case -2 -> boardString.append(Symbols.WHITE_KING.getSymbol());
+                case 1 -> boardString.append(Symbols.BLACK.getSymbol());
+                case 2 -> boardString.append(Symbols.BLACK_KING.getSymbol());
             }
         }
         boardString.append(Symbols.VERTICAL.getSymbol());

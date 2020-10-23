@@ -1,14 +1,14 @@
 import java.util.Scanner;
 
 public class UserInterface {
-    private Game game;
-    private Scanner scanner;
+    private final Game game;
+    private final Scanner scanner;
 
     private Player player1; // white == o
     private Player player2; // black == x
     private boolean playerBool; // true == player1, false == player2
 
-    private String moveRegex;
+    private final String moveRegex;
 
     public UserInterface() {
         game = new Game();
@@ -36,7 +36,6 @@ public class UserInterface {
             if (command.equals("jump")) jump();
             if (command.equals("score")) printScore();
             if (command.equals("display")) printBoard();
-            else continue;
         }
     }
 
