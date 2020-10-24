@@ -36,12 +36,12 @@ public class Game {
         activeMen.forEach(board::placeMan);
     }
 
-    public boolean move(Player player, boolean playerBool, Man man, int row, int column) {
+    public boolean move(Player player, Man man, int row, int column) {
         Move move = new Move(player,
                 man.getRow(), man.getColumn(), man.getValue(), // the man we are currently moving
                 row, column, board.getCoordinate(row, column)); // the position where we want to move
 
-        if (!move.isValid(playerBool)) return false;
+        if (!move.isValid()) return false;
 
         man.setRow(row);
         man.setColumn(column);
@@ -50,7 +50,7 @@ public class Game {
         return true;
     }
 
-    public boolean jump(Player player, boolean playerBool, Man man,
+    public boolean jump(Player player, Man man,
                         int jumpedRow, int jumpedColumn,
                         int row, int column) {
         Man jumpedMan = getManByPosition(jumpedRow, jumpedColumn);
@@ -61,7 +61,7 @@ public class Game {
                 jumpedRow, jumpedColumn, jumpedMan.getValue(),
                 row, column, board.getCoordinate(row, column)); // the position where we want to move
 
-        if (!jump.isValid(playerBool)) return false;
+        if (!jump.isValid()) return false;
 
         player.addPoint();
 

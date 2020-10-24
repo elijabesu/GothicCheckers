@@ -14,13 +14,14 @@ public class Jump extends Move {
     }
 
     @Override
-    public boolean isValid(boolean player) {
-        if (!basicValidation(player)) return false;
+    public boolean isValid() {
+        if (!basicValidation()) return false;
+        if (jumpedMan == 0) return false;
 
         int rowDifference = Utils.getDifference(originalRow, newRow);
         int columnDifference = Utils.getDifference(originalColumn, newColumn);
 
-        if (player) {
+        if (player.isWhite()) {
             if (jumpedMan < 0) return false; // if the WHITE player is trying to jump over another WHITE man -> NOPE
         } else {
             if (jumpedMan > 0) return false; // if the BLACK player is trying to jump over another BLACK man -> NOPE

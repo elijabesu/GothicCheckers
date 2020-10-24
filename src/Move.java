@@ -19,8 +19,8 @@ public class Move {
         this.newPositionOriginalMan = newMan;
     }
 
-    public boolean isValid(boolean player) {
-        if (!basicValidation(player)) return false;
+    public boolean isValid() {
+        if (!basicValidation()) return false;
 
         int rowDifference = Utils.getDifference(originalRow, newRow);
         int columnDifference = Utils.getDifference(originalColumn, newColumn);
@@ -31,10 +31,10 @@ public class Move {
         return false;
     }
 
-    protected boolean basicValidation(boolean player) {
+    protected boolean basicValidation() {
         if (newPositionOriginalMan != 0) return false; // if the position is occupied -> NOPE
 
-        if (player) {
+        if (player.isWhite()) {
             if (movingMan > 0) return false; // if the WHITE player is trying to move any of the BLACK men -> NOPE
         } else {
             if (movingMan < 0) return false; // if the BLACK player is trying to move any of the WHITE men -> NOPE
@@ -72,8 +72,8 @@ public class Move {
 
     @Override
     public String toString() {
-        return "" + Columns.values()[originalColumn] + originalRow + " -> " +
-                Columns.values()[newColumn] + newRow +
+        return "" + Columns.values()[originalColumn] + Utils.convertRowForToString(originalRow) + " -> " +
+                Columns.values()[newColumn] + Utils.convertRowForToString(newRow) +
                 " (" + player.getName() + ", " + Utils.whichMan(movingMan) + ")";
     }
 }
