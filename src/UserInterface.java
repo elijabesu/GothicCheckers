@@ -50,7 +50,7 @@ public class UserInterface {
             Man man = game.getManByPosition(coordinates[0], coordinates[1]);
             if (man == null) printInvalidMove();
             else {
-                if (game.move(playerBool, man, coordinates[2], coordinates[3])) {
+                if (game.move(whichPlayer(), playerBool, man, coordinates[2], coordinates[3])) {
                     printBoard();
                     switchPlayers();
                 } else printInvalidMove();
@@ -69,7 +69,8 @@ public class UserInterface {
             Man man = game.getManByPosition(coordinates[0], coordinates[1]);
             if (man == null) printInvalidMove();
             else {
-                if (game.jump(playerBool, man, coordinates[4], coordinates[5], coordinates[2], coordinates[3])) {
+                if (game.jump(whichPlayer(), playerBool, man,
+                        coordinates[4], coordinates[5], coordinates[2], coordinates[3])) {
                     printBoard();
                     switchPlayers();
                 } else printInvalidMove();

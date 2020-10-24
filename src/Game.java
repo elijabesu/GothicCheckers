@@ -3,12 +3,12 @@ import java.util.List;
 
 public class Game {
     private final Board board;
-    private final List<Man> men;
+    private final List<Man> activeMen;
     private final History history;
 
     public Game() {
         board = new Board(8);
-        men = new ArrayList<>();
+        activeMen = new ArrayList<>();
         history = new History();
     }
 
@@ -20,28 +20,28 @@ public class Game {
         // black
         for (int i = 0; i < 2; i++) {
             for (int j = 0; j < board.getSize(); j++) {
-                men.add(new Man(1, i, j));
+                activeMen.add(new Man(1, i, j));
             }
         }
 
         // white
         for (int i = board.getSize() - 2; i < board.getSize(); i++) {
             for (int j = 0; j < board.getSize(); j++) {
-                men.add(new Man(-1, i, j));
+                activeMen.add(new Man(-1, i, j));
             }
         }
     }
 
     public void placeAllMenOnBoard() {
-        men.forEach(board::placeMan);
+        activeMen.forEach(board::placeMan);
     }
 
-    public boolean move(boolean player, Man man, int row, int column) {
-        Move move = new Move(
+    public boolean move(Player player, boolean playerBool, Man man, int row, int column) {
+        Move move = new Move(player,
                 man.getRow(), man.getColumn(), man.getValue(), // the man we are currently moving
                 row, column, board.getCoordinate(row, column)); // the position where we want to move
 
-        if (!move.isValid(player)) return false;
+        if (!move.isValid(playerBool)) return false;
 
         man.setRow(row);
         man.setColumn(column);
@@ -50,30 +50,34 @@ public class Game {
         return true;
     }
 
-    public boolean jump(boolean player, Man man,
+    public boolean jump(Player player, boolean playerBool, Man man,
                         int jumpedRow, int jumpedColumn,
                         int row, int column) {
         Man jumpedMan = getManByPosition(jumpedRow, jumpedColumn);
         if (jumpedMan == null) return false;
 
-        Jump jump = new Jump(
+        Jump jump = new Jump(player,
                 man.getRow(), man.getColumn(), man.getValue(), // the man we are currently moving
                 jumpedRow, jumpedColumn, jumpedMan.getValue(),
                 row, column, board.getCoordinate(row, column)); // the position where we want to move
 
-        if (!jump.isValid(player)) return false;
+        if (!jump.isValid(playerBool)) return false;
+
+        player.addPoint();
 
         man.setRow(row);
         man.setColumn(column);
+
         board.jumpedOver(jump);
         history.add(jump);
-        men.remove(jumpedMan);
+        activeMen.remove(jumpedMan);
+
         return true;
     }
 
     public Man getManByPosition(int row, int column) {
         //if (board.getCoordinate(row, column) == 0) return null;
-        return men.stream()
+        return activeMen.stream()
                 .filter(man -> man.getRow() == row)
                 .filter(man -> man.getColumn() == column)
                 .findFirst().orElse(null);

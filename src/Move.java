@@ -1,4 +1,5 @@
 public class Move {
+    protected Player player;
     protected int originalRow;
     protected int originalColumn;
     protected int movingMan;
@@ -6,8 +7,10 @@ public class Move {
     protected int newColumn;
     protected int newPositionOriginalMan;
 
-    public Move(int originalRow, int originalColumn, int movingMan,
+    public Move(Player player,
+                int originalRow, int originalColumn, int movingMan,
                 int newRow, int newColumn, int newMan) {
+        this.player = player;
         this.originalRow = originalRow;
         this.originalColumn = originalColumn;
         this.movingMan = movingMan;
@@ -78,6 +81,8 @@ public class Move {
 
         s.append(Columns.values()[newColumn]);
         s.append(newRow);
+
+        s.append(" (" + player.getName() + ", " + Utils.whichMan(movingMan) + ")");
 
         return s.toString();
     }
