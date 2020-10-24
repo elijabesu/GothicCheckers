@@ -39,27 +39,4 @@ public class Jump extends Move {
         return jumpedColumn;
     }
 
-    public int getJumpedMan() {
-        return jumpedMan;
-    }
-
-    @Override
-    public String toString() {
-        StringBuilder s = new StringBuilder();
-
-        s.append(Columns.values()[originalColumn]);
-        s.append(originalRow);
-
-        s.append(" -> ");
-
-        s.append(Columns.values()[jumpedColumn]);
-        s.append(jumpedRow);
-
-        s.append(" -> ");
-
-        s.append(Columns.values()[newColumn]);
-        s.append(newRow);
-
-        return s.toString();
-    }
 }
