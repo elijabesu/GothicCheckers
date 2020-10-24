@@ -72,18 +72,8 @@ public class Move {
 
     @Override
     public String toString() {
-        StringBuilder s = new StringBuilder();
-
-        s.append(Columns.values()[originalColumn]);
-        s.append(originalRow);
-
-        s.append(" -> ");
-
-        s.append(Columns.values()[newColumn]);
-        s.append(newRow);
-
-        s.append(" (" + player.getName() + ", " + Utils.whichMan(movingMan) + ")");
-
-        return s.toString();
+        return "" + Columns.values()[originalColumn] + originalRow + " -> " +
+                Columns.values()[newColumn] + newRow +
+                " (" + player.getName() + ", " + Utils.whichMan(movingMan) + ")";
     }
 }
