@@ -70,7 +70,6 @@ public class UserInterface {
             if (man == null) printInvalidMove();
             else {
                 if (game.jump(playerBool, man, coordinates[4], coordinates[5], coordinates[2], coordinates[3])) {
-                    successfulJump();
                     printBoard();
                     switchPlayers();
                 } else printInvalidMove();
@@ -99,12 +98,6 @@ public class UserInterface {
     private void switchPlayers() {
         if (playerBool) playerBool = false;
         else playerBool = true;
-    }
-
-    private void successfulJump() {
-        Player player = whichPlayer();
-        player.addPoint();
-        System.out.println("Well done, " + player.getName() + "! You now have " + player.getPoints() + " point(s).");
     }
 
     public Player whichPlayer() {
