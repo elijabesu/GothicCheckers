@@ -8,21 +8,22 @@ public class Utils {
     }
 
     public static int getRow(char row) {
-        return Integer.parseInt(String.valueOf(row)) - 1;
+        int inputRow = Integer.parseInt(String.valueOf(row)); // 1 - 8
+        return convertRow(inputRow);
     }
 
     public static int getJumpedColumn(int original, int next) {
         int difference = Utils.getDifference(original, next);
-        if (difference == 0) return 0;
+        if (difference == 0) return original;
         if (difference != 2) return -1;
         return original + 1;
     }
 
     public static int getJumpedRow(boolean bool, int original, int next) {
         int difference = Utils.getDifference(original, next);
-        if (difference == 0) return 0;
+        if (difference == 0) return original;
         if (difference != 2) return -1;
-        if (bool) return original - 1;
+        if (bool) return convertRow(original + 1);
         return original + 1;
     }
 
@@ -43,5 +44,23 @@ public class Utils {
         coordinates[5] = Utils.getJumpedColumn(coordinates[1], coordinates[3]);
 
         return coordinates;
+    }
+
+    private static int convertRow(int row) {
+        int[] rows = new int[] {8, 7, 6, 5, 4, 3, 2, 1};
+        for (int i = 0; i < rows.length; i++) {
+            if (rows[i] == row) return i;
+        }
+        return -1;
+    }
+
+    public static String whichMan(int man) {
+        switch (man) {
+            case 1: return "x";
+            case 2: return "X";
+            case -1: return "o";
+            case -2: return "O";
+        }
+        return "-";
     }
 }

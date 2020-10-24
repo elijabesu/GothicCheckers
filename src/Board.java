@@ -14,7 +14,7 @@ public class Board {
         appendColumnsNames();
         for (int row = 0; row < size; row++) {
             boardString.append(Symbols.LINE.getSymbol());
-            boardString.append(Columns.values()[row].ordinal() + 1);
+            boardString.append(Columns.values()[size - row - 1].ordinal() + 1);
             boardString.append(Symbols.EMPTY.getSymbol());
             appendColumns(row);
         }
