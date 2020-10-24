@@ -26,4 +26,12 @@ public class History {
 
         return s.toString();
     }
+
+    public void save() {
+        // TODO saving mechanism
+    }
+
+    public void load() {
+        // TODO loading mechanism
+    }
 }

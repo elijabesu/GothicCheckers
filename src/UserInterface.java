@@ -9,6 +9,7 @@ public class UserInterface {
     private boolean playerBool; // true == player1, false == player2
 
     private final String moveRegex;
+    private final String hintRegex;
 
     public UserInterface() {
         game = new Game();
@@ -18,6 +19,7 @@ public class UserInterface {
         game.placeAllMenOnBoard();
 
         moveRegex = "[A-H][1-8] -> [A-H][1-8]";
+        hintRegex = "[A-H][1-8] -> ?";
     }
 
     public void startGame() {
@@ -27,14 +29,17 @@ public class UserInterface {
             if (playerBool) System.out.println("\n\t\t" + player1.getName() + "'s turn:");
             else System.out.println("\n\t\t" + player2.getName() + "'s turn:");
 
-            System.out.print("\tCommand? (B2 -> C3, history, score, display, quit)\n\t\t");
+            System.out.print("\tCommand? (B2 -> C3, B2 -> ?, history, score, display, save, load, quit)\n\t\t");
             String command = scanner.nextLine();
 
             if (command.equals("quit")) break;
             if (command.equals("history")) System.out.println(game.getHistory());
             if (command.matches(moveRegex)) movement(command);
+            if (command.matches(hintRegex)) hint(command);
             if (command.equals("score")) printScore();
             if (command.equals("display")) printBoard();
+            if (command.equals("save")) saveGame();
+            if (command.equals("load")) loadGame();
         }
     }
 
@@ -56,7 +61,6 @@ public class UserInterface {
         } else printInvalidMove();
     }
 
-    //FIXME white F2 (6, 5) -> D4 (4, 3) took black's G7 and gave white a point??? aka took as if E3 (5, 4) was G7 (1, 6)
     private void jump(Man man, int[] coordinates) {
         if (game.jump(whichPlayer(), man,
                 coordinates[4], coordinates[5], coordinates[2], coordinates[3])) {
@@ -96,5 +100,17 @@ public class UserInterface {
     public void printScore() {
         System.out.println(player1);
         System.out.println(player2);
+    }
+
+    private void hint(String command) {
+        // TODO implement hinting mechanism, aka generating all possible moves
+    }
+
+    private void saveGame() {
+        // TODO saving mechanism
+    }
+
+    private void loadGame() {
+        // TODO loading mechanism
     }
 }
