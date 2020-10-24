@@ -59,12 +59,12 @@ public class Board {
 
     public void moved(Move move) {
         coordinates.removeMan(move.getOriginalRow(), move.getOriginalColumn());
-        coordinates.placeMan(move.getNewRow(), move.getNewColumn(), move.getMan());
+        coordinates.placeMan(move.getNewRow(), move.getNewColumn(), move.getMan().getValue());
     }
 
     public void jumpedOver(Jump jump) {
         coordinates.removeMan(jump.getOriginalRow(), jump.getOriginalColumn());
         coordinates.removeMan(jump.getJumpedRow(), jump.getJumpedColumn());
-        coordinates.placeMan(jump.getNewRow(), jump.getNewColumn(), jump.getMan());
+        coordinates.placeMan(jump.getNewRow(), jump.getNewColumn(), jump.getMan().getValue());
     }
 }

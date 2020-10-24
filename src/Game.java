@@ -36,28 +36,30 @@ public class Game {
         activeMen.forEach(board::placeMan);
     }
 
-    public boolean move(Player player, Man man, int row, int column) {
-        Move move = new Move(player,
-                man.getRow(), man.getColumn(), man.getValue(), // the man we are currently moving
+    public boolean move(Player player, Man movingMan, int row, int column) {
+        Move move = new Move(player, movingMan, // the man we are currently moving
                 row, column, board.getCoordinate(row, column)); // the position where we want to move
 
         if (!move.isValid()) return false;
 
-        man.setRow(row);
-        man.setColumn(column);
+        if (move.needsPromotion()) movingMan.promote();
+
         board.moved(move);
         history.add(move);
+
+        movingMan.setRow(row);
+        movingMan.setColumn(column);
+
         return true;
     }
 
-    public boolean jump(Player player, Man man,
+    public boolean jump(Player player, Man movingMan,
                         int jumpedRow, int jumpedColumn,
                         int row, int column) {
         Man jumpedMan = getManByPosition(jumpedRow, jumpedColumn);
         if (jumpedMan == null) return false;
 
-        Jump jump = new Jump(player,
-                man.getRow(), man.getColumn(), man.getValue(), // the man we are currently moving
+        Jump jump = new Jump(player, movingMan, // the man we are currently moving
                 jumpedRow, jumpedColumn, jumpedMan.getValue(),
                 row, column, board.getCoordinate(row, column)); // the position where we want to move
 
@@ -65,18 +67,19 @@ public class Game {
 
         player.addPoint();
 
-        man.setRow(row);
-        man.setColumn(column);
+        if (jump.needsPromotion()) movingMan.promote();
 
         board.jumpedOver(jump);
         history.add(jump);
         activeMen.remove(jumpedMan);
 
+        movingMan.setRow(row);
+        movingMan.setColumn(column);
+
         return true;
     }
 
     public Man getManByPosition(int row, int column) {
-        //if (board.getCoordinate(row, column) == 0) return null;
         return activeMen.stream()
                 .filter(man -> man.getRow() == row)
                 .filter(man -> man.getColumn() == column)
