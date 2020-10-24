@@ -63,4 +63,16 @@ public class Utils {
         }
         return "-";
     }
+
+    public static boolean containsMinus(int[] array) {
+        for (int i = 0; i < array.length; i++) {
+            if (array[i] < 0) return true;
+        }
+        return false;
+    }
+
+    public static int convertRowForToString(int row) {
+        int[] rows = new int[] {8, 7, 6, 5, 4, 3, 2, 1};
+        return rows[row];
+    }
 }
