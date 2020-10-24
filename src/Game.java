@@ -67,7 +67,7 @@ public class Game {
         man.setColumn(column);
         board.jumpedOver(jump);
         history.add(jump);
-        men.remove(jump.getJumpedMan());
+        men.remove(jumpedMan);
         return true;
     }
 
