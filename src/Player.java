@@ -9,10 +9,11 @@ public class Player {
     }
 
     public Player(String name, boolean white, boolean computer) {
-        this.name = name;
         this.white = white;
         this.computer = computer;
         this.points = 0;
+        if (name.isEmpty()) name = "Player";
+        this.name = name;
     }
 
     public int getPoints() {
