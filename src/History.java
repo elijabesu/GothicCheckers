@@ -54,6 +54,7 @@ public class History {
                     Man man = game.getManByPosition(coordinates[0], coordinates[1]);
                     if (Utils.containsMinus(coordinates)) game.move(player, man, coordinates[2], coordinates[3]);
                     else game.jump(player, man, coordinates[4], coordinates[5], coordinates[2], coordinates[3]);
+                    game.switchPlayers();
                 });
     }
 }
