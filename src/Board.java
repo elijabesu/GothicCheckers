@@ -67,4 +67,6 @@ public class Board {
         coordinates.removeMan(jump.getJumpedRow(), jump.getJumpedColumn());
         coordinates.placeMan(jump.getNewRow(), jump.getNewColumn(), jump.getMan().getValue());
     }
+
+    public Coordinates getCoordinates() { return coordinates; }
 }

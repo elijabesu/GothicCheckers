@@ -34,16 +34,16 @@ public class Move {
         if (newPositionOriginalMan != 0) return false; // if the position is occupied -> NOPE
 
         if (player.isWhite()) {
-            if (movingMan.getValue() > 0) return false; // if the WHITE player is trying to move any of the BLACK men -> NOPE
+            if (!movingMan.isWhite()) return false; // if the WHITE player is trying to move any of the BLACK men -> NOPE
         } else {
-            if (movingMan.getValue() < 0) return false; // if the BLACK player is trying to move any of the WHITE men -> NOPE
+            if (movingMan.isWhite()) return false; // if the BLACK player is trying to move any of the WHITE men -> NOPE
         }
 
-        if (movingMan.getValue() == 2 || movingMan.getValue() == -2) return true; // if it's a King -> YEP
+        if (movingMan.isKing()) return true; // if it's a King -> YEP
 
         // if they are trying to move backwards -> NOPE
-        if (movingMan.getValue() == -1 && newRow > originalRow) return false;
-        if (movingMan.getValue() == 1 && newRow < originalRow) return false;
+        if (movingMan.isWhite() && newRow > originalRow) return false;
+        if (!movingMan.isWhite() && newRow < originalRow) return false;
 
         // everything else:
         return true;
@@ -71,14 +71,17 @@ public class Move {
 
     @Override
     public String toString() {
-        return "" + Columns.values()[originalColumn] + Utils.convertRowForToString(originalRow) + " -> " +
-                Columns.values()[newColumn] + Utils.convertRowForToString(newRow) +
-                " (" + player.getName() + ", " + Utils.whichMan(movingMan.getValue()) + ")";
+        return toStringWithoutPlayer() + " (" + player.getName() + ", " + Utils.whichMan(movingMan.getValue()) + ")";
     }
 
     public boolean needsPromotion() {
         if (movingMan.getValue() == 1 && newRow == 7) return true;
         if (movingMan.getValue() == -1 && newRow == 0) return true;
         return false;
+    }
+
+    public String toStringWithoutPlayer() {
+        return "" + Columns.values()[originalColumn] + Utils.convertRowForToString(originalRow) + " -> " +
+                Columns.values()[newColumn] + Utils.convertRowForToString(newRow);
     }
 }

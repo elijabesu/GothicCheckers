@@ -33,4 +33,14 @@ public class Man {
     public void setColumn(int column) {
         this.column = column;
     }
+
+    public boolean isKing() {
+        if (Math.abs(value) == 2) return true;
+        return false;
+    }
+
+    public boolean isWhite() {
+        if (value < 0) return true;
+        return false;
+    }
 }
