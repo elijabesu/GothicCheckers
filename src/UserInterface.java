@@ -16,17 +16,18 @@ public class UserInterface {
         scanner = new Scanner(System.in);
 
         moveRegex = "[A-H][1-8] -> [A-H][1-8]";
-        hintRegex = "[A-H][1-8] -> ?";
+        hintRegex = "[A-H][1-8] ->";
     }
 
     public void startGame() {
         getPlayerNames();
         printBoard();
+
         while (true) {
             if (playerBool) System.out.println("\n\t\t" + player1.getName() + "'s turn:");
             else System.out.println("\n\t\t" + player2.getName() + "'s turn:");
 
-            System.out.print("\tCommand? (B2 -> C3, B2 -> ?, history, score, display, save, load, quit)\n\t\t");
+            System.out.print("\tCommand? (B2 -> C3, B2 ->, history, score, display, save, load, quit)\n\t\t");
             String command = scanner.nextLine();
 
             if (command.equals("quit")) break;
@@ -37,10 +38,13 @@ public class UserInterface {
             if (command.equals("display")) printBoard();
             if (command.equals("save")) saveGame();
             if (command.equals("load")) loadGame();
+
+            if (game.shouldEnd()) break;
         }
+        endGame();
     }
 
-    public void movement(String movement) {
+    private void movement(String movement) {
         int[] coordinates = Utils.getCoordinates(movement, whichPlayer().isWhite());
 
         Man man = game.getManByPosition(coordinates[0], coordinates[1]);
@@ -105,7 +109,7 @@ public class UserInterface {
         Man man = game.getManByPosition(coordinate[0], coordinate[1]);
         if (man == null) printInvalidMove();
         else {
-            game.hint(whichPlayer(), man);
+            System.out.println(game.hint(whichPlayer(), man));
         }
     }
 
@@ -117,6 +121,12 @@ public class UserInterface {
         System.out.print("Filename? ");
         String fileName = scanner.nextLine();
         if (game.load(game, player1, player2, fileName)) System.out.println("Successfully loaded the game.");
+    }
+
+    private void endGame() {
+        if (player1.getPoints() > player2.getPoints()) System.out.println(player1.getName() + " won!");
+        else if (player1.getPoints() < player2.getPoints()) System.out.println(player2.getName() + " won!");
+        else System.out.println("It's a draw!");
     }
 
     // FIXME E7 -> C7 doesn't work BUT C7 -> E7 does

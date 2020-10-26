@@ -118,11 +118,16 @@ public class Game {
     }
 
     public String hint(Player player, Man movingMan) {
-        Hint hint = new Hint(player, movingMan);
+        Hint hint = new Hint(player, movingMan, board.getCoordinates());
         return hint.toString();
     }
 
     private void end() {
         // TODO
+    }
+
+    public boolean shouldEnd() {
+        if (movesWithoutJump == 30) return true;
+        return false;
     }
 }
