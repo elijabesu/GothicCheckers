@@ -40,7 +40,7 @@ public class UserInterface {
         }
     }
 
-    private void movement(String movement) {
+    public void movement(String movement) {
         int[] coordinates = Utils.getCoordinates(movement, whichPlayer().isWhite());
 
         Man man = game.getManByPosition(coordinates[0], coordinates[1]);
@@ -101,14 +101,23 @@ public class UserInterface {
 
     private void hint(String command) {
         // TODO implement hinting mechanism, aka generating all possible moves
+        int[] coordinate = Utils.getCoordinate(command, 1, 0);
+        Man man = game.getManByPosition(coordinate[0], coordinate[1]);
+        if (man == null) printInvalidMove();
+        else {
+            game.hint(whichPlayer(), man);
+        }
     }
 
     private void saveGame() {
-        // TODO saving mechanism
         if (game.save()) System.out.println("Successfully saved the game.");
     }
 
     private void loadGame() {
-        // TODO loading mechanism
+        System.out.print("Filename? ");
+        String fileName = scanner.nextLine();
+        if (game.load(game, player1, player2, fileName)) System.out.println("Successfully loaded the game.");
     }
+
+    // FIXME E7 -> C7 doesn't work BUT C7 -> E7 does
 }

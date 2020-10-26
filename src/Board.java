@@ -62,7 +62,7 @@ public class Board {
         coordinates.placeMan(move.getNewRow(), move.getNewColumn(), move.getMan().getValue());
     }
 
-    public void jumpedOver(Jump jump) {
+    public void jumped(Jump jump) {
         coordinates.removeMan(jump.getOriginalRow(), jump.getOriginalColumn());
         coordinates.removeMan(jump.getJumpedRow(), jump.getJumpedColumn());
         coordinates.placeMan(jump.getNewRow(), jump.getNewColumn(), jump.getMan().getValue());

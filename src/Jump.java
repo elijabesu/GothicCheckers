@@ -39,9 +39,4 @@ public class Jump extends Move {
     public int getJumpedColumn() {
         return jumpedColumn;
     }
-
-    @Override
-    public String toString() {
-        return super.toString().replace(")", ", + 1)");
-    }
 }

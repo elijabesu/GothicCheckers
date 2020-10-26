@@ -5,11 +5,13 @@ public class Game {
     private final Board board;
     private final List<Man> activeMen;
     private final History history;
+    private int movesWithoutJump;
 
     public Game() {
         board = new Board(8);
         activeMen = new ArrayList<>();
         history = new History();
+        movesWithoutJump = 0;
 
         generateMen();
         placeAllMenOnBoard();
@@ -49,6 +51,7 @@ public class Game {
 
         board.moved(move);
         history.add(move);
+        ++movesWithoutJump;
 
         movingMan.setRow(row);
         movingMan.setColumn(column);
@@ -72,9 +75,10 @@ public class Game {
 
         if (jump.needsPromotion()) movingMan.promote();
 
-        board.jumpedOver(jump);
+        board.jumped(jump);
         history.add(jump);
         activeMen.remove(jumpedMan);
+        movesWithoutJump = 0;
 
         movingMan.setRow(row);
         movingMan.setColumn(column);
@@ -101,5 +105,24 @@ public class Game {
             System.out.println(e);
             return false;
         }
+    }
+
+    public boolean load(Game game, Player player1, Player player2, String fileName) {
+        try {
+            history.load(game, player1, player2, fileName);
+            return true;
+        } catch (Exception e) {
+            System.out.println(e);
+            return false;
+        }
+    }
+
+    public String hint(Player player, Man movingMan) {
+        Hint hint = new Hint(player, movingMan);
+        return hint.toString();
+    }
+
+    private void end() {
+        // TODO
     }
 }
