@@ -78,4 +78,8 @@ public class Utils {
         int[] rows = new int[] {8, 7, 6, 5, 4, 3, 2, 1};
         return rows[row];
     }
+
+    public static int[] generateArrayOfThree(int middle) {
+        return new int[] {middle - 1, middle, middle + 1};
+    }
 }
