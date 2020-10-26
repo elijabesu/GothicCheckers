@@ -16,6 +16,7 @@ public class Utils {
         int difference = Utils.getDifference(original, next);
         if (difference == 0) return original;
         if (difference != 2) return -1;
+        if (original > next) return original - 1;
         return original + 1;
     }
 
