@@ -15,9 +15,6 @@ public class UserInterface {
         game = new Game();
         scanner = new Scanner(System.in);
 
-        game.generateMen();
-        game.placeAllMenOnBoard();
-
         moveRegex = "[A-H][1-8] -> [A-H][1-8]";
         hintRegex = "[A-H][1-8] -> ?";
     }
@@ -108,6 +105,7 @@ public class UserInterface {
 
     private void saveGame() {
         // TODO saving mechanism
+        if (game.save()) System.out.println("Successfully saved the game.");
     }
 
     private void loadGame() {

@@ -40,4 +40,8 @@ public class Jump extends Move {
         return jumpedColumn;
     }
 
+    @Override
+    public String toString() {
+        return super.toString().replace(")", ", + 1)");
+    }
 }

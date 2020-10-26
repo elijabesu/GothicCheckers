@@ -10,6 +10,9 @@ public class Game {
         board = new Board(8);
         activeMen = new ArrayList<>();
         history = new History();
+
+        generateMen();
+        placeAllMenOnBoard();
     }
 
     public String displayBoard() {
@@ -88,5 +91,15 @@ public class Game {
 
     public String getHistory() {
         return history.toString();
+    }
+
+    public boolean save() {
+        try {
+            history.save();
+            return true;
+        } catch (Exception e) {
+            System.out.println(e);
+            return false;
+        }
     }
 }
