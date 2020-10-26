@@ -6,7 +6,6 @@ public class UserInterface {
 
     private Player player1; // white == o
     private Player player2; // black == x
-    private boolean playerBool; // true == player1, false == player2
 
     private final String moveRegex;
     private final String hintRegex;
@@ -24,20 +23,20 @@ public class UserInterface {
         printBoard();
 
         while (true) {
-            if (playerBool) System.out.println("\n\t\t" + player1.getName() + "'s turn:");
+            if (game.getPlayerBool()) System.out.println("\n\t\t" + player1.getName() + "'s turn:");
             else System.out.println("\n\t\t" + player2.getName() + "'s turn:");
 
             System.out.print("\tCommand? (B2 -> C3, B2 ->, history, score, display, save, load, quit)\n\t\t");
             String command = scanner.nextLine();
 
-            if (command.equals("quit")) break;
-            if (command.equals("history")) System.out.println(game.getHistory());
-            if (command.matches(moveRegex)) movement(command);
-            if (command.matches(hintRegex)) hint(command);
-            if (command.equals("score")) printScore();
-            if (command.equals("display")) printBoard();
-            if (command.equals("save")) saveGame();
-            if (command.equals("load")) loadGame();
+            if (command.trim().equals("quit")) break;
+            if (command.trim().equals("history")) System.out.println(game.getHistory());
+            if (command.trim().matches(moveRegex)) movement(command);
+            if (command.trim().matches(hintRegex)) hint(command);
+            if (command.trim().equals("score")) printScore();
+            if (command.trim().equals("display")) printBoard();
+            if (command.trim().equals("save")) saveGame();
+            if (command.trim().equals("load")) loadGame();
 
             if (game.shouldEnd()) break;
         }
@@ -58,7 +57,7 @@ public class UserInterface {
     private void move(Man man, int[] coordinates) {
         if (game.move(whichPlayer(), man, coordinates[2], coordinates[3])) {
             printBoard();
-            switchPlayers();
+            game.switchPlayers();
         } else printInvalidMove();
     }
 
@@ -66,7 +65,7 @@ public class UserInterface {
         if (game.jump(whichPlayer(), man,
                 coordinates[4], coordinates[5], coordinates[2], coordinates[3])) {
             printBoard();
-            switchPlayers();
+            game.switchPlayers();
         } else printInvalidMove();
     }
 
@@ -84,27 +83,19 @@ public class UserInterface {
 
         System.out.print("Enter second player's name (black): ");
         player2 = new Player(scanner.nextLine(), false);
-
-        playerBool = true;
     }
 
-    private void switchPlayers() {
-        if (playerBool) playerBool = false;
-        else playerBool = true;
-    }
-
-    public Player whichPlayer() {
-        if (playerBool) return player1;
+    private Player whichPlayer() {
+        if (game.getPlayerBool()) return player1;
         return player2;
     }
 
-    public void printScore() {
+    private void printScore() {
         System.out.println(player1);
         System.out.println(player2);
     }
 
     private void hint(String command) {
-        // TODO implement hinting mechanism, aka generating all possible moves
         int[] coordinate = Utils.getCoordinate(command, 1, 0);
         Man man = game.getManByPosition(coordinate[0], coordinate[1]);
         if (man == null) printInvalidMove();
@@ -128,6 +119,4 @@ public class UserInterface {
         else if (player1.getPoints() < player2.getPoints()) System.out.println(player2.getName() + " won!");
         else System.out.println("It's a draw!");
     }
-
-    // FIXME E7 -> C7 doesn't work BUT C7 -> E7 does
 }

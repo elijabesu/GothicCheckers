@@ -6,12 +6,14 @@ public class Game {
     private final List<Man> activeMen;
     private final History history;
     private int movesWithoutJump;
+    private boolean playerBool; // true == player1, false == player2
 
     public Game() {
         board = new Board(8);
         activeMen = new ArrayList<>();
         history = new History();
         movesWithoutJump = 0;
+        playerBool = true;
 
         generateMen();
         placeAllMenOnBoard();
@@ -122,12 +124,17 @@ public class Game {
         return hint.toString();
     }
 
-    private void end() {
-        // TODO
-    }
-
     public boolean shouldEnd() {
         if (movesWithoutJump == 30) return true;
         return false;
+    }
+
+    public boolean getPlayerBool() {
+        return playerBool;
+    }
+
+    public void switchPlayers() {
+        if (playerBool) playerBool = false;
+        else playerBool = true;
     }
 }
