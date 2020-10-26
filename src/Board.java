@@ -1,12 +1,12 @@
 public class Board {
     private final StringBuilder boardString;
     private final int size;
-    private final Positions coordinates;
+    private final Coordinates coordinates;
 
     public Board(int size) {
         this.size = size;
         this.boardString = new StringBuilder();
-        coordinates = new Positions(size);
+        coordinates = new Coordinates(size);
     }
 
     public String displayBoard() {
