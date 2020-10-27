@@ -45,11 +45,11 @@ public class Game {
 
     public boolean move(Player player, Man movingMan, int row, int column) {
         Move move = new Move(player, movingMan, // the man we are currently moving
-                row, column, board.getCoordinate(row, column)); // the position where we want to move
+                row, column); // the position where we want to move
 
-        if (!move.isValid()) return false;
+        if (!(Rules.isValid(player, movingMan, move, board))) return false;
 
-        if (move.needsPromotion()) movingMan.promote();
+        if (Rules.needsPromotion(movingMan, row)) movingMan.promote();
 
         movingMan.setRow(row);
         movingMan.setColumn(column);
@@ -69,13 +69,13 @@ public class Game {
 
         Jump jump = new Jump(player, movingMan, // the man we are currently moving
                 jumpedRow, jumpedColumn, jumpedMan.getValue().getValue(),
-                row, column, board.getCoordinate(row, column)); // the position where we want to move
+                row, column); // the position where we want to move
 
-        if (!jump.isValid()) return false;
+        if (!(Rules.isValid(player, movingMan, jump, board))) return false;
 
         player.addPoint();
 
-        if (jump.needsPromotion()) movingMan.promote();
+        if (Rules.needsPromotion(movingMan, row)) movingMan.promote();
 
         movingMan.setRow(row);
         movingMan.setColumn(column);
