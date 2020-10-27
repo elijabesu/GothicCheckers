@@ -1,3 +1,5 @@
+import java.util.Objects;
+
 public class Jump extends Move {
     private final int jumpedRow;
     private final int jumpedColumn;
@@ -5,31 +7,11 @@ public class Jump extends Move {
 
     public Jump(Player player, Man movingMan,
                 int jumpedRow, int jumpedColumn, int jumpedMan,
-                int newRow, int newColumn, int newMan) {
-        super(player, movingMan, newRow, newColumn, newMan);
+                int newRow, int newColumn) {
+        super(player, movingMan, newRow, newColumn);
         this.jumpedRow = jumpedRow;
         this.jumpedColumn = jumpedColumn;
         this.jumpedMan = jumpedMan;
-    }
-
-    @Override
-    public boolean isValid() {
-        if (!basicValidation()) return false;
-        if (jumpedMan == 0) return false;
-
-        int rowDifference = Utils.getDifference(originalRow, newRow);
-        int columnDifference = Utils.getDifference(originalColumn, newColumn);
-
-        if (player.isWhite()) {
-            if (jumpedMan < 0) return false; // if the WHITE player is trying to jump over another WHITE man -> NOPE
-        } else {
-            if (jumpedMan > 0) return false; // if the BLACK player is trying to jump over another BLACK man -> NOPE
-        }
-
-        if (rowDifference == 0 && columnDifference == 2) return true; // left and right
-        if (rowDifference == 2 && (columnDifference == 0 || columnDifference == 2)) return true; // rest
-
-        return false;
     }
 
     public int getJumpedRow() {
@@ -38,5 +20,25 @@ public class Jump extends Move {
 
     public int getJumpedColumn() {
         return jumpedColumn;
+    }
+
+    public int getJumpedMan() {
+        return jumpedMan;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        if (!super.equals(o)) return false;
+        Jump jump = (Jump) o;
+        return jumpedRow == jump.jumpedRow &&
+                jumpedColumn == jump.jumpedColumn &&
+                jumpedMan == jump.jumpedMan;
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(super.hashCode(), jumpedRow, jumpedColumn, jumpedMan);
     }
 }
