@@ -10,6 +10,9 @@ public class Rules {
         List<Jump> possibleJumps = new ArrayList<>();
         List<Move> possibilities = new ArrayList<>();
 
+        if (movingMan.isKing()) return generateKingMoves(player, movingMan, board,
+                possibleMoves, possibleJumps, possibilities);
+
         int[] rows = Utils.generateArrayOfThree(movingMan.getRow());
         int[] columns = Utils.generateArrayOfThree(movingMan.getColumn());
 
@@ -43,6 +46,8 @@ public class Rules {
         int nextRow = row - (movingMan.getRow() - row);
         int nextColumn = column - (movingMan.getColumn() - column);
 
+        if (nextRow < 0 || nextRow > 7 || nextColumn < 0 || nextColumn > 7) return null;
+
         if (board.isOccupied(nextRow, nextColumn)) return null;
         Jump maybeJump = new Jump(player, movingMan,
                 row, column, board.getCoordinate(row, column), // jumpedRow, jumpedColumn, jumpedValue
@@ -52,10 +57,8 @@ public class Rules {
         return null;
     }
 
-    public static boolean isValidMove(Player player, Move move, boolean newPositionOccupied) { //TODO doesn't work for Kings
+    private static boolean isValidMove(Player player, Move move, boolean newPositionOccupied) {
         if (!(basicValidation(player, move, newPositionOccupied))) return false;
-
-        if (move.getMan().isKing()) isValidMoveForKing(move);
 
         int rowDifference = Math.abs(move.getOriginalRow() - move.getNewRow());
         int columnDifference = Math.abs(move.getOriginalColumn() - move.getNewColumn());
@@ -66,7 +69,7 @@ public class Rules {
         return false;
     }
 
-    public static boolean isValidJump(Player player, Jump jump, boolean newPositionOccupied) {
+    private static boolean isValidJump(Player player, Jump jump, boolean newPositionOccupied) {
         if (!(basicValidation(player, jump, newPositionOccupied))) return false;
 
         int jumpedMan = jump.getJumpedMan();
@@ -121,11 +124,55 @@ public class Rules {
         return possibilities.contains(move);
     }
 
-    public static boolean isPossibleAnotherJump() {
+    public static boolean possibleAnotherJump() {
+        // TODO
         return false;
     }
 
-    private static boolean isValidMoveForKing(Move move) {
-        return false;
+    private static List<Move> generateKingMoves(Player player, Man movingMan, Board board,
+                                                List<Move> possibleMoves, List<Jump> possibleJumps,
+                                                List<Move> possibilities) {
+        int row;
+        int column;
+
+        // MOVES:
+        // check rows with a smaller id
+        for (row = movingMan.getRow() - 1; row >= 0; row--) {
+            // same column:
+            column = movingMan.getColumn();
+            if (board.isOccupied(row, column)) break; // TODO jump
+            possibleMoves.add(new Move(player, movingMan, row, column));
+        }
+        // check rows with a bigger id
+        for (row = movingMan.getRow() + 1; row <= 7; row++) {
+            // same column:
+            column = movingMan.getColumn();
+            if (board.isOccupied(row, column)) break; // TODO jump
+            possibleMoves.add(new Move(player, movingMan, row, column));
+        }
+        // check columns with a smaller id
+        for (column = movingMan.getColumn() - 1; column >= 0; column--) {
+            // same row:
+            row = movingMan.getRow();
+            if (board.isOccupied(row, column)) break; // TODO jump
+            possibleMoves.add(new Move(player, movingMan, row, column));
+        }
+        // check columns with a bigger id
+        for (column = movingMan.getColumn() + 1; column <= 7; column++) {
+            // same row:
+            row = movingMan.getRow();
+            if (board.isOccupied(row, column)) break; // TODO jump
+            possibleMoves.add(new Move(player, movingMan, row, column));
+        }
+
+        for (Jump jump: possibleJumps) {
+            if (jump == null) continue;
+            possibilities.add(jump);
+        }
+        for (Move move: possibleMoves) {
+            if (move == null) continue;
+            possibilities.add(move);
+        }
+        return possibilities;
     }
 }
