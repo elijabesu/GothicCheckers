@@ -1,20 +1,20 @@
 public class Man {
-    private int value; // -1 is WHITE == o, 1 is BLACK == x
+    private Pieces value; // -1 is WHITE == o, 1 is BLACK == x
     private int row;
     private int column;
 
-    public Man(int value, int row, int column) {
+    public Man(Pieces value, int row, int column) {
         this.value = value;
         this.row = row;
         this.column = column;
     }
 
     public void promote() {
-        if (value == 1) value = 2;
-        if (value == -1) value = -2;
+        if (value == Pieces.BLACK) value = Pieces.BLACK_KING;
+        if (value == Pieces.WHITE) value = Pieces.WHITE_KING;
     }
 
-    public int getValue() {
+    public Pieces getValue() {
         return value;
     }
 
@@ -35,12 +35,10 @@ public class Man {
     }
 
     public boolean isKing() {
-        if (Math.abs(value) == 2) return true;
-        return false;
+        return (value == Pieces.BLACK_KING || value == Pieces.WHITE_KING);
     }
 
     public boolean isWhite() {
-        if (value < 0) return true;
-        return false;
+        return (value == Pieces.WHITE || value == Pieces.WHITE_KING);
     }
 }

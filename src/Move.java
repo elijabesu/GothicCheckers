@@ -71,12 +71,12 @@ public class Move {
 
     @Override
     public String toString() {
-        return toStringWithoutPlayer() + " (" + player.getName() + ", " + Utils.whichMan(movingMan.getValue()) + ")";
+        return toStringWithoutPlayer() + " (" + player.getName() + ", " + Utils.whichMan(movingMan.getValue().getValue()) + ")";
     }
 
     public boolean needsPromotion() {
-        if (movingMan.getValue() == 1 && newRow == 7) return true;
-        if (movingMan.getValue() == -1 && newRow == 0) return true;
+        if (movingMan.getValue() == Pieces.BLACK && newRow == 7) return true;
+        if (movingMan.getValue() == Pieces.WHITE && newRow == 0) return true;
         return false;
     }
 

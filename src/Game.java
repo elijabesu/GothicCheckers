@@ -27,14 +27,14 @@ public class Game {
         // black
         for (int i = 0; i < 2; i++) {
             for (int j = 0; j < board.getSize(); j++) {
-                activeMen.add(new Man(1, i, j));
+                activeMen.add(new Man(Pieces.BLACK, i, j));
             }
         }
 
         // white
         for (int i = board.getSize() - 2; i < board.getSize(); i++) {
             for (int j = 0; j < board.getSize(); j++) {
-                activeMen.add(new Man(-1, i, j));
+                activeMen.add(new Man(Pieces.WHITE, i, j));
             }
         }
     }
@@ -68,7 +68,7 @@ public class Game {
         if (jumpedMan == null) return false;
 
         Jump jump = new Jump(player, movingMan, // the man we are currently moving
-                jumpedRow, jumpedColumn, jumpedMan.getValue(),
+                jumpedRow, jumpedColumn, jumpedMan.getValue().getValue(),
                 row, column, board.getCoordinate(row, column)); // the position where we want to move
 
         if (!jump.isValid()) return false;
@@ -104,7 +104,7 @@ public class Game {
             history.save();
             return true;
         } catch (Exception e) {
-            System.out.println(e);
+            System.out.println("Error saving a file: " + e);
             return false;
         }
     }
@@ -114,7 +114,7 @@ public class Game {
             history.load(game, player1, player2, fileName);
             return true;
         } catch (Exception e) {
-            System.out.println(e);
+            System.out.println("Error loading a file: " + e);
             return false;
         }
     }
@@ -125,8 +125,7 @@ public class Game {
     }
 
     public boolean shouldEnd() {
-        if (movesWithoutJump == 30) return true;
-        return false;
+        return movesWithoutJump == 30;
     }
 
     public boolean getPlayerBool() {

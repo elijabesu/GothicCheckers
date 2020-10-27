@@ -50,7 +50,7 @@ public class Board {
     }
 
     public void placeMan(Man man) {
-        coordinates.placeMan(man.getRow(), man.getColumn(), man.getValue());
+        coordinates.placeMan(man.getRow(), man.getColumn(), man.getValue().getValue());
     }
 
     public int getCoordinate(int row, int column) {
@@ -59,13 +59,13 @@ public class Board {
 
     public void moved(Move move) {
         coordinates.removeMan(move.getOriginalRow(), move.getOriginalColumn());
-        coordinates.placeMan(move.getNewRow(), move.getNewColumn(), move.getMan().getValue());
+        coordinates.placeMan(move.getNewRow(), move.getNewColumn(), move.getMan().getValue().getValue());
     }
 
     public void jumped(Jump jump) {
         coordinates.removeMan(jump.getOriginalRow(), jump.getOriginalColumn());
         coordinates.removeMan(jump.getJumpedRow(), jump.getJumpedColumn());
-        coordinates.placeMan(jump.getNewRow(), jump.getNewColumn(), jump.getMan().getValue());
+        coordinates.placeMan(jump.getNewRow(), jump.getNewColumn(), jump.getMan().getValue().getValue());
     }
 
     public Coordinates getCoordinates() { return coordinates; }
