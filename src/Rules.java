@@ -55,6 +55,8 @@ public class Rules {
     public static boolean isValidMove(Player player, Move move, boolean newPositionOccupied) { //TODO doesn't work for Kings
         if (!(basicValidation(player, move, newPositionOccupied))) return false;
 
+        if (move.getMan().isKing()) isValidMoveForKing(move);
+
         int rowDifference = Utils.getDifference(move.getOriginalRow(), move.getNewRow());
         int columnDifference = Utils.getDifference(move.getOriginalColumn(), move.getNewColumn());
 
@@ -117,5 +119,13 @@ public class Rules {
         List<Move> possibilities = generateMoves(player, movingMan, board);
         if (possibilities == null || possibilities.isEmpty()) return false;
         return possibilities.contains(move);
+    }
+
+    public static boolean isPossibleAnotherJump() {
+        return false;
+    }
+
+    private static boolean isValidMoveForKing(Move move) {
+        return false;
     }
 }

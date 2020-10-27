@@ -43,16 +43,16 @@ public class Game {
         activeMen.forEach(board::placeMan);
     }
 
-    public boolean move(Player player, Man movingMan, int row, int column) {
+    public boolean move(Player player, Man movingMan, int newRow, int newColumn) {
         Move move = new Move(player, movingMan, // the man we are currently moving
-                row, column); // the position where we want to move
+                newRow, newColumn); // the position where we want to move
 
         if (!(Rules.isValid(player, movingMan, move, board))) return false;
 
-        if (Rules.needsPromotion(movingMan, row)) movingMan.promote();
+        if (Rules.needsPromotion(movingMan, newRow)) movingMan.promote();
 
-        movingMan.setRow(row);
-        movingMan.setColumn(column);
+        movingMan.setRow(newRow);
+        movingMan.setColumn(newColumn);
 
         board.moved(move);
         history.add(move);
@@ -63,22 +63,22 @@ public class Game {
 
     public boolean jump(Player player, Man movingMan,
                         int jumpedRow, int jumpedColumn,
-                        int row, int column) {
+                        int newRow, int newColumn) {
         Man jumpedMan = getManByPosition(jumpedRow, jumpedColumn);
         if (jumpedMan == null) return false;
 
         Jump jump = new Jump(player, movingMan, // the man we are currently moving
                 jumpedRow, jumpedColumn, jumpedMan.getValue().getValue(),
-                row, column); // the position where we want to move
+                newRow, newColumn); // the position where we want to move
 
         if (!(Rules.isValid(player, movingMan, jump, board))) return false;
 
         player.addPoint();
 
-        if (Rules.needsPromotion(movingMan, row)) movingMan.promote();
+        if (Rules.needsPromotion(movingMan, newRow)) movingMan.promote();
 
-        movingMan.setRow(row);
-        movingMan.setColumn(column);
+        movingMan.setRow(newRow);
+        movingMan.setColumn(newColumn);
 
         board.jumped(jump);
         history.add(jump);
@@ -135,5 +135,9 @@ public class Game {
     public void switchPlayers() {
         if (playerBool) playerBool = false;
         else playerBool = true;
+    }
+
+    public void kingMovement(Player player, Man movingMan, int newRow, int newColumn) {
+        // TODO
     }
 }

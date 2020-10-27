@@ -44,11 +44,18 @@ public class UserInterface {
     }
 
     private void movement(String movement) {
-        int[] coordinates = Utils.getCoordinates(movement, whichPlayer().isWhite());
+        int[] origCoords = Utils.getCoordinate(movement, 1, 0);
 
-        Man man = game.getManByPosition(coordinates[0], coordinates[1]);
+        Man man = game.getManByPosition(origCoords[0], origCoords[1]);
+
         if (man == null) printInvalidMove();
+        else if (man.isKing()) {
+            int[] newCoords = Utils.getCoordinate(movement, 7, 6);
+            game.kingMovement(whichPlayer(), man, newCoords[0], newCoords[1]);
+            afterMove();
+        }
         else {
+            int[] coordinates = Utils.getCoordinates(movement, whichPlayer().isWhite());
             if (Utils.containsMinus(coordinates)) move(man, coordinates);
             else jump(man, coordinates);
         }
@@ -56,16 +63,14 @@ public class UserInterface {
 
     private void move(Man man, int[] coordinates) {
         if (game.move(whichPlayer(), man, coordinates[2], coordinates[3])) {
-            printBoard();
-            game.switchPlayers();
+            afterMove();
         } else printInvalidMove();
     }
 
     private void jump(Man man, int[] coordinates) {
         if (game.jump(whichPlayer(), man,
                 coordinates[4], coordinates[5], coordinates[2], coordinates[3])) {
-            printBoard();
-            game.switchPlayers();
+            afterMove();
         } else printInvalidMove();
     }
 
@@ -118,5 +123,10 @@ public class UserInterface {
         if (player1.getPoints() > player2.getPoints()) System.out.println(player1.getName() + " won!");
         else if (player1.getPoints() < player2.getPoints()) System.out.println(player2.getName() + " won!");
         else System.out.println("It's a draw!");
+    }
+
+    private void afterMove() {
+        printBoard();
+        game.switchPlayers();
     }
 }
