@@ -69,8 +69,8 @@ public class Utils {
     }
 
     public static boolean containsMinus(int[] array) {
-        for (int i = 0; i < array.length; i++) {
-            if (array[i] < 0) return true;
+        for (int i: array) {
+            if (i < 0) return true;
         }
         return false;
     }

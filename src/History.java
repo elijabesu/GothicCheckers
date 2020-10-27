@@ -35,7 +35,7 @@ public class History {
         Files.write(Paths.get(System.getProperty("user.dir") + "\\saves\\" +
                 java.time.LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy.MM.dd-HH.mm.ss"))
                         + ".txt"),
-                history.stream().map(move -> move.toString()).collect(Collectors.toList()));
+                history.stream().map(String::valueOf).collect(Collectors.toList()));
     }
 
     public void load(Game game, Player player1, Player player2, String fileName) throws IOException {

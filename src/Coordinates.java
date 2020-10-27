@@ -10,8 +10,7 @@ public class Coordinates {
     }
 
     public boolean isOccupied(int row, int column) {
-        if (coordinates[row][column] == 0) return false;
-        return true;
+        return !(coordinates[row][column] == 0);
     }
 
     public void placeMan(int row, int column, int value) {
