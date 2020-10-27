@@ -51,12 +51,12 @@ public class Game {
 
         if (move.needsPromotion()) movingMan.promote();
 
+        movingMan.setRow(row);
+        movingMan.setColumn(column);
+
         board.moved(move);
         history.add(move);
         ++movesWithoutJump;
-
-        movingMan.setRow(row);
-        movingMan.setColumn(column);
 
         return true;
     }
@@ -77,13 +77,13 @@ public class Game {
 
         if (jump.needsPromotion()) movingMan.promote();
 
+        movingMan.setRow(row);
+        movingMan.setColumn(column);
+
         board.jumped(jump);
         history.add(jump);
         activeMen.remove(jumpedMan);
         movesWithoutJump = 0;
-
-        movingMan.setRow(row);
-        movingMan.setColumn(column);
 
         return true;
     }
@@ -120,7 +120,7 @@ public class Game {
     }
 
     public String hint(Player player, Man movingMan) {
-        Hint hint = new Hint(player, movingMan, board.getCoordinates());
+        Hint hint = new Hint(player, movingMan, board);
         return hint.toString();
     }
 

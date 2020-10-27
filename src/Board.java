@@ -1,12 +1,12 @@
 public class Board {
     private final StringBuilder boardString;
     private final int size;
-    private final Coordinates coordinates;
+    private final int[][] coordinates;
 
     public Board(int size) {
         this.size = size;
         this.boardString = new StringBuilder();
-        coordinates = new Coordinates(size);
+        this.coordinates = new int[size][size];
     }
 
     public String displayBoard() {
@@ -26,7 +26,7 @@ public class Board {
     private void appendColumns(int row) {
         for (int column = 0; column < size; column++) {
             boardString.append(Symbols.VERTICAL.getSymbol());
-            switch (coordinates.getValue(row, column)) {
+            switch (coordinates[row][column]) {
                 case 0 -> boardString.append(Symbols.EMPTY.getSymbol());
                 case -1 -> boardString.append(Symbols.WHITE.getSymbol());
                 case -2 -> boardString.append(Symbols.WHITE_KING.getSymbol());
@@ -50,23 +50,29 @@ public class Board {
     }
 
     public void placeMan(Man man) {
-        coordinates.placeMan(man.getRow(), man.getColumn(), man.getValue().getValue());
+        coordinates[man.getRow()][man.getColumn()] = man.getValue().getValue();
+    }
+
+    public void removeMan(int row, int column) {
+        coordinates[row][column] = 0;
     }
 
     public int getCoordinate(int row, int column) {
-        return coordinates.getValue(row, column);
+        return coordinates[row][column];
+    }
+
+    public boolean isOccupied(int row, int column) {
+        return !(coordinates[row][column] == 0);
     }
 
     public void moved(Move move) {
-        coordinates.removeMan(move.getOriginalRow(), move.getOriginalColumn());
-        coordinates.placeMan(move.getNewRow(), move.getNewColumn(), move.getMan().getValue().getValue());
+        removeMan(move.getOriginalRow(), move.getOriginalColumn());
+        placeMan(move.getMan());
     }
 
     public void jumped(Jump jump) {
-        coordinates.removeMan(jump.getOriginalRow(), jump.getOriginalColumn());
-        coordinates.removeMan(jump.getJumpedRow(), jump.getJumpedColumn());
-        coordinates.placeMan(jump.getNewRow(), jump.getNewColumn(), jump.getMan().getValue().getValue());
+        removeMan(jump.getOriginalRow(), jump.getOriginalColumn());
+        removeMan(jump.getJumpedRow(), jump.getJumpedColumn());
+        placeMan(jump.getMan());
     }
-
-    public Coordinates getCoordinates() { return coordinates; }
 }

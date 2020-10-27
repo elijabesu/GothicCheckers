@@ -4,14 +4,14 @@ import java.util.List;
 public class Hint {
     private final Player player;
     private final Man movingMan;
-    private final Coordinates coordinates;
+    private final Board board;
     private final List<Move> possibilities;
     private final List<Jump> jumps;   // separating it for when we have to choose the best possible move
 
-    public Hint(Player player, Man movingMan, Coordinates coordinates) {
+    public Hint(Player player, Man movingMan, Board board) {
         this.player = player;
         this.movingMan = movingMan;
-        this.coordinates = coordinates;
+        this.board = board;
         this.possibilities = new ArrayList<>();
         this.jumps = new ArrayList<>();
 
@@ -28,7 +28,7 @@ public class Hint {
             if (row < 0 || row > 7) continue;
             for (int column: columns) {
                 if (column < 0 || column > 7) continue;
-                if (coordinates.isOccupied(row, column)) generateJump(row, column);
+                if (board.isOccupied(row, column)) generateJump(row, column);
                 else {
                     Move maybeMove = new Move(player, movingMan, row, column, 0);
                     if (maybeMove.isValid()) possibilities.add(maybeMove);
@@ -38,14 +38,14 @@ public class Hint {
     }
 
     private void generateJump(int row, int column) {
-        if (coordinates.getValue(row, column) == movingMan.getValue().getValue()) return;
+        if (board.getCoordinate(row, column) == movingMan.getValue().getValue()) return;
 
         int nextRow = row - (movingMan.getRow() - row);
         int nextColumn = column - (movingMan.getColumn() - column);
 
-        if (coordinates.isOccupied(nextRow, nextColumn)) return;
+        if (board.isOccupied(nextRow, nextColumn)) return;
         Jump maybeJump = new Jump(player, movingMan,
-                row, column, coordinates.getValue(row, column), // jumpedRow, jumpedColumn, jumpedValue
+                row, column, board.getCoordinate(row, column), // jumpedRow, jumpedColumn, jumpedValue
                 nextRow, nextColumn, 0);
         if (maybeJump.isValid()) jumps.add(maybeJump);
     }
