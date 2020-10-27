@@ -49,29 +49,22 @@ public class UserInterface {
         Man man = game.getManByPosition(origCoords[0], origCoords[1]);
 
         if (man == null) printInvalidMove();
-        else if (man.isKing()) {
-            int[] newCoords = Utils.getCoordinate(movement, 7, 6);
-            game.kingMovement(whichPlayer(), man, newCoords[0], newCoords[1]);
-            afterMove();
-        }
         else {
             int[] coordinates = Utils.getCoordinates(movement, whichPlayer().isWhite());
-            if (Utils.containsMinus(coordinates)) move(man, coordinates);
+            if (man.isKing() || Utils.containsMinus(coordinates)) move(man, coordinates);
             else jump(man, coordinates);
         }
     }
 
     private void move(Man man, int[] coordinates) {
-        if (game.move(whichPlayer(), man, coordinates[2], coordinates[3])) {
-            afterMove();
-        } else printInvalidMove();
+        if (game.move(whichPlayer(), man, coordinates[2], coordinates[3])) afterMove();
+        else printInvalidMove();
     }
 
     private void jump(Man man, int[] coordinates) {
         if (game.jump(whichPlayer(), man,
-                coordinates[4], coordinates[5], coordinates[2], coordinates[3])) {
-            afterMove();
-        } else printInvalidMove();
+                coordinates[4], coordinates[5], coordinates[2], coordinates[3])) afterMove();
+        else printInvalidMove();
     }
 
     private void printBoard() {

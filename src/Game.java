@@ -136,8 +136,4 @@ public class Game {
         if (playerBool) playerBool = false;
         else playerBool = true;
     }
-
-    public void kingMovement(Player player, Man movingMan, int newRow, int newColumn) {
-        // TODO
-    }
 }

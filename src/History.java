@@ -39,6 +39,7 @@ public class History {
     }
 
     public void load(Game game, Player player1, Player player2, String fileName) throws IOException {
+        // FIXME loading king moves
         Files.lines(Paths.get(System.getProperty("user.dir") + "\\saves\\" + fileName))
                 .map(row -> row.split(" "))
                 .filter(parts -> parts.length >= 5)
@@ -52,7 +53,7 @@ public class History {
                     }
                     int[] coordinates = Utils.getCoordinates(movement, which);
                     Man man = game.getManByPosition(coordinates[0], coordinates[1]);
-                    if (Utils.containsMinus(coordinates)) game.move(player, man, coordinates[2], coordinates[3]);
+                    if (man.isKing() || Utils.containsMinus(coordinates)) game.move(player, man, coordinates[2], coordinates[3]);
                     else game.jump(player, man, coordinates[4], coordinates[5], coordinates[2], coordinates[3]);
                     game.switchPlayers();
                 });
