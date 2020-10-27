@@ -7,7 +7,6 @@ public class Move {
     protected int originalColumn;
     protected int newRow;
     protected int newColumn;
-    protected int newPositionOriginalMan;
 
     public Move(Player player, Man movingMan, int newRow, int newColumn) {
         this.player = player;
@@ -57,13 +56,12 @@ public class Move {
                 originalColumn == move.originalColumn &&
                 newRow == move.newRow &&
                 newColumn == move.newColumn &&
-                newPositionOriginalMan == move.newPositionOriginalMan &&
                 player.equals(move.player) &&
                 movingMan.equals(move.movingMan);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(player, movingMan, originalRow, originalColumn, newRow, newColumn, newPositionOriginalMan);
+        return Objects.hash(player, movingMan, originalRow, originalColumn, newRow, newColumn);
     }
 }
