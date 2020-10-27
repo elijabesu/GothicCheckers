@@ -57,8 +57,8 @@ public class Rules {
 
         if (move.getMan().isKing()) isValidMoveForKing(move);
 
-        int rowDifference = Utils.getDifference(move.getOriginalRow(), move.getNewRow());
-        int columnDifference = Utils.getDifference(move.getOriginalColumn(), move.getNewColumn());
+        int rowDifference = Math.abs(move.getOriginalRow() - move.getNewRow());
+        int columnDifference = Math.abs(move.getOriginalColumn() - move.getNewColumn());
 
         if (rowDifference == 0 && columnDifference == 1) return true; // left and right
         if (rowDifference == 1 && (columnDifference == 0 | columnDifference == 1)) return true; // rest
@@ -73,8 +73,8 @@ public class Rules {
 
         if (jumpedMan == 0) return false;
 
-        int rowDifference = Utils.getDifference(jump.getOriginalRow(), jump.getNewRow());
-        int columnDifference = Utils.getDifference(jump.getOriginalColumn(), jump.getNewColumn());
+        int rowDifference = Math.abs(jump.getOriginalRow() - jump.getNewRow());
+        int columnDifference = Math.abs(jump.getOriginalColumn() - jump.getNewColumn());
 
         if (player.isWhite()) {
             if (jumpedMan < 0) return false; // if the WHITE player is trying to jump over another WHITE man -> NOPE

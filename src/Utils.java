@@ -1,7 +1,4 @@
 public class Utils {
-    public static int getDifference(int x, int y) {
-        return Math.abs(x - y);
-    }
 
     private static int getColumn(char column) {
         return Columns.valueOf(String.valueOf(column)).ordinal();
@@ -13,7 +10,7 @@ public class Utils {
     }
 
     private static int getJumpedColumn(int original, int next) {
-        int difference = Utils.getDifference(original, next);
+        int difference = Math.abs(original - next);
         if (difference == 0) return original;
         if (difference != 2) return -1;
         if (original > next) return original - 1;
@@ -21,7 +18,7 @@ public class Utils {
     }
 
     private static int getJumpedRow(boolean bool, int original, int next) {
-        int difference = Utils.getDifference(original, next);
+        int difference = Math.abs(original - next);
         if (difference == 0) return original;
         if (difference != 2) return -1;
         if (bool) { // if WHITE
