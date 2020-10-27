@@ -132,37 +132,20 @@ public class Rules {
     private static List<Move> generateKingMoves(Player player, Man movingMan, Board board,
                                                 List<Move> possibleMoves, List<Jump> possibleJumps,
                                                 List<Move> possibilities) {
-        int row;
-        int column;
-
         // MOVES:
-        // check rows with a smaller id
-        for (row = movingMan.getRow() - 1; row >= 0; row--) {
-            // same column:
-            column = movingMan.getColumn();
-            if (board.isOccupied(row, column)) break; // TODO jump
-            possibleMoves.add(new Move(player, movingMan, row, column));
-        }
-        // check rows with a bigger id
-        for (row = movingMan.getRow() + 1; row <= 7; row++) {
-            // same column:
-            column = movingMan.getColumn();
-            if (board.isOccupied(row, column)) break; // TODO jump
-            possibleMoves.add(new Move(player, movingMan, row, column));
-        }
-        // check columns with a smaller id
-        for (column = movingMan.getColumn() - 1; column >= 0; column--) {
-            // same row:
-            row = movingMan.getRow();
-            if (board.isOccupied(row, column)) break; // TODO jump
-            possibleMoves.add(new Move(player, movingMan, row, column));
-        }
-        // check columns with a bigger id
-        for (column = movingMan.getColumn() + 1; column <= 7; column++) {
-            // same row:
-            row = movingMan.getRow();
-            if (board.isOccupied(row, column)) break; // TODO jump
-            possibleMoves.add(new Move(player, movingMan, row, column));
+        int sameRow = movingMan.getRow();
+        int sameColumn = movingMan.getColumn();
+        for (int i = 0; i < board.getSize(); i++) {
+            for (int row: new int[] {sameRow, sameRow - (i + 1), sameRow + (i + 1)}) {
+                if (row < 0 || row > 7) continue;
+                for (int column: new int[] {sameColumn, sameColumn - (i + 1), sameColumn + (i + 1)}) {
+                    if (column < 0 || column > 7) continue;
+                    if (board.isOccupied(row, column)) break; // TODO jump
+                    else {
+                        possibleMoves.add(new Move(player, movingMan, row, column));
+                    }
+                }
+            }
         }
 
         for (Jump jump: possibleJumps) {
