@@ -9,7 +9,7 @@ public class Hint {
 
     @Override
     public String toString() {
-        if (possibilities.size() == 0) return "No possible moves.";
+        if (possibilities == null || possibilities.size() == 0) return "No possible moves.";
 
         StringBuilder str = new StringBuilder();
         str.append("Possible moves:");
