@@ -3,8 +3,8 @@ import java.util.List;
 public class Hint {
     private final List<Move> possibilities;
 
-    public Hint(Player player, Man movingMan, Board board) {
-        this.possibilities = Rules.generateMoves(player, movingMan, board);
+    public Hint(Player player, Man movingMan, Rules rules) {
+        this.possibilities = rules.getPossibilities(player, movingMan);
     }
 
     @Override
