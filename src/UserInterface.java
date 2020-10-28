@@ -109,7 +109,10 @@ public class UserInterface {
     private void loadGame() {
         System.out.print("Filename? ");
         String fileName = scanner.nextLine();
-        if (game.load(game, player1, player2, fileName)) System.out.println("Successfully loaded the game.");
+        if (game.load(game, player1, player2, fileName)) {
+            System.out.println("Successfully loaded the game.");
+            printBoard();
+        }
     }
 
     private void endGame() {
