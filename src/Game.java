@@ -127,8 +127,8 @@ public class Game {
         return hint.toString();
     }
 
-    public boolean shouldEnd() {
-        return movesWithoutJump == 30;
+    public boolean shouldEnd(Player player1, Player player2) {
+        return movesWithoutJump == 30 || player1.getPoints() == 16 || player2.getPoints() == 16;
     }
 
     public boolean getPlayerBool() {

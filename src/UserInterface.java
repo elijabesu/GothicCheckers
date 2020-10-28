@@ -38,7 +38,7 @@ public class UserInterface {
             if (command.trim().equals("save")) saveGame();
             if (command.trim().equals("load")) loadGame();
 
-            if (game.shouldEnd()) break;
+            if (game.shouldEnd(player1, player2)) break;
         }
         endGame();
     }
