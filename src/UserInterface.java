@@ -57,7 +57,8 @@ public class UserInterface {
     }
 
     private void move(Man man, int[] coordinates) {
-        if (game.move(whichPlayer(), man, coordinates[2], coordinates[3])) afterMove();
+        if (man.isKing()) if (game.moveKing(whichPlayer(), man, coordinates[2], coordinates[3])) afterMove();
+        else if (game.move(whichPlayer(), man, coordinates[2], coordinates[3])) afterMove();
         else printInvalidMove();
     }
 

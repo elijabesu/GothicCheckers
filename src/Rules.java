@@ -2,16 +2,33 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class Rules {
+    Board board;
+    List<Move> possibleMoves;
+    List<Jump> possibleJumps;
+    List<Move> possibilities;
 
-    public static List<Move> generateMoves(Player player, Man movingMan, Board board) {
-        if (player.isWhite() != movingMan.isWhite()) return null;
+    public Rules(Board board) {
+        this.board = board;
+        this.possibleMoves = new ArrayList<>();
+        this.possibleJumps = new ArrayList<>();
+        this.possibilities = new ArrayList<>();
+    }
 
-        List<Move> possibleMoves = new ArrayList<>();
-        List<Jump> possibleJumps = new ArrayList<>();
-        List<Move> possibilities = new ArrayList<>();
+    public boolean isValid(Player player, Man movingMan, Move move) {
+        clearAll();
+        generateMoves(player, movingMan);
+        addIntoPossibilities();
+        if (possibilities == null || possibilities.isEmpty()) return false;
+        return possibilities.contains(move);
+    }
 
-        if (movingMan.isKing()) return generateKingMoves(player, movingMan, board,
-                possibleMoves, possibleJumps, possibilities);
+    public void generateMoves(Player player, Man movingMan) {
+        if (player.isWhite() != movingMan.isWhite()) return;
+
+        if (movingMan.isKing()) {
+            generateKingMoves(player, movingMan);
+            return;
+        }
 
         int[] rows = Utils.generateArrayOfThree(movingMan.getRow());
         int[] columns = Utils.generateArrayOfThree(movingMan.getColumn());
@@ -20,45 +37,32 @@ public class Rules {
             if (row < 0 || row > 7) continue;
             for (int column: columns) {
                 if (column < 0 || column > 7) continue;
-                if (board.isOccupied(row, column)) possibleJumps.add(generateJump(player, movingMan, board, row, column));
+                if (board.isOccupied(row, column)) generateJump(player, movingMan, row, column);
                 else {
                     Move maybeMove = new Move(player, movingMan, row, column);
-                    if (isValidMove(player, maybeMove, false)) possibleMoves.add(maybeMove);
+                    if (isValidMove(player, maybeMove)) possibleMoves.add(maybeMove);
                 }
             }
         }
-
-        for (Jump jump: possibleJumps) {
-            if (jump == null) continue;
-            possibilities.add(jump);
-        }
-        for (Move move: possibleMoves) {
-            if (move == null) continue;
-            possibilities.add(move);
-        }
-
-        return possibilities;
     }
 
-    private static Jump generateJump(Player player, Man movingMan, Board board, int row, int column) {
-        if (board.getCoordinate(row, column) == movingMan.getValue().getValue()) return null;
+    private void generateJump(Player player, Man movingMan, int row, int column) {
+        if (board.getCoordinate(row, column) == movingMan.getValue().getNumberValue()) return;
 
         int nextRow = row - (movingMan.getRow() - row);
         int nextColumn = column - (movingMan.getColumn() - column);
 
-        if (nextRow < 0 || nextRow > 7 || nextColumn < 0 || nextColumn > 7) return null;
+        if (nextRow < 0 || nextRow > 7 || nextColumn < 0 || nextColumn > 7) return;
 
-        if (board.isOccupied(nextRow, nextColumn)) return null;
+        if (board.isOccupied(nextRow, nextColumn)) return;
         Jump maybeJump = new Jump(player, movingMan,
                 row, column, board.getCoordinate(row, column), // jumpedRow, jumpedColumn, jumpedValue
                 nextRow, nextColumn);
-        if (isValidJump(player, maybeJump, board.isOccupied(nextRow, nextColumn))) return maybeJump;
-
-        return null;
+        if (isValidJump(player, maybeJump, board.isOccupied(nextRow, nextColumn))) possibleJumps.add(maybeJump);
     }
 
-    private static boolean isValidMove(Player player, Move move, boolean newPositionOccupied) {
-        if (!(basicValidation(player, move, newPositionOccupied))) return false;
+    private boolean isValidMove(Player player, Move move) {
+        if (!(basicValidation(player, move, false))) return false;
 
         int rowDifference = Math.abs(move.getOriginalRow() - move.getNewRow());
         int columnDifference = Math.abs(move.getOriginalColumn() - move.getNewColumn());
@@ -69,7 +73,7 @@ public class Rules {
         return false;
     }
 
-    private static boolean isValidJump(Player player, Jump jump, boolean newPositionOccupied) {
+    private boolean isValidJump(Player player, Jump jump, boolean newPositionOccupied) {
         if (!(basicValidation(player, jump, newPositionOccupied))) return false;
 
         int jumpedMan = jump.getJumpedMan();
@@ -91,7 +95,7 @@ public class Rules {
         return false;
     }
 
-    private static boolean basicValidation(Player player, Move move, boolean newPositionOccupied) {
+    private boolean basicValidation(Player player, Move move, boolean newPositionOccupied) {
         Man movingMan = move.getMan();
 
         if (newPositionOccupied) return false; // if the position is occupied -> NOPE
@@ -112,50 +116,88 @@ public class Rules {
         return true;
     }
 
-    public static boolean needsPromotion(Man movingMan, int newRow) {
-        if (movingMan.getValue() == Pieces.BLACK && newRow == 7) return true;
-        if (movingMan.getValue() == Pieces.WHITE && newRow == 0) return true;
-        return false;
-    }
-
-    public static boolean isValid(Player player, Man movingMan, Move move, Board board) {
-        List<Move> possibilities = generateMoves(player, movingMan, board);
-        if (possibilities == null || possibilities.isEmpty()) return false;
-        return possibilities.contains(move);
-    }
-
-    public static boolean possibleAnotherJump() {
+    public boolean possibleAnotherJump() {
         // TODO
         return false;
     }
 
-    private static List<Move> generateKingMoves(Player player, Man movingMan, Board board,
-                                                List<Move> possibleMoves, List<Jump> possibleJumps,
-                                                List<Move> possibilities) {
-        // MOVES:
+    private void generateKingMoves(Player player, Man movingMan) {
+        List<Integer> skipRows = new ArrayList<>();
+        List<Integer> skipColumns = new ArrayList<>();
+
         int sameRow = movingMan.getRow();
         int sameColumn = movingMan.getColumn();
+
         for (int i = 0; i < board.getSize(); i++) {
             for (int row: new int[] {sameRow, sameRow - (i + 1), sameRow + (i + 1)}) {
                 if (row < 0 || row > 7) continue;
                 for (int column: new int[] {sameColumn, sameColumn - (i + 1), sameColumn + (i + 1)}) {
                     if (column < 0 || column > 7) continue;
-                    if (board.isOccupied(row, column)) break; // TODO jump
-                    else {
-                        possibleMoves.add(new Move(player, movingMan, row, column));
-                    }
+                    if (skipRows.contains(row) && skipColumns.contains(column)) continue;
+                    if (board.isOccupied(row, column)) generateKingJump(player, movingMan, row, column,
+                            skipRows, skipColumns);
+                    else possibleMoves.add(new Move(player, movingMan, row, column));
                 }
             }
         }
+    }
 
+    private void generateKingJump(Player player, Man movingMan, int row, int column,
+                                  List<Integer> skipRows, List<Integer> skipColumns) {
+        if (movingMan.getValue().isSameColourAs(board.getCoordinate(row, column))) return;// if they are the same colour
+
+        int nextRow = row - (movingMan.getRow() - row);
+        int nextColumn = column - (movingMan.getColumn() - column);
+
+        if (nextRow < 0 || nextRow > 7 || nextColumn < 0 || nextColumn > 7) return;
+
+        if (board.isOccupied(nextRow, nextColumn)) return;
+
+        possibleJumps.add(new Jump(player, movingMan,
+                row, column, board.getCoordinate(row, column), // jumpedRow, jumpedColumn, jumpedValue
+                nextRow, nextColumn));
+
+        skipRows.add(nextRow);
+        skipColumns.add(nextColumn);
+    }
+
+    public boolean needsPromotion(Man movingMan, int newRow) {
+        if (movingMan.getValue() == Pieces.BLACK && newRow == 7) return true;
+        if (movingMan.getValue() == Pieces.WHITE && newRow == 0) return true;
+        return false;
+    }
+
+    private void clearAll() {
+        possibleMoves.clear();
+        possibleJumps.clear();
+        possibilities.clear();
+    }
+
+    private void addIntoPossibilities() {
         for (Jump jump: possibleJumps) {
-            if (jump == null) continue;
             possibilities.add(jump);
         }
         for (Move move: possibleMoves) {
-            if (move == null) continue;
             possibilities.add(move);
         }
+    }
+
+    public List<Move> getPossibleMoves(Player player, Man movingMan) {
+        clearAll();
+        generateMoves(player, movingMan);
+        return possibleMoves;
+    }
+
+    public List<Jump> getPossibleJumps(Player player, Man movingMan) {
+        clearAll();
+        generateMoves(player, movingMan);
+        return possibleJumps;
+    }
+
+    public List<Move> getPossibilities(Player player, Man movingMan) {
+        clearAll();
+        generateMoves(player, movingMan);
+        addIntoPossibilities();
         return possibilities;
     }
 }
