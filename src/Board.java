@@ -50,7 +50,7 @@ public class Board {
     }
 
     public void placeMan(Man man) {
-        coordinates[man.getRow()][man.getColumn()] = man.getValue().getValue();
+        coordinates[man.getRow()][man.getColumn()] = man.getValue().getNumberValue();
     }
 
     public void removeMan(int row, int column) {

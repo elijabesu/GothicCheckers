@@ -39,7 +39,7 @@ public class Move {
 
     @Override
     public String toString() {
-        return toStringWithoutPlayer() + " (" + player.getName() + ", " + Utils.whichMan(movingMan.getValue().getValue()) + ")";
+        return toStringWithoutPlayer() + " (" + player.getName() + ", " + Utils.whichMan(movingMan.getValue().getNumberValue()) + ")";
     }
 
     public String toStringWithoutPlayer() {
