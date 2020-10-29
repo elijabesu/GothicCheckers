@@ -122,6 +122,7 @@ public class Rules {
     }
 
     private void generateKingMoves(Player player, Man movingMan) {
+        // FIXME cannot jump over multiple enemy men
         List<Integer> skipRows = new ArrayList<>();
         List<Integer> skipColumns = new ArrayList<>();
 
