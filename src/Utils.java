@@ -1,3 +1,5 @@
+import java.util.List;
+
 public class Utils {
 
     private static int getColumn(char column) {
@@ -79,5 +81,12 @@ public class Utils {
 
     public static int[] generateArrayOfThree(int middle) {
         return new int[] {middle - 1, middle, middle + 1};
+    }
+
+    public static boolean listOfArraysContains(List<int[]> listOfIntArrays, int row, int column) {
+        for (int[] arrayInList: listOfIntArrays) {
+            if (arrayInList[0] == row && arrayInList[1] == column) return true;
+        }
+        return false;
     }
 }

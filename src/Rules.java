@@ -122,8 +122,7 @@ public class Rules {
     }
 
     private void generateKingMoves(Player player, Man movingMan) {
-        List<Integer> skipRows = new ArrayList<>();
-        List<Integer> skipColumns = new ArrayList<>();
+        List<int[]> skipPositions = new ArrayList<>();
 
         int sameRow = movingMan.getRow();
         int sameColumn = movingMan.getColumn();
@@ -133,9 +132,9 @@ public class Rules {
                 if (row < 0 || row > 7) continue;
                 for (int column: new int[] {sameColumn, sameColumn - (i + 1), sameColumn + (i + 1)}) {
                     if (column < 0 || column > 7) continue;
-                    if (skipRows.contains(row) && skipColumns.contains(column)) continue;
+                    if (Utils.listOfArraysContains(skipPositions, row, column)) continue;
                     if (board.isOccupied(row, column)) generateKingJump(player, movingMan, row, column,
-                            skipRows, skipColumns);
+                            skipPositions);
                     else possibleMoves.add(new Move(player, movingMan, row, column));
                 }
             }
@@ -143,29 +142,30 @@ public class Rules {
     }
 
     private void generateKingJump(Player player, Man movingMan, int row, int column,
-                                  List<Integer> skipRows, List<Integer> skipColumns) {
-        // FIXME jumps don't work when jumping over multiple empty spots
+                                  List<int[]> skipPositions) {
+        // FIXME jumps don't work when jumping over multiple empty spots AFTER the jump
         // TODO check so that Kings cannot jump over multiple enemy men
         if (movingMan.getValue().isSameColourAs(board.getCoordinate(row, column))) return;// if they are the same colour
 
-        int nextRow = row;
-        if (movingMan.getRow() - nextRow < 0) nextRow = row + 1;
-        else if (movingMan.getRow() - nextRow > 0) nextRow = row - 1;
+        for (int i = 1; i < board.getSize(); i++) {
+            int nextRow = row;
+            if (movingMan.getRow() - nextRow < 0) nextRow = row + i;
+            else if (movingMan.getRow() - nextRow > 0) nextRow = row - i;
 
-        int nextColumn = column;
-        if (movingMan.getColumn() - nextColumn < 0) nextColumn = column + 1;
-        else if (movingMan.getColumn() - nextColumn > 0) nextColumn = column - 1;
+            int nextColumn = column;
+            if (movingMan.getColumn() - nextColumn < 0) nextColumn = column + i;
+            else if (movingMan.getColumn() - nextColumn > 0) nextColumn = column - i;
 
-        if (nextRow < 0 || nextRow > 7 || nextColumn < 0 || nextColumn > 7) return;
+            if (nextRow < 0 || nextRow > 7 || nextColumn < 0 || nextColumn > 7) return;
 
-        if (board.isOccupied(nextRow, nextColumn)) return;
+            if (board.isOccupied(nextRow, nextColumn)) return;
 
-        possibleJumps.add(new Jump(player, movingMan,
-                row, column, board.getCoordinate(row, column), // jumpedRow, jumpedColumn, jumpedValue
-                nextRow, nextColumn));
+            possibleJumps.add(new Jump(player, movingMan,
+                    row, column, board.getCoordinate(row, column), // jumpedRow, jumpedColumn, jumpedValue
+                    nextRow, nextColumn));
 
-        skipRows.add(nextRow);
-        skipColumns.add(nextColumn);
+            skipPositions.add(new int[]{nextRow, nextColumn});
+        }
     }
 
     public boolean needsPromotion(Man movingMan, int newRow) {
