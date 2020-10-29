@@ -122,7 +122,6 @@ public class Rules {
     }
 
     private void generateKingMoves(Player player, Man movingMan) {
-        // FIXME cannot jump over multiple enemy men
         List<Integer> skipRows = new ArrayList<>();
         List<Integer> skipColumns = new ArrayList<>();
 
@@ -145,10 +144,17 @@ public class Rules {
 
     private void generateKingJump(Player player, Man movingMan, int row, int column,
                                   List<Integer> skipRows, List<Integer> skipColumns) {
+        // FIXME jumps don't work when jumping over multiple empty spots
+        // TODO check so that Kings cannot jump over multiple enemy men
         if (movingMan.getValue().isSameColourAs(board.getCoordinate(row, column))) return;// if they are the same colour
 
-        int nextRow = row - (movingMan.getRow() - row);
-        int nextColumn = column - (movingMan.getColumn() - column);
+        int nextRow = row;
+        if (movingMan.getRow() - nextRow < 0) nextRow = row + 1;
+        else if (movingMan.getRow() - nextRow > 0) nextRow = row - 1;
+
+        int nextColumn = column;
+        if (movingMan.getColumn() - nextColumn < 0) nextColumn = column + 1;
+        else if (movingMan.getColumn() - nextColumn > 0) nextColumn = column - 1;
 
         if (nextRow < 0 || nextRow > 7 || nextColumn < 0 || nextColumn > 7) return;
 

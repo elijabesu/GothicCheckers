@@ -46,3 +46,20 @@ A1 -> A6
 A1 -> F6
 
 A1 -> G1 NESMI JIT!!
+
+
+2020.10.29-11.24.41.txt
+		A1 ->
+Possible moves:
+A1 -> C1
+A1 -> A3
+A1 -> B2
+A1 -> A4
+A1 -> D4
+A1 -> A5
+A1 -> E5
+A1 -> A6
+A1 -> F6
+
+A1 -> D4 nevymaze C3
+DIAGONALNI SKOKY DOZADU NEFUNGUJOU
