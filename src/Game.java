@@ -38,45 +38,48 @@ public class Game {
         }
     }
 
-    public boolean move(Player player, Pieces movingMan, int[] coordinates) {
+    public Move move(Player player, Pieces movingMan, int[] coordinates) {
         Move move = new Move(player, movingMan, coordinates[0], coordinates[1], // the man we are currently moving
                 coordinates[2], coordinates[3]); // the position where we want to move
 
-        if (!(rules.isValid(player, movingMan, move))) return false;
+        if (!(rules.isValid(player, movingMan, move))) return null;
         afterMove(move);
-        return true;
+        return move;
     }
 
-    public boolean jump(Player player, Pieces movingMan, int[] coordinates) {
+    public Jump jump(Player player, Pieces movingMan, int[] coordinates) {
         Pieces jumpedMan = getManByPosition(coordinates[4], coordinates[5]);
-        if (jumpedMan == null) return false;
+        if (jumpedMan == null) return null;
 
         Jump jump = new Jump(player, movingMan, coordinates[0], coordinates[1], // the man we are currently moving
                 coordinates[4], coordinates[5], jumpedMan,
                 coordinates[2], coordinates[3]); // the position where we want to move
 
-        if (!(rules.isValid(player, movingMan, jump))) return false;
+        if (!(rules.isValid(player, movingMan, jump))) return null;
         afterJump(player, jump);
-        return true;
+        return jump;
     }
 
-    public boolean moveKing(Player player, Pieces movingMan, int[] coordinates) {
+    public Move moveKing(Player player, Pieces movingMan, int[] coordinates) {
         Move maybeMove = rules.getPossibleMoves(player, movingMan, coordinates[0], coordinates[1]).stream()
                 .filter(move -> move.getNewRow() == coordinates[2] && move.getNewColumn() == coordinates[3])
                 .findFirst().orElse(null);
         if (maybeMove != null) {
             afterMove(maybeMove);
-            return true;
+            return maybeMove;
         }
+        return null;
+    }
 
+    public Jump jumpKing(Player player, Pieces movingMan, int[] coordinates) {
         Jump maybeJump = rules.getPossibleJumps(player, movingMan, coordinates[0], coordinates[1]).stream()
                 .filter(jump -> jump.getNewRow() == coordinates[2] && jump.getNewColumn() == coordinates[3])
                 .findFirst().orElse(null);
         if (maybeJump != null) {
             afterJump(player, maybeJump);
-            return true;
+            return maybeJump;
         }
-        return false;
+        return null;
     }
 
     public Pieces getManByPosition(int row, int column) {
@@ -145,5 +148,9 @@ public class Game {
 
         history.add(move);
         ++movesWithoutJump;
+    }
+
+    public boolean possibleAnotherJump(Player player, Pieces movingMan, Jump jump) {
+        return rules.possibleAnotherJump(player, movingMan, jump);
     }
 }

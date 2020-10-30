@@ -26,17 +26,7 @@ public class UserInterface {
             if (game.getPlayerBool()) System.out.println("\n\t\t" + player1.getName() + "'s turn:");
             else System.out.println("\n\t\t" + player2.getName() + "'s turn:");
 
-            System.out.print("\tCommand? (B2 -> C3, B2 ->, history, score, display, save, load, quit)\n\t\t");
-            String command = scanner.nextLine();
-
-            if (command.trim().equals("quit")) break;
-            if (command.trim().equals("history")) System.out.println(game.getHistory());
-            if (command.trim().matches(moveRegex)) movement(command);
-            if (command.trim().matches(hintRegex)) hint(command);
-            if (command.trim().equals("score")) printScore();
-            if (command.trim().equals("display")) printBoard();
-            if (command.trim().equals("save")) saveGame();
-            if (command.trim().equals("load")) loadGame();
+            if (!readCommand()) break;
 
             if (game.shouldEnd(player1, player2)) break;
         }
@@ -58,14 +48,23 @@ public class UserInterface {
 
     private void move(Pieces man, int[] coordinates) {
         if (man.isKing()) {
-            if (game.moveKing(whichPlayer(), man, coordinates)) afterMove();
+            Move gameKingMove = game.moveKing(whichPlayer(), man, coordinates);
+            if (gameKingMove != null) afterMove();
+            else {
+                Jump gameKingJump = game.jumpKing(whichPlayer(), man, coordinates);
+                if (gameKingJump != null) afterJump(whichPlayer(), man, gameKingJump);
+            }
         }
-        else if (game.move(whichPlayer(), man, coordinates)) afterMove();
-        else printInvalidMove();
+        else {
+            Move gameMove = game.move(whichPlayer(), man, coordinates);
+            if (gameMove != null) afterMove();
+            else printInvalidMove();
+        }
     }
 
     private void jump(Pieces man, int[] coordinates) {
-        if (game.jump(whichPlayer(), man, coordinates)) afterMove();
+        Jump gameJump = game.jump(whichPlayer(), man, coordinates);
+        if (gameJump != null) afterJump(whichPlayer(), man, gameJump);
         else printInvalidMove();
     }
 
@@ -98,7 +97,7 @@ public class UserInterface {
     private void hint(String command) {
         int[] coordinate = Utils.getCoordinate(command, 1, 0);
         Pieces man = game.getManByPosition(coordinate[0], coordinate[1]);
-        if (man == null) printInvalidMove();
+        if (man == Pieces.EMPTY) printInvalidMove();
         else {
             System.out.println(game.hint(whichPlayer(), man, coordinate[0], coordinate[1]));
         }
@@ -126,5 +125,31 @@ public class UserInterface {
     private void afterMove() {
         printBoard();
         game.switchPlayers();
+    }
+
+    private void afterJump(Player player, Pieces movingMan, Jump jump) {
+        if (game.possibleAnotherJump(player, movingMan, jump)) askForAnotherJump();
+        else afterMove();
+    }
+
+    private void askForAnotherJump() {
+        System.out.print("\tAnother jump is possible.");
+        readCommand();
+    }
+
+    private boolean readCommand() {
+        System.out.print("\tCommand? (B2 -> C3, B2 ->, history, score, display, save, load, quit)\n\t\t");
+        String command = scanner.nextLine();
+
+        if (command.trim().equals("quit")) return false;
+        if (command.trim().equals("history")) System.out.println(game.getHistory());
+        if (command.trim().matches(moveRegex)) movement(command);
+        if (command.trim().matches(hintRegex)) hint(command);
+        if (command.trim().equals("score")) printScore();
+        if (command.trim().equals("display")) printBoard();
+        if (command.trim().equals("save")) saveGame();
+        if (command.trim().equals("load")) loadGame();
+
+        return true;
     }
 }
