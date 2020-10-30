@@ -1,12 +1,12 @@
 public class Board {
     private final StringBuilder boardString;
     private final int size;
-    private final int[][] coordinates;
+    private final Pieces[][] coordinates;
 
     public Board(int size) {
         this.size = size;
         this.boardString = new StringBuilder();
-        this.coordinates = new int[size][size];
+        this.coordinates = new Pieces[size][size];
     }
 
     public String displayBoard() {
@@ -26,12 +26,13 @@ public class Board {
     private void appendColumns(int row) {
         for (int column = 0; column < size; column++) {
             boardString.append(Symbols.VERTICAL.getSymbol());
+            if (coordinates[row][column] == null) coordinates[row][column] = Pieces.EMPTY;
             switch (coordinates[row][column]) {
-                case 0 -> boardString.append(Symbols.EMPTY.getSymbol());
-                case -1 -> boardString.append(Symbols.WHITE.getSymbol());
-                case -2 -> boardString.append(Symbols.WHITE_KING.getSymbol());
-                case 1 -> boardString.append(Symbols.BLACK.getSymbol());
-                case 2 -> boardString.append(Symbols.BLACK_KING.getSymbol());
+                case EMPTY -> boardString.append(Symbols.EMPTY.getSymbol());
+                case WHITE -> boardString.append(Symbols.WHITE.getSymbol());
+                case WHITE_KING -> boardString.append(Symbols.WHITE_KING.getSymbol());
+                case BLACK -> boardString.append(Symbols.BLACK.getSymbol());
+                case BLACK_KING -> boardString.append(Symbols.BLACK_KING.getSymbol());
             }
         }
         boardString.append(Symbols.VERTICAL.getSymbol());
@@ -49,30 +50,35 @@ public class Board {
         return size;
     }
 
-    public void placeMan(Man man) {
-        coordinates[man.getRow()][man.getColumn()] = man.getValue().getNumberValue();
+    public void placeMan(Pieces man, int row, int column) {
+        coordinates[row][column] = man;
     }
 
     public void removeMan(int row, int column) {
-        coordinates[row][column] = 0;
+        coordinates[row][column] = Pieces.EMPTY;
     }
 
-    public int getCoordinate(int row, int column) {
+    public Pieces getCoordinate(int row, int column) {
         return coordinates[row][column];
     }
 
     public boolean isOccupied(int row, int column) {
-        return !(coordinates[row][column] == 0);
+        return (coordinates[row][column] != Pieces.EMPTY);
     }
 
     public void moved(Move move) {
         removeMan(move.getOriginalRow(), move.getOriginalColumn());
-        placeMan(move.getMan());
+        placeMan(move.getMan(), move.getNewRow(), move.getNewColumn());
     }
 
     public void jumped(Jump jump) {
         removeMan(jump.getOriginalRow(), jump.getOriginalColumn());
         removeMan(jump.getJumpedRow(), jump.getJumpedColumn());
-        placeMan(jump.getMan());
+        placeMan(jump.getMan(), jump.getNewRow(), jump.getNewColumn());
+    }
+
+    public void promoted(Pieces man, int row, int column) {
+        if (man.isWhite()) coordinates[row][column] = Pieces.WHITE_KING;
+        else coordinates[row][column] = Pieces.BLACK_KING;
     }
 }

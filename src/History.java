@@ -52,9 +52,9 @@ public class History {
                         which = false;
                     }
                     int[] coordinates = Utils.getCoordinates(movement, which);
-                    Man man = game.getManByPosition(coordinates[0], coordinates[1]);
-                    if (man.isKing() || Utils.containsMinus(coordinates)) game.move(player, man, coordinates[2], coordinates[3]);
-                    else game.jump(player, man, coordinates[4], coordinates[5], coordinates[2], coordinates[3]);
+                    Pieces man = game.getManByPosition(coordinates[0], coordinates[1]);
+                    if (man.isKing() || Utils.containsMinus(coordinates)) game.move(player, man, coordinates);
+                    else game.jump(player, man, coordinates);
                     game.switchPlayers();
                 });
     }

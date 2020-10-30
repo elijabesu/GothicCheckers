@@ -3,12 +3,12 @@ import java.util.Objects;
 public class Jump extends Move {
     private final int jumpedRow;
     private final int jumpedColumn;
-    private final int jumpedMan;
+    private final Pieces jumpedMan;
 
-    public Jump(Player player, Man movingMan,
-                int jumpedRow, int jumpedColumn, int jumpedMan,
+    public Jump(Player player, Pieces movingMan, int originalRow, int originalColumn,
+                int jumpedRow, int jumpedColumn, Pieces jumpedMan,
                 int newRow, int newColumn) {
-        super(player, movingMan, newRow, newColumn);
+        super(player, movingMan, originalRow, originalColumn, newRow, newColumn);
         this.jumpedRow = jumpedRow;
         this.jumpedColumn = jumpedColumn;
         this.jumpedMan = jumpedMan;
@@ -22,7 +22,7 @@ public class Jump extends Move {
         return jumpedColumn;
     }
 
-    public int getJumpedMan() {
+    public Pieces getJumpedMan() {
         return jumpedMan;
     }
 

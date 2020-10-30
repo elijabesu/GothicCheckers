@@ -57,12 +57,12 @@ public class Utils {
         return -1;
     }
 
-    public static String whichMan(int man) {
+    public static String whichMan(Pieces man) {
         switch (man) {
-            case 1: return "x";
-            case 2: return "X";
-            case -1: return "o";
-            case -2: return "O";
+            case BLACK: return "x";
+            case BLACK_KING: return "X";
+            case WHITE: return "o";
+            case WHITE_KING: return "O";
         }
         return "-";
     }

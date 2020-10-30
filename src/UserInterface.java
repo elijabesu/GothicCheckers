@@ -46,9 +46,9 @@ public class UserInterface {
     private void movement(String movement) {
         int[] origCoords = Utils.getCoordinate(movement, 1, 0);
 
-        Man man = game.getManByPosition(origCoords[0], origCoords[1]);
+        Pieces man = game.getManByPosition(origCoords[0], origCoords[1]);
 
-        if (man == null) printInvalidMove();
+        if (man == Pieces.EMPTY) printInvalidMove();
         else {
             int[] coordinates = Utils.getCoordinates(movement, whichPlayer().isWhite());
             if (man.isKing() || Utils.containsMinus(coordinates)) move(man, coordinates);
@@ -56,17 +56,16 @@ public class UserInterface {
         }
     }
 
-    private void move(Man man, int[] coordinates) {
+    private void move(Pieces man, int[] coordinates) {
         if (man.isKing()) {
-            if (game.moveKing(whichPlayer(), man, coordinates[2], coordinates[3])) afterMove();
+            if (game.moveKing(whichPlayer(), man, coordinates)) afterMove();
         }
-        else if (game.move(whichPlayer(), man, coordinates[2], coordinates[3])) afterMove();
+        else if (game.move(whichPlayer(), man, coordinates)) afterMove();
         else printInvalidMove();
     }
 
-    private void jump(Man man, int[] coordinates) {
-        if (game.jump(whichPlayer(), man,
-                coordinates[4], coordinates[5], coordinates[2], coordinates[3])) afterMove();
+    private void jump(Pieces man, int[] coordinates) {
+        if (game.jump(whichPlayer(), man, coordinates)) afterMove();
         else printInvalidMove();
     }
 
@@ -98,10 +97,10 @@ public class UserInterface {
 
     private void hint(String command) {
         int[] coordinate = Utils.getCoordinate(command, 1, 0);
-        Man man = game.getManByPosition(coordinate[0], coordinate[1]);
+        Pieces man = game.getManByPosition(coordinate[0], coordinate[1]);
         if (man == null) printInvalidMove();
         else {
-            System.out.println(game.hint(whichPlayer(), man));
+            System.out.println(game.hint(whichPlayer(), man, coordinate[0], coordinate[1]));
         }
     }
 

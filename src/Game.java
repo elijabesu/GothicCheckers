@@ -3,7 +3,6 @@ import java.util.List;
 
 public class Game {
     private final Board board;
-    private final List<Man> activeMen;
     private final Rules rules;
     private final History history;
     private int movesWithoutJump;
@@ -11,14 +10,12 @@ public class Game {
 
     public Game() {
         board = new Board(8);
-        activeMen = new ArrayList<>();
         rules = new Rules(board);
         history = new History();
         movesWithoutJump = 0;
         playerBool = true;
 
         generateMen();
-        placeAllMenOnBoard();
     }
 
     public String displayBoard() {
@@ -29,73 +26,61 @@ public class Game {
         // black
         for (int i = 0; i < 2; i++) {
             for (int j = 0; j < board.getSize(); j++) {
-                activeMen.add(new Man(Pieces.BLACK, i, j));
+                board.placeMan(Pieces.BLACK, i, j);
             }
         }
 
         // white
         for (int i = board.getSize() - 2; i < board.getSize(); i++) {
             for (int j = 0; j < board.getSize(); j++) {
-                activeMen.add(new Man(Pieces.WHITE, i, j));
+                board.placeMan(Pieces.WHITE, i, j);
             }
         }
     }
 
-    public void placeAllMenOnBoard() {
-        activeMen.forEach(board::placeMan);
-    }
-
-    public boolean move(Player player, Man movingMan, int newRow, int newColumn) {
-        Move move = new Move(player, movingMan, // the man we are currently moving
-                newRow, newColumn); // the position where we want to move
+    public boolean move(Player player, Pieces movingMan, int[] coordinates) {
+        Move move = new Move(player, movingMan, coordinates[0], coordinates[1], // the man we are currently moving
+                coordinates[2], coordinates[3]); // the position where we want to move
 
         if (!(rules.isValid(player, movingMan, move))) return false;
-        if (rules.needsPromotion(movingMan, newRow)) movingMan.promote();
-        afterMove(movingMan, move);
+        afterMove(move);
         return true;
     }
 
-    public boolean jump(Player player, Man movingMan,
-                        int jumpedRow, int jumpedColumn,
-                        int newRow, int newColumn) {
-        Man jumpedMan = getManByPosition(jumpedRow, jumpedColumn);
+    public boolean jump(Player player, Pieces movingMan, int[] coordinates) {
+        Pieces jumpedMan = getManByPosition(coordinates[4], coordinates[5]);
         if (jumpedMan == null) return false;
 
-        Jump jump = new Jump(player, movingMan, // the man we are currently moving
-                jumpedRow, jumpedColumn, jumpedMan.getValue().getNumberValue(),
-                newRow, newColumn); // the position where we want to move
+        Jump jump = new Jump(player, movingMan, coordinates[0], coordinates[1], // the man we are currently moving
+                coordinates[4], coordinates[5], jumpedMan,
+                coordinates[2], coordinates[3]); // the position where we want to move
 
         if (!(rules.isValid(player, movingMan, jump))) return false;
-        if (rules.needsPromotion(movingMan, newRow)) movingMan.promote();
-        afterJump(player, movingMan, jump, jumpedMan);
+        afterJump(player, jump);
         return true;
     }
 
-    public boolean moveKing(Player player, Man movingMan, int newRow, int newColumn) {
-        Move maybeMove = rules.getPossibleMoves(player, movingMan).stream()
-                .filter(move -> move.getNewRow() == newRow && move.getNewColumn() == newColumn)
+    public boolean moveKing(Player player, Pieces movingMan, int[] coordinates) {
+        Move maybeMove = rules.getPossibleMoves(player, movingMan, coordinates[0], coordinates[1]).stream()
+                .filter(move -> move.getNewRow() == coordinates[2] && move.getNewColumn() == coordinates[3])
                 .findFirst().orElse(null);
         if (maybeMove != null) {
-            afterMove(movingMan, maybeMove);
+            afterMove(maybeMove);
             return true;
         }
 
-        Jump maybeJump = rules.getPossibleJumps(player, movingMan).stream()
-                .filter(jump -> jump.getNewRow() == newRow && jump.getNewColumn() == newColumn)
+        Jump maybeJump = rules.getPossibleJumps(player, movingMan, coordinates[0], coordinates[1]).stream()
+                .filter(jump -> jump.getNewRow() == coordinates[2] && jump.getNewColumn() == coordinates[3])
                 .findFirst().orElse(null);
         if (maybeJump != null) {
-            afterJump(player, movingMan, maybeJump,
-                    getManByPosition(maybeJump.getJumpedRow(), maybeJump.getJumpedColumn()));
+            afterJump(player, maybeJump);
             return true;
         }
         return false;
     }
 
-    public Man getManByPosition(int row, int column) {
-        return activeMen.stream()
-                .filter(man -> man.getRow() == row)
-                .filter(man -> man.getColumn() == column)
-                .findFirst().orElse(null);
+    public Pieces getManByPosition(int row, int column) {
+        return board.getCoordinate(row, column);
     }
 
     public String getHistory() {
@@ -122,8 +107,8 @@ public class Game {
         }
     }
 
-    public String hint(Player player, Man movingMan) {
-        Hint hint = new Hint(player, movingMan, rules);
+    public String hint(Player player, Pieces movingMan, int originalRow, int originalColumn) {
+        Hint hint = new Hint(player, movingMan, originalRow, originalColumn, rules);
         return hint.toString();
     }
 
@@ -140,23 +125,24 @@ public class Game {
         else playerBool = true;
     }
 
-    private void afterJump(Player player, Man movingMan, Jump jump, Man jumpedMan) {
+    private void afterJump(Player player, Jump jump) {
         player.addPoint();
 
-        movingMan.setRow(jump.getNewRow());
-        movingMan.setColumn(jump.getNewColumn());
-
         board.jumped(jump);
+
+        if (rules.needsPromotion(jump.getMan(), jump.getNewRow()))
+            board.promoted(jump.getMan(), jump.getNewRow(), jump.getNewColumn());
+
         history.add(jump);
-        activeMen.remove(jumpedMan);
         movesWithoutJump = 0;
     }
 
-    private void afterMove(Man movingMan, Move move) {
-        movingMan.setRow(move.getNewRow());
-        movingMan.setColumn(move.getNewColumn());
-
+    private void afterMove(Move move) {
         board.moved(move);
+
+        if (rules.needsPromotion(move.getMan(), move.getNewRow()))
+            board.promoted(move.getMan(), move.getNewRow(), move.getNewColumn());
+
         history.add(move);
         ++movesWithoutJump;
     }

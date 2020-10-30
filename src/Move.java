@@ -2,17 +2,17 @@ import java.util.Objects;
 
 public class Move {
     protected Player player;
-    protected Man movingMan;
+    protected Pieces movingMan;
     protected int originalRow;
     protected int originalColumn;
     protected int newRow;
     protected int newColumn;
 
-    public Move(Player player, Man movingMan, int newRow, int newColumn) {
+    public Move(Player player, Pieces movingMan, int originalRow, int originalColumn, int newRow, int newColumn) {
         this.player = player;
         this.movingMan = movingMan;
-        this.originalRow = movingMan.getRow();
-        this.originalColumn = movingMan.getColumn();
+        this.originalRow = originalRow;
+        this.originalColumn = originalColumn;
         this.newRow = newRow;
         this.newColumn = newColumn;
     }
@@ -25,7 +25,7 @@ public class Move {
         return originalColumn;
     }
 
-    public Man getMan() {
+    public Pieces getMan() {
         return movingMan;
     }
 
@@ -39,7 +39,7 @@ public class Move {
 
     @Override
     public String toString() {
-        return toStringWithoutPlayer() + " (" + player.getName() + ", " + Utils.whichMan(movingMan.getValue().getNumberValue()) + ")";
+        return toStringWithoutPlayer() + " (" + player.getName() + ", " + Utils.whichMan(movingMan) + ")";
     }
 
     public String toStringWithoutPlayer() {

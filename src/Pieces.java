@@ -1,26 +1,25 @@
 public enum Pieces {
-    WHITE(-1),
-    BLACK(1),
-    WHITE_KING(-2),
-    BLACK_KING(2);
+    WHITE(),            // ordinal: 0
+    WHITE_KING(),       // ordinal: 1
+    EMPTY(),            // ordinal: 2
+    BLACK(),            // ordinal: 3
+    BLACK_KING();       // ordinal: 5
 
-    private final int numberValue;
-
-    Pieces(int numberValue) {
-        this.numberValue = numberValue;
-    }
-
-    public int getNumberValue() {
-        return numberValue;
-    }
-
-    public boolean isSameColourAs(int value) {
-        if (isWhite(value) && isWhite(this.numberValue)) return true;
-        if (!isWhite(value) && !isWhite(this.numberValue)) return true;
+    public boolean isSameColourAs(Pieces value) {
+        if (isWhite(value) && isWhite(this)) return true;
+        if (!isWhite(value) && !isWhite(this)) return true;
         return false;
     }
 
-    private boolean isWhite(int value) {
-        return (value == WHITE.numberValue || value == WHITE_KING.numberValue);
+    public boolean isWhite() {
+        return (this.ordinal() < EMPTY.ordinal());
+    }
+
+    private boolean isWhite(Pieces value) {
+        return (value.ordinal() < EMPTY.ordinal());
+    }
+
+    public boolean isKing() {
+        return this == BLACK_KING || this == WHITE_KING;
     }
 }
