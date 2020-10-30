@@ -120,31 +120,10 @@ public class Rules {
     }
 
     public boolean possibleAnotherJump(Player player, Pieces movingMan, Jump jump) {
-        // TODO
         List<Jump> maybeMoreJumps = getPossibleJumps(player, movingMan, jump.getNewRow(), jump.getNewColumn());
-        if (maybeMoreJumps != null || maybeMoreJumps.size() != 0) return true;
-        return false;
+        if (maybeMoreJumps == null || maybeMoreJumps.size() == 0) return false;
+        return true;
     }
-        /*List<List<Jump>> multiJumps = new ArrayList<>();
-        List<Jump> multiJump = generateMultiJump(player, movingMan, row, column, new ArrayList<>());
-        if (multiJump != null || multiJump.size() != 0) multiJumps.add(multiJump);
-        if (multiJumps != null || multiJumps.size() != 0) return true;
-        return false;
-    }
-
-    public List<Jump> generateMultiJump(Player player, Pieces movingMan, int startingRow, int startingColumn,
-                                         List<Jump> multiJump) {
-        List<Jump> originalPossibleJumps = getPossibleJumps(player, movingMan, startingRow, startingColumn);
-        for (Jump jump: originalPossibleJumps) {
-            List<Jump> newPossibleJumps = getPossibleJumps(player, movingMan, jump.getNewRow(), jump.getNewColumn());
-            if (newPossibleJumps.size() != 0) {
-                multiJump.add(jump);
-                multiJump = generateMultiJump(player, movingMan, jump.getNewRow(), jump.getNewColumn(), multiJump);
-            }
-            return multiJump;
-        }
-        return null;
-    }*/
 
     private List<List> generateKingMoves(Player player, Pieces movingMan, int originalRow, int originalColumn,
                                          List<List> possibilities, List<Move> possibleMoves, List<Jump> possibleJumps) {
