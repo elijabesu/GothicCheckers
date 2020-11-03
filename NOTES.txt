@@ -3,13 +3,8 @@
 Possible moves:
 A1 -> C1
 A1 -> A3
-A1 -> G1
-A1 -> B2
 A1 -> A4
-A1 -> D4
 A1 -> A5
-A1 -> E5
 A1 -> A6
-A1 -> F6
 
-A1 -> G1 NESMI JIT!!
+2020.11.03-12.55.36.txt

@@ -1,4 +1,3 @@
-import java.util.ArrayList;
 import java.util.List;
 
 public class Game {
@@ -123,9 +122,11 @@ public class Game {
             }
         } else {
             List<Move> possible = rules.getPossibleMoves(player, movingMan, originalRow, originalColumn);
-            for (Move move: possible) {
-                str.append(System.lineSeparator());
-                str.append(move.toStringWithoutPlayer());
+            if (possible != null) {
+                for (Move move : possible) {
+                    str.append(System.lineSeparator());
+                    str.append(move.toStringWithoutPlayer());
+                }
             }
         }
         return str.toString();
@@ -140,8 +141,7 @@ public class Game {
     }
 
     public void switchPlayers() {
-        if (playerBool) playerBool = false;
-        else playerBool = true;
+        playerBool = !playerBool;
     }
 
     private void afterJump(Player player, Jump jump) {
