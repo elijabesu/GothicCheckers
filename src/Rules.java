@@ -202,9 +202,9 @@ public class Rules {
         return generateMoves(player, movingMan, originalRow, originalColumn).get(1);
     }
 
-    public List<Move> getPossibilities(Player player, Pieces movingMan, int originalRow, int originalColumn) {
-        List<List> possibilities = generateMoves(player, movingMan, originalRow, originalColumn);
-        if (possibilities == null) return null;
-        return addIntoPossibilities(possibilities.get(0), possibilities.get(1));
+    public boolean isJumpingPossible(Player player, Pieces movingMan, int originalRow, int originalColumn) {
+        List <Jump> possibleJumps = getPossibleJumps(player, movingMan, originalRow, originalColumn);
+        if (possibleJumps == null) return false;
+        return possibleJumps.size() != 0;
     }
 }
