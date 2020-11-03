@@ -89,4 +89,28 @@ public class Utils {
         }
         return false;
     }
+
+    public static void ignorePositions(int startingRow, int startingColumn, int nextRow, int nextColumn, List<int[]> skipPositions) {
+        if (startingRow < nextRow) {
+            for (int row = startingRow; row < 8; row++) {
+                ignoreRow(row, startingColumn, nextColumn, skipPositions);
+            }
+        } else {
+            for (int row = startingRow; row > 0; row--) {
+                ignoreRow(row, startingColumn, nextColumn, skipPositions);
+            }
+        }
+    }
+
+    private static void ignoreRow(int row, int startingColumn, int nextColumn, List<int[]> skipPositions) {
+        if (startingColumn < nextColumn) {
+            for (int column = startingColumn; column < 8; column++) {
+                skipPositions.add(new int[] {row, column});
+            }
+        } else {
+            for (int column = startingColumn; column > 0; column--) {
+                skipPositions.add(new int[] {row, column});
+            }
+        }
+    }
 }
