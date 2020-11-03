@@ -53,6 +53,7 @@ public class UserInterface {
             else {
                 Jump gameKingJump = game.jumpKing(whichPlayer(), man, coordinates);
                 if (gameKingJump != null) afterJump(whichPlayer(), man, gameKingJump);
+                else printInvalidMove();
             }
         }
         else {
@@ -99,7 +100,11 @@ public class UserInterface {
         Pieces man = game.getManByPosition(coordinate[0], coordinate[1]);
         if (man == Pieces.EMPTY) printInvalidMove();
         else {
-            System.out.println(game.hint(whichPlayer(), man, coordinate[0], coordinate[1]));
+            String hint = game.hint(whichPlayer(), man, coordinate[0], coordinate[1]);
+            if (hint.length() == 0) printInvalidMove();
+            else {
+                System.out.println("Possible moves:" + hint);
+            }
         }
     }
 
@@ -133,7 +138,8 @@ public class UserInterface {
     }
 
     private void askForAnotherJump() {
-        System.out.print("\tAnother jump is possible.");
+        printBoard();
+        System.out.print("\n\tAnother jump is possible.");
         readCommand();
     }
 

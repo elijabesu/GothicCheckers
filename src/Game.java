@@ -39,6 +39,7 @@ public class Game {
     }
 
     public Move move(Player player, Pieces movingMan, int[] coordinates) {
+        if (rules.isJumpingPossible(player, movingMan, coordinates[0], coordinates[1])) return null;
         Move move = new Move(player, movingMan, coordinates[0], coordinates[1], // the man we are currently moving
                 coordinates[2], coordinates[3]); // the position where we want to move
 
@@ -61,6 +62,7 @@ public class Game {
     }
 
     public Move moveKing(Player player, Pieces movingMan, int[] coordinates) {
+        if (rules.isJumpingPossible(player, movingMan, coordinates[0], coordinates[1])) return null;
         Move maybeMove = rules.getPossibleMoves(player, movingMan, coordinates[0], coordinates[1]).stream()
                 .filter(move -> move.getNewRow() == coordinates[2] && move.getNewColumn() == coordinates[3])
                 .findFirst().orElse(null);
@@ -111,8 +113,22 @@ public class Game {
     }
 
     public String hint(Player player, Pieces movingMan, int originalRow, int originalColumn) {
-        Hint hint = new Hint(player, movingMan, originalRow, originalColumn, rules);
-        return hint.toString();
+        StringBuilder str = new StringBuilder();
+
+        if (rules.isJumpingPossible(player, movingMan, originalRow, originalColumn)) {
+            List<Jump> possible = rules.getPossibleJumps(player, movingMan, originalRow, originalColumn);
+            for (Jump jump: possible) {
+                str.append(System.lineSeparator());
+                str.append(jump.toStringWithoutPlayer());
+            }
+        } else {
+            List<Move> possible = rules.getPossibleMoves(player, movingMan, originalRow, originalColumn);
+            for (Move move: possible) {
+                str.append(System.lineSeparator());
+                str.append(move.toStringWithoutPlayer());
+            }
+        }
+        return str.toString();
     }
 
     public boolean shouldEnd(Player player1, Player player2) {
