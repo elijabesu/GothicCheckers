@@ -6,17 +6,17 @@ public enum Pieces {
     BLACK_KING();       // ordinal: 5
 
     public boolean isSameColourAs(Pieces value) {
-        if (isWhite(value) && isWhite(this)) return true;
-        if (!isWhite(value) && !isWhite(this)) return true;
+        if (isWhite(value) && isWhite()) return true;
+        if (!isWhite(value) && !isWhite()) return true;
         return false;
     }
 
     public boolean isWhite() {
-        return (this.ordinal() < EMPTY.ordinal());
+        return isWhite(this);
     }
 
     private boolean isWhite(Pieces value) {
-        return (value.ordinal() < EMPTY.ordinal());
+        return value == WHITE || value == WHITE_KING;
     }
 
     public boolean isKing() {
