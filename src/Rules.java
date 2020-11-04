@@ -70,10 +70,8 @@ public class Rules {
         int rowDifference = Math.abs(move.getOriginalRow() - move.getNewRow());
         int columnDifference = Math.abs(move.getOriginalColumn() - move.getNewColumn());
 
-        if (rowDifference == 0 && columnDifference == 1) return true; // left and right
-        if (rowDifference == 1 && (columnDifference == 0 | columnDifference == 1)) return true; // rest
-
-        return false;
+        return (rowDifference == 0 && columnDifference == 1) ||
+                (rowDifference == 1 && (columnDifference == 0 || columnDifference == 1));
     }
 
     private boolean isValidJump(Player player, Jump jump, boolean newPositionOccupied) {
@@ -92,10 +90,8 @@ public class Rules {
             if (!jumpedMan.isWhite()) return false; // if the BLACK player is trying to jump over another BLACK man -> NOPE
         }
 
-        if (rowDifference == 0 && columnDifference == 2) return true; // left and right
-        if (rowDifference == 2 && (columnDifference == 0 || columnDifference == 2)) return true; // rest
-
-        return false;
+        return (rowDifference == 0 && columnDifference == 2) ||
+                (rowDifference == 2 && (columnDifference == 0 || columnDifference == 2));
     }
 
     private boolean basicValidation(Player player, Move move, boolean newPositionOccupied) {
@@ -117,12 +113,14 @@ public class Rules {
 
         // everything else:
         return true;
+
+        /*return !(movingMan.isWhite() && move.getNewRow() > move.getOriginalRow()) ||
+                !(!(movingMan.isWhite()) && move.getNewRow() < move.getOriginalRow());*/
     }
 
     public boolean possibleAnotherJump(Player player, Pieces movingMan, Jump jump) {
         List<Jump> maybeMoreJumps = getPossibleJumps(player, movingMan, jump.getNewRow(), jump.getNewColumn());
-        if (maybeMoreJumps == null || maybeMoreJumps.isEmpty()) return false;
-        return true;
+        return !(maybeMoreJumps == null || maybeMoreJumps.isEmpty());
     }
 
     private List<List<? extends Move>> generateKingMoves(Player player, Pieces movingMan, int originalRow, int originalColumn,
@@ -176,20 +174,15 @@ public class Rules {
     }
 
     public boolean needsPromotion(Pieces movingMan, int newRow) {
-        if (!movingMan.isWhite() && newRow == 7) return true;
-        if (movingMan.isWhite() && newRow == 0) return true;
-        return false;
+        return (!movingMan.isWhite() && newRow == 7) || (movingMan.isWhite() && newRow == 0);
     }
 
     private List<Move> addIntoPossibilities(List<Move> possibleMoves, List<Jump> possibleJumps) {
         List<Move> possibilities = new ArrayList<>();
 
-        for (Jump jump: possibleJumps) {
-            possibilities.add(jump);
-        }
-        for (Move move: possibleMoves) {
-            possibilities.add(move);
-        }
+        possibilities.addAll(possibleJumps);
+        possibilities.addAll(possibleMoves);
+
         return possibilities;
     }
 
