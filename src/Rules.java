@@ -9,18 +9,18 @@ public class Rules {
     }
 
     public boolean isValid(Player player, Pieces movingMan, Move move) {
-        List<List> movesAndJumps = generateMoves(player, movingMan, move.getOriginalRow(), move.getOriginalColumn());
-        List<Move> possibilities = addIntoPossibilities(movesAndJumps.get(0), movesAndJumps.get(1));
+        List<List<? extends Move>> movesAndJumps = generateMoves(player, movingMan, move.getOriginalRow(), move.getOriginalColumn());
+        List<Move> possibilities = addIntoPossibilities((List<Move>) movesAndJumps.get(0), (List<Jump>) movesAndJumps.get(1));
         if (possibilities.isEmpty()) return false;
         return possibilities.contains(move);
     }
 
-    public List<List> generateMoves(Player player, Pieces movingMan, int originalRow, int originalColumn) {
+    public List<List<? extends Move>> generateMoves(Player player, Pieces movingMan, int originalRow, int originalColumn) {
         if (player.isWhite() != movingMan.isWhite()) return null;
 
         List<Move> possibleMoves = new ArrayList<>();
         List<Jump> possibleJumps = new ArrayList<>();
-        List<List> possibilities = new ArrayList<>();
+        List<List<? extends Move>> possibilities = new ArrayList<>();
 
         if (movingMan.isKing()) {
             return generateKingMoves(player, movingMan, originalRow, originalColumn, possibilities, possibleMoves, possibleJumps);
@@ -125,8 +125,8 @@ public class Rules {
         return true;
     }
 
-    private List<List> generateKingMoves(Player player, Pieces movingMan, int originalRow, int originalColumn,
-                                         List<List> possibilities, List<Move> possibleMoves, List<Jump> possibleJumps) {
+    private List<List<? extends Move>> generateKingMoves(Player player, Pieces movingMan, int originalRow, int originalColumn,
+                                         List<List<? extends Move>> possibilities, List<Move> possibleMoves, List<Jump> possibleJumps) {
         List<int[]> skipPositions = new ArrayList<>();
 
         for (int i = 0; i < board.getSize(); i++) {
@@ -194,15 +194,15 @@ public class Rules {
     }
 
     public List<Move> getPossibleMoves(Player player, Pieces movingMan, int originalRow, int originalColumn) {
-        List<List> possibilities = generateMoves(player, movingMan, originalRow, originalColumn);
+        List<List<? extends Move>> possibilities = generateMoves(player, movingMan, originalRow, originalColumn);
         if (possibilities == null || possibilities.isEmpty()) return null;
-        return possibilities.get(0);
+        return (List<Move>) possibilities.get(0);
     }
 
     public List<Jump> getPossibleJumps(Player player, Pieces movingMan, int originalRow, int originalColumn) {
-        List<List> possibilities = generateMoves(player, movingMan, originalRow, originalColumn);
+        List<List<? extends Move>> possibilities = generateMoves(player, movingMan, originalRow, originalColumn);
         if (possibilities == null || possibilities.isEmpty()) return null;
-        return possibilities.get(1);
+        return (List<Jump>) possibilities.get(1);
     }
 
     public boolean isJumpingPossible(Player player, Pieces movingMan, int originalRow, int originalColumn) {
