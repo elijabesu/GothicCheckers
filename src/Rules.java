@@ -177,6 +177,10 @@ public class Rules {
         return (!movingMan.isWhite() && newRow == 7) || (movingMan.isWhite() && newRow == 0);
     }
 
+    public boolean endRow(Pieces movingMan, int newRow) {
+        return (!movingMan.isWhite() && newRow == 0) || (movingMan.isWhite() && newRow == 7);
+    }
+
     private List<Move> addIntoPossibilities(List<Move> possibleMoves, List<Jump> possibleJumps) {
         List<Move> possibilities = new ArrayList<>();
 
@@ -202,5 +206,65 @@ public class Rules {
         List <Jump> possibleJumps = getPossibleJumps(player, movingMan, originalRow, originalColumn);
         if (possibleJumps == null) return false;
         return possibleJumps.size() != 0;
+    }
+
+    private int minimax(Player currentPlayer, Player nextPlayer, Pieces movingMan, int originalRow, int originalColumn, int depth) {
+        if (depth == 0 || endRow(movingMan, originalRow)) return board.getBoardValue();
+        int evaluation = -1000;
+        if (isJumpingPossible(currentPlayer, movingMan, originalRow, originalColumn)) {
+            List<Jump> possibilities = getPossibleJumps(currentPlayer, movingMan, originalRow, originalColumn);
+            if (possibilities == null) return evaluation;
+            for (Jump possibleJump : possibilities) {
+                System.out.println("minimax:" + possibleJump.toStringWithoutPlayer()); // TODO delete
+                int newRow = possibleJump.getNewRow();
+                int newColumn = possibleJump.getNewColumn();
+                evaluation = Integer.max(evaluation,
+                        -minimax(currentPlayer, nextPlayer, board.getCoordinate(newRow, newColumn), newRow, newColumn, depth-1));
+            }
+        } else {
+            List<Move> possibilities = getPossibleMoves(currentPlayer, movingMan, originalRow, originalColumn);
+            if (possibilities == null) return evaluation;
+            for (Move possibleMove : possibilities) {
+                System.out.println("minimax:" + possibleMove.toStringWithoutPlayer()); // TODO delete
+                int newRow = possibleMove.getNewRow();
+                int newColumn = possibleMove.getNewColumn();
+                evaluation = Integer.max(evaluation,
+                        -minimax(nextPlayer, currentPlayer, board.getCoordinate(newRow, newColumn), newRow, newColumn, depth - 1));
+            }
+        }
+        return evaluation;
+    }
+
+    public Move bestMove(Player currentPlayer, Player nextPlayer, Pieces movingMan, int originalRow, int originalColumn, int depth) {
+        int best_evaluation = -1000;
+        Move apparentlyBestMove = null;
+        if (isJumpingPossible(currentPlayer, movingMan, originalRow, originalColumn)) {
+            List<Jump> possibilities = getPossibleJumps(currentPlayer, movingMan, originalRow, originalColumn);
+            if (possibilities == null) return null;
+            for (Jump possibleJump : possibilities) {
+                System.out.println("bestMove:" + possibleJump.toStringWithoutPlayer()); // TODO delete
+                int newRow = possibleJump.getNewRow();
+                int newColumn = possibleJump.getNewColumn();
+                int evaluation = -minimax(currentPlayer, nextPlayer, board.getCoordinate(newRow, newColumn), newRow, newColumn, depth-1);
+                if (evaluation > best_evaluation) {
+                    best_evaluation = evaluation;
+                    apparentlyBestMove = possibleJump;
+                }
+            }
+        } else {
+            List<Move> possibilities = getPossibleMoves(currentPlayer, movingMan, originalRow, originalColumn);
+            if (possibilities == null) return null;
+            for (Move possibleMove : possibilities) {
+                System.out.println("bestMove:" + possibleMove.toStringWithoutPlayer()); // TODO delete
+                int newRow = possibleMove.getNewRow();
+                int newColumn = possibleMove.getNewColumn();
+                int evaluation = -minimax(nextPlayer, currentPlayer, board.getCoordinate(newRow, newColumn), newRow, newColumn, depth-1);
+                if (evaluation > best_evaluation) {
+                    best_evaluation = evaluation;
+                    apparentlyBestMove = possibleMove;
+                }
+            }
+        }
+        return apparentlyBestMove;
     }
 }

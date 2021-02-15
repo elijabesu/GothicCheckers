@@ -132,6 +132,12 @@ public class Game {
         return str.toString();
     }
 
+    public String hint(Player currentPlayer, Player nextPlayer, Pieces movingMan, int originalRow, int originalColumn, int depth) {
+        Move move = rules.bestMove(currentPlayer, nextPlayer, movingMan, originalRow, originalColumn, depth);
+        if (move == null) return "";
+        return move.toStringWithoutPlayer();
+    }
+
     public boolean shouldEnd(Player player1, Player player2) {
         return movesWithoutJump == 30 || player1.getPoints() == 16 || player2.getPoints() == 16;
     }
@@ -168,5 +174,9 @@ public class Game {
 
     public boolean possibleAnotherJump(Player player, Pieces movingMan, Jump jump) {
         return rules.possibleAnotherJump(player, movingMan, jump);
+    }
+
+    public int getBoardValue() {
+        return board.getBoardValue();
     }
 }

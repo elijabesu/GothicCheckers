@@ -81,4 +81,22 @@ public class Board {
         if (man.isWhite()) coordinates[row][column] = Pieces.WHITE_KING;
         else coordinates[row][column] = Pieces.BLACK_KING;
     }
+
+    public int getBoardValue() { // kladna hodnota je, ze vyhrava cerna
+        int value = 0;
+        for (int row = 0; row < size; row++) {
+            for (int column = 0; column < size; column++) {
+                Pieces piece = coordinates[row][column];
+                if (piece == Pieces.EMPTY) continue;
+                if (piece.isWhite()) {
+                    if (piece.isKing()) value -= 5;
+                    else value -= 3;
+                } else {
+                    if (piece.isKing()) value += 5;
+                    else value += 3;
+                }
+            }
+        }
+        return value;
+    }
 }

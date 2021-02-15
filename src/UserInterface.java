@@ -93,6 +93,7 @@ public class UserInterface {
     private void printScore() {
         System.out.println(player1);
         System.out.println(player2);
+        System.out.println("Current board value: " + game.getBoardValue());
     }
 
     private void hint(String command) {
@@ -100,10 +101,14 @@ public class UserInterface {
         Pieces man = game.getManByPosition(coordinate[0], coordinate[1]);
         if (man == Pieces.EMPTY) printInvalidMove();
         else {
-            String hint = game.hint(whichPlayer(), man, coordinate[0], coordinate[1]);
+            //String hint = game.hint(whichPlayer(), man, coordinate[0], coordinate[1]);
+            Player otherPlayer = whichPlayer();
+            if (whichPlayer().equals(player1)) otherPlayer = player2;
+            else otherPlayer = player1;
+            String hint = game.hint(whichPlayer(), otherPlayer, man, coordinate[0], coordinate[1], 5);
             if (hint.length() == 0) printInvalidMove();
             else {
-                System.out.println("Possible moves:" + hint);
+                System.out.println("Possible moves: " + hint);
             }
         }
     }
