@@ -179,4 +179,52 @@ public class Game {
     public int getBoardValue() {
         return board.getBoardValue();
     }
+
+    public void computerMove(Player currentPlayer, Player nextPlayer, int depth) {
+        int bestEvaluation = 0;
+        Jump bestJump = null;
+        Move bestMove = null;
+
+        List<int[]> positionsOfTheCurrentPlayer = board.getCoordinatesList(currentPlayer);
+        for (int[] positionCoordinate : positionsOfTheCurrentPlayer) {
+            Pieces movingMan = board.getCoordinate(positionCoordinate[0], positionCoordinate[1]);
+
+            if (rules.isJumpingPossible(currentPlayer, movingMan, positionCoordinate[0], positionCoordinate[1])) {
+                Jump jump = rules.bestJump(currentPlayer, nextPlayer, movingMan,
+                        positionCoordinate[0], positionCoordinate[1], depth);
+                if (currentPlayer.isWhite()) {
+                    if (bestJump == null || bestEvaluation == 0 || jump.getEvaluation() > bestEvaluation) {
+                        bestEvaluation = jump.getEvaluation();
+                        bestJump = jump;
+                    }
+                } else {
+                    if (bestJump == null || bestEvaluation == 0 || jump.getEvaluation() < bestEvaluation) {
+                        bestEvaluation = jump.getEvaluation();
+                        bestJump = jump;
+                    }
+                }
+            } else {
+                Move move = rules.bestMove(currentPlayer, nextPlayer, movingMan,
+                        positionCoordinate[0], positionCoordinate[1], depth);
+                if (move == null) continue;
+                if (currentPlayer.isWhite()) {
+                    if (bestMove == null || bestEvaluation == 0 || move.getEvaluation() > bestEvaluation) {
+                        bestEvaluation = move.getEvaluation();
+                        bestMove = move;
+                    }
+                } else {
+                    if (bestMove == null || bestEvaluation == 0 || move.getEvaluation() < bestEvaluation) {
+                        bestEvaluation = move.getEvaluation();
+                        bestMove = move;
+                    }
+                }
+            }
+        }
+        if (bestJump != null) {
+            afterJump(currentPlayer, bestJump);
+            if (possibleAnotherJump(currentPlayer, bestJump.getMan(), bestJump))
+                computerMove(currentPlayer, nextPlayer, depth);
+        }
+        else afterMove(bestMove);
+    }
 }
