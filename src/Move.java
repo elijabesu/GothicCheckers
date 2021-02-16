@@ -7,13 +7,14 @@ public class Move {
     protected int originalColumn;
     protected int newRow;
     protected int newColumn;
-    protected int evaluation;
+    protected double evaluation;
 
     public Move(Player player, Pieces movingMan, int originalRow, int originalColumn, int newRow, int newColumn) {
         this(player, movingMan, originalRow, originalColumn, newRow, newColumn, 0);
     }
 
-    public Move(Player player, Pieces movingMan, int originalRow, int originalColumn, int newRow, int newColumn, int evaluation) {
+    public Move(Player player, Pieces movingMan, int originalRow, int originalColumn,
+                int newRow, int newColumn, double evaluation) {
         this.player = player;
         this.movingMan = movingMan;
         this.originalRow = originalRow;
@@ -43,8 +44,8 @@ public class Move {
         return newColumn;
     }
 
-    public void setEvaluation(int evaluation) { this.evaluation = evaluation; }
-    public int getEvaluation() { return evaluation; }
+    public void setEvaluation(double evaluation) { this.evaluation = evaluation; }
+    public double getEvaluation() { return evaluation; }
 
     @Override
     public String toString() {

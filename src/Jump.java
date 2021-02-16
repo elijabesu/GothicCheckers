@@ -13,7 +13,7 @@ public class Jump extends Move {
 
     public Jump(Player player, Pieces movingMan, int originalRow, int originalColumn,
                 int jumpedRow, int jumpedColumn, Pieces jumpedMan,
-                int newRow, int newColumn, int evaluation) {
+                int newRow, int newColumn, double evaluation) {
         super(player, movingMan, originalRow, originalColumn, newRow, newColumn, evaluation);
         this.jumpedRow = jumpedRow;
         this.jumpedColumn = jumpedColumn;

@@ -118,7 +118,6 @@ public class UserInterface {
     private void printScore() {
         System.out.println(player1);
         System.out.println(player2);
-        System.out.println("Current board value: " + game.getBoardValue());
     }
 
     private void hint(String command) {
