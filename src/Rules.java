@@ -1,5 +1,7 @@
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
+import java.util.Random;
 
 public class Rules {
     Board board;
@@ -208,103 +210,292 @@ public class Rules {
         return possibleJumps.size() != 0;
     }
 
-    private int minimax(Player currentPlayer, Player nextPlayer, Pieces movingMan, int originalRow, int originalColumn, int depth) {
-        if (depth == 0 || endRow(movingMan, originalRow)) return board.getBoardValue();
-        int evaluation = -1000;
-        if (isJumpingPossible(currentPlayer, movingMan, originalRow, originalColumn)) {
-            List<Jump> possibilities = getPossibleJumps(currentPlayer, movingMan, originalRow, originalColumn);
-            if (possibilities == null) return evaluation;
-            for (Jump possibleJump : possibilities) {
-                //System.out.println("minimax: " + possibleJump.toString()); // TODO delete
-                int newRow = possibleJump.getNewRow();
-                int newColumn = possibleJump.getNewColumn();
-                evaluation = Integer.max(evaluation,
-                        -minimax(currentPlayer, nextPlayer, board.getCoordinate(newRow, newColumn), newRow, newColumn, depth-1));
-            }
-        } else {
-            List<Move> possibilities = getPossibleMoves(currentPlayer, movingMan, originalRow, originalColumn);
-            if (possibilities == null) return evaluation;
-            for (Move possibleMove : possibilities) {
-                //System.out.println("minimax: " + possibleMove.toString()); // TODO delete
-                List<int[]> positionsOfTheNextPlayer = board.getCoordinatesList(nextPlayer);
-                for (int[] positionCoordinate : positionsOfTheNextPlayer) {
-                    evaluation = Integer.max(evaluation,
-                            -minimax(nextPlayer, currentPlayer,
-                                    board.getCoordinate(positionCoordinate[0], positionCoordinate[1]),
-                                    positionCoordinate[0], positionCoordinate[1], depth-1));
-                }
-            }
-        }
-        return evaluation;
+//    private int minimax(Player currentPlayer, Player nextPlayer, Pieces movingMan, int originalRow, int originalColumn, int depth) {
+//        if (depth == 0 || endRow(movingMan, originalRow)) return board.getBoardValue();
+//        int evaluation = 0;
+//        if (isJumpingPossible(currentPlayer, movingMan, originalRow, originalColumn)) {
+//            List<Jump> possibilities = getPossibleJumps(currentPlayer, movingMan, originalRow, originalColumn);
+//            if (possibilities == null) return evaluation;
+//            for (Jump possibleJump : possibilities) {
+//                //System.out.println("minimax: " + possibleJump.toString()); // TODO delete
+//                int newRow = possibleJump.getNewRow();
+//                int newColumn = possibleJump.getNewColumn();
+//                evaluation = Integer.max(evaluation,
+//                        -minimax(currentPlayer, nextPlayer, board.getCoordinate(newRow, newColumn), newRow, newColumn, depth-1));
+//            }
+//        } else {
+//            List<Move> possibilities = getPossibleMoves(currentPlayer, movingMan, originalRow, originalColumn);
+//            if (possibilities == null) return evaluation;
+//            for (Move possibleMove : possibilities) {
+//                //System.out.println("minimax: " + possibleMove.toString()); // TODO delete
+//                List<int[]> positionsOfTheNextPlayer = board.getCoordinatesList(nextPlayer);
+//                for (int[] positionCoordinate : positionsOfTheNextPlayer) {
+//                    evaluation = Integer.max(evaluation,
+//                            -minimax(nextPlayer, currentPlayer,
+//                                    board.getCoordinate(positionCoordinate[0], positionCoordinate[1]),
+//                                    positionCoordinate[0], positionCoordinate[1], depth-1));
+//                }
+//            }
+//        }
+//        return evaluation;
+//    }
+//
+//    public Move bestMove(Player currentPlayer, Player nextPlayer, Pieces movingMan,
+//                         int originalRow, int originalColumn, int depth, int bestEvaluation) {
+//        Move apparentlyBestMove = null;
+//        if (isJumpingPossible(currentPlayer, movingMan, originalRow, originalColumn)) {
+//            apparentlyBestMove = bestJump(currentPlayer, nextPlayer, movingMan, originalRow, originalColumn, depth);
+//        } else {
+//            List<Move> possibilities = getPossibleMoves(currentPlayer, movingMan, originalRow, originalColumn);
+//            if (possibilities == null) return null;
+//            for (Move possibleMove : possibilities) {
+//                //System.out.println("bestMove: " + possibleMove.toString()); // TODO delete
+//                List<int[]> positionsOfTheNextPlayer = board.getCoordinatesList(nextPlayer);
+//                for (int[] positionCoordinate : positionsOfTheNextPlayer) {
+//                    int evaluation = -minimax(nextPlayer, currentPlayer,
+//                                    board.getCoordinate(positionCoordinate[0], positionCoordinate[1]),
+//                                    positionCoordinate[0], positionCoordinate[1], depth-1);
+//                    if (currentPlayer.isWhite()) {
+//                        if (apparentlyBestMove == null || evaluation < bestEvaluation) {
+//                            bestEvaluation = evaluation;
+//                            apparentlyBestMove = possibleMove;
+//                            apparentlyBestMove.setEvaluation(bestEvaluation);
+//                        }
+//                    } else {
+//                        if (apparentlyBestMove == null || evaluation > bestEvaluation) {
+//                            bestEvaluation = evaluation;
+//                            apparentlyBestMove = possibleMove;
+//                            apparentlyBestMove.setEvaluation(bestEvaluation);
+//                        }
+//                    }
+//                }
+//            }
+//        }
+//        if (apparentlyBestMove != null) System.out.println("bestMove: " + apparentlyBestMove.toString() +
+//                "\nevaluation: " + apparentlyBestMove.getEvaluation()); // TODO delete
+//        return apparentlyBestMove;
+//    }
+//
+//    public Jump bestJump(Player currentPlayer, Player nextPlayer, Pieces movingMan,
+//                         int originalRow, int originalColumn, int depth, int bestEvaluation) {
+//        Jump apparentlyBestJump = null;
+//        List<Jump> possibilities = getPossibleJumps(currentPlayer, movingMan, originalRow, originalColumn);
+//        if (possibilities == null) return null;
+//        for (Jump possibleJump : possibilities) {
+//            //System.out.println("bestJump: " + possibleJump.toString()); // TODO delete
+//            int newRow = possibleJump.getNewRow();
+//            int newColumn = possibleJump.getNewColumn();
+//            int evaluation = -minimax(currentPlayer, nextPlayer, board.getCoordinate(newRow, newColumn), newRow, newColumn, depth-1);
+//            if (currentPlayer.isWhite()) {
+//                if (apparentlyBestJump == null || evaluation < bestEvaluation) {
+//                    bestEvaluation = evaluation;
+//                    apparentlyBestJump = possibleJump;
+//                    apparentlyBestJump.setEvaluation(bestEvaluation);
+//                }
+//            } else {
+//                if (apparentlyBestJump == null || evaluation > bestEvaluation) {
+//                    bestEvaluation = evaluation;
+//                    apparentlyBestJump = possibleJump;
+//                    apparentlyBestJump.setEvaluation(bestEvaluation);
+//                }
+//            }
+//        }
+//        if (apparentlyBestJump != null) System.out.println("bestMove: " + apparentlyBestJump.toString() +
+//                "\nevaluation: " + apparentlyBestJump.getEvaluation()); // TODO delete
+//        return apparentlyBestJump;
+//    }
+//
+//    public Move bestMove(Player currentPlayer, Player nextPlayer, Pieces movingMan,
+//                         int originalRow, int originalColumn, int depth) {
+//        return bestMove(currentPlayer, nextPlayer, movingMan, originalRow, originalColumn, depth, 0);
+//    }
+//    public Jump bestJump(Player currentPlayer, Player nextPlayer, Pieces movingMan,
+//                         int originalRow, int originalColumn, int depth) {
+//        return bestJump(currentPlayer, nextPlayer, movingMan, originalRow, originalColumn, depth, 0);
+//    }
+
+    private double getHeuristicValue(Board board, Player currentPlayer) {
+        double kingWeight = 1.5;
+        double result = 0;
+
+        if (currentPlayer.isWhite()) result = board.getNumberOfWhiteKings() * kingWeight +
+                board.getNumberOfWhiteMen() - board.getNumberOfBlackKings() * kingWeight -
+                board.getNumberOfBlackMen();
+        else result = board.getNumberOfBlackKings() * kingWeight +
+                board.getNumberOfBlackMen() - board.getNumberOfWhiteKings() * kingWeight -
+                board.getNumberOfWhiteMen();
+
+        return result;
     }
 
-    public Move bestMove(Player currentPlayer, Player nextPlayer, Pieces movingMan,
-                         int originalRow, int originalColumn, int depth, int bestEvaluation) {
-        Move apparentlyBestMove = null;
+    public Move bestMove(Player currentPlayer, Player nextPlayer, Pieces movingMan, int originalRow, int originalColumn, int depth) {
+        double alpha = Double.NEGATIVE_INFINITY;
+        double beta = Double.POSITIVE_INFINITY;
+
+        List<Move> possibilities = getPossibleMoves(currentPlayer, movingMan, originalRow, originalColumn);
+        List<Double> heuristics = new ArrayList<>();
+        List<Double> tempHeuristics = new ArrayList<>();
+
+        if (possibilities == null) return null;
+        Board tempBoard;
+
+        for (Move possibleMove : possibilities) {
+            tempBoard = board.clone();
+            tempBoard.moved(possibleMove);
+            List<int[]> positionsOfTheNextPlayer = board.getCoordinatesList(nextPlayer);
+            for (int[] positionCoordinate : positionsOfTheNextPlayer) {
+                tempHeuristics.add(minimax(tempBoard, nextPlayer, currentPlayer,
+                        tempBoard.getCoordinate(positionCoordinate[0], positionCoordinate[1]),
+                        positionCoordinate[0], positionCoordinate[1], depth, alpha, beta));
+            }
+            heuristics.add(Collections.max(tempHeuristics));
+        }
+
+        double maxHeuristics = Double.NEGATIVE_INFINITY;
+        Random random = new Random();
+        for (int i = heuristics.size() - 1; i >= 0; i--) {
+            if (heuristics.get(i) >= maxHeuristics) {
+                maxHeuristics = heuristics.get(i);
+            }
+        }
+
+        for (int i = 0; i < heuristics.size(); i++) {
+            if (heuristics.get(i) < maxHeuristics) {
+                heuristics.remove(i);
+                possibilities.remove(i);
+                i--;
+            }
+        }
+        if (possibilities.isEmpty()) return null;
+        return possibilities.get(random.nextInt(possibilities.size()));
+    }
+
+    public Jump bestJump(Player currentPlayer, Player nextPlayer, Pieces movingMan, int originalRow, int originalColumn, int depth) {
+        double alpha = Double.NEGATIVE_INFINITY;
+        double beta = Double.POSITIVE_INFINITY;
+
+        List<Jump> possibilities = getPossibleJumps(currentPlayer, movingMan, originalRow, originalColumn);
+
+        if (possibilities == null) return null;
+        Board tempBoard;
+
+        for (Jump possibleJump : possibilities) {
+            tempBoard = board.clone();
+            tempBoard.jumped(possibleJump);
+            int newRow = possibleJump.getNewRow();
+            int newColumn = possibleJump.getNewColumn();
+            possibleJump.setEvaluation(minimax(tempBoard, nextPlayer, currentPlayer,
+                    tempBoard.getCoordinate(newRow, newColumn),
+                    newRow, newColumn, depth, alpha, beta));
+        }
+
+        double maxHeuristics = Double.NEGATIVE_INFINITY;
+        Random random = new Random();
+        for (int i = possibilities.size() - 1; i >= 0; i--) {
+            if (possibilities.get(i).getEvaluation() >= maxHeuristics) {
+                maxHeuristics = possibilities.get(i).getEvaluation();
+            }
+        }
+
+        for (int i = 0; i < possibilities.size(); i++) {
+            if (possibilities.get(i).getEvaluation() < maxHeuristics) {
+                possibilities.remove(i);
+                i--;
+            }
+        }
+        if (possibilities.isEmpty()) return null;
+        return possibilities.get(random.nextInt(possibilities.size()));
+    }
+
+    private double minimax(Board board, Player currentPlayer, Player nextPlayer, Pieces movingMan,
+                           int originalRow, int originalColumn, int depth, double alpha, double beta) {
+        if (depth == 0) return getHeuristicValue(board, currentPlayer);
+
         if (isJumpingPossible(currentPlayer, movingMan, originalRow, originalColumn)) {
-            apparentlyBestMove = bestJump(currentPlayer, nextPlayer, movingMan, originalRow, originalColumn, depth);
-        } else {
+            List<Jump> possibilities = getPossibleJumps(currentPlayer, movingMan, originalRow, originalColumn);
+            if (possibilities == null) return getHeuristicValue(board, currentPlayer);
+
+            double initial;
+            Board tempBoard;
+
+            if (currentPlayer.isWhite()) {
+                initial = Double.NEGATIVE_INFINITY;
+                for (Jump possibleJump : possibilities) {
+                    tempBoard = board.clone();
+                    tempBoard.jumped(possibleJump);
+
+                    int newRow = possibleJump.getNewRow();
+                    int newColumn = possibleJump.getNewColumn();
+                    double result = minimax(tempBoard, nextPlayer, currentPlayer, tempBoard.getCoordinate(newRow, newColumn),
+                            newRow, newColumn, depth - 1, alpha, beta);
+
+                    initial = Math.max(result, initial);
+                    alpha = Math.max(alpha, initial);
+
+                    if (alpha >= beta) break;
+                }
+            } else {
+                initial = Double.POSITIVE_INFINITY;
+                for (Jump possibleJump : possibilities) {
+                    tempBoard = board.clone();
+                    tempBoard.jumped(possibleJump);
+
+                    int newRow = possibleJump.getNewRow();
+                    int newColumn = possibleJump.getNewColumn();
+                    double result = minimax(tempBoard, nextPlayer, currentPlayer, tempBoard.getCoordinate(newRow, newColumn),
+                            newRow, newColumn, depth - 1, alpha, beta);
+
+                    initial = Math.min(result, initial);
+                    alpha = Math.min(alpha, initial);
+
+                    if (alpha >= beta) break;
+                }
+            }
+            return initial;
+        }
+        else {
             List<Move> possibilities = getPossibleMoves(currentPlayer, movingMan, originalRow, originalColumn);
-            if (possibilities == null) return null;
-            for (Move possibleMove : possibilities) {
-                //System.out.println("bestMove: " + possibleMove.toString()); // TODO delete
-                List<int[]> positionsOfTheNextPlayer = board.getCoordinatesList(nextPlayer);
-                for (int[] positionCoordinate : positionsOfTheNextPlayer) {
-                    int evaluation = -minimax(nextPlayer, currentPlayer,
-                                    board.getCoordinate(positionCoordinate[0], positionCoordinate[1]),
-                                    positionCoordinate[0], positionCoordinate[1], depth-1);
-                    if (currentPlayer.isWhite()) {
-                        if (bestEvaluation == 0 || evaluation > bestEvaluation) {
-                            bestEvaluation = evaluation;
-                            apparentlyBestMove = possibleMove;
-                            apparentlyBestMove.setEvaluation(bestEvaluation);
-                        }
-                    } else {
-                        if (bestEvaluation == 0 || evaluation < bestEvaluation) {
-                            bestEvaluation = evaluation;
-                            apparentlyBestMove = possibleMove;
-                            apparentlyBestMove.setEvaluation(bestEvaluation);
-                        }
+            if (possibilities == null) return getHeuristicValue(board, currentPlayer);
+
+            double initial;
+            Board tempBoard;
+
+            if (currentPlayer.isWhite()) {
+                initial = Double.NEGATIVE_INFINITY;
+                for (Move possibleMove : possibilities) {
+                    tempBoard = board.clone();
+                    tempBoard.moved(possibleMove);
+
+                    List<int[]> positionsOfTheNextPlayer = board.getCoordinatesList(nextPlayer);
+                    for (int[] positionCoordinate : positionsOfTheNextPlayer) {
+                        double result = minimax(tempBoard, nextPlayer, currentPlayer,
+                                tempBoard.getCoordinate(positionCoordinate[0], positionCoordinate[1]),
+                                positionCoordinate[0], positionCoordinate[1], depth - 1, alpha, beta);
+                        initial = Math.max(result, initial);
+                        alpha = Math.max(alpha, initial);
+
+                        if (alpha >= beta) break;
+                    }
+                }
+            } else {
+                initial = Double.POSITIVE_INFINITY;
+                for (Move possibleMove : possibilities) {
+                    tempBoard = board.clone();
+                    tempBoard.moved(possibleMove);
+
+                    List<int[]> positionsOfTheNextPlayer = board.getCoordinatesList(nextPlayer);
+                    for (int[] positionCoordinate : positionsOfTheNextPlayer) {
+                        double result = minimax(tempBoard, nextPlayer, currentPlayer,
+                                tempBoard.getCoordinate(positionCoordinate[0], positionCoordinate[1]),
+                                positionCoordinate[0], positionCoordinate[1], depth - 1, alpha, beta);
+                        initial = Math.min(result, initial);
+                        alpha = Math.min(alpha, initial);
+
+                        if (alpha >= beta) break;
                     }
                 }
             }
+            return initial;
         }
-        return apparentlyBestMove;
-    }
-
-    public Jump bestJump(Player currentPlayer, Player nextPlayer, Pieces movingMan,
-                         int originalRow, int originalColumn, int depth, int bestEvaluation) {
-        Jump apparentlyBestJump = null;
-        List<Jump> possibilities = getPossibleJumps(currentPlayer, movingMan, originalRow, originalColumn);
-        if (possibilities == null) return null;
-        for (Jump possibleJump : possibilities) {
-            //System.out.println("bestJump: " + possibleJump.toString()); // TODO delete
-            int newRow = possibleJump.getNewRow();
-            int newColumn = possibleJump.getNewColumn();
-            int evaluation = -minimax(currentPlayer, nextPlayer, board.getCoordinate(newRow, newColumn), newRow, newColumn, depth-1);
-            if (currentPlayer.isWhite()) {
-                if (evaluation > bestEvaluation) {
-                    bestEvaluation = evaluation;
-                    apparentlyBestJump = possibleJump;
-                    apparentlyBestJump.setEvaluation(bestEvaluation);
-                }
-            } else {
-                if (evaluation < bestEvaluation) {
-                    bestEvaluation = evaluation;
-                    apparentlyBestJump = possibleJump;
-                    apparentlyBestJump.setEvaluation(bestEvaluation);
-                }
-            }
-        }
-        return apparentlyBestJump;
-    }
-
-    public Move bestMove(Player currentPlayer, Player nextPlayer, Pieces movingMan,
-                         int originalRow, int originalColumn, int depth) {
-        return bestMove(currentPlayer, nextPlayer, movingMan, originalRow, originalColumn, depth, 0);
-    }
-    public Jump bestJump(Player currentPlayer, Player nextPlayer, Pieces movingMan,
-                         int originalRow, int originalColumn, int depth) {
-        return bestJump(currentPlayer, nextPlayer, movingMan, originalRow, originalColumn, depth, 0);
     }
 }

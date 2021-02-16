@@ -111,9 +111,11 @@ public class Game {
         }
     }
 
-
     public String hint(Player currentPlayer, Player nextPlayer, Pieces movingMan, int originalRow, int originalColumn, int depth) {
-        Move move = rules.bestMove(currentPlayer, nextPlayer, movingMan, originalRow, originalColumn, depth);
+        Move move;
+        if (rules.isJumpingPossible(currentPlayer, movingMan, originalRow, originalColumn))
+            move = rules.bestJump(currentPlayer, nextPlayer, movingMan, originalRow, originalColumn, depth);
+        else move = rules.bestMove(currentPlayer, nextPlayer, movingMan, originalRow, originalColumn, depth);
         if (move == null) return "";
         return move.toStringWithoutPlayer();
     }
@@ -156,55 +158,79 @@ public class Game {
         return rules.possibleAnotherJump(player, movingMan, jump);
     }
 
-    public int getBoardValue() {
-        return board.getBoardValue();
-    }
+//    public void computerMove(Player currentPlayer, Player nextPlayer, int depth) {
+//        int bestEvaluation = 0;
+//        Jump bestJump = null;
+//        Move bestMove = null;
+//
+//        List<int[]> positionsOfTheCurrentPlayer = board.getCoordinatesList(currentPlayer);
+//        for (int[] positionCoordinate : positionsOfTheCurrentPlayer) {
+//            Pieces movingMan = board.getCoordinate(positionCoordinate[0], positionCoordinate[1]);
+//
+//            if (rules.isJumpingPossible(currentPlayer, movingMan, positionCoordinate[0], positionCoordinate[1])) {
+//                Jump jump = rules.bestJump(currentPlayer, nextPlayer, movingMan,
+//                        positionCoordinate[0], positionCoordinate[1], depth);
+//                if (currentPlayer.isWhite()) {
+//                    if (bestJump == null || jump.getEvaluation() < bestEvaluation) {
+//                        bestEvaluation = jump.getEvaluation();
+//                        bestJump = jump;
+//                    }
+//                } else {
+//                    if (bestJump == null || jump.getEvaluation() > bestEvaluation) {
+//                        bestEvaluation = jump.getEvaluation();
+//                        bestJump = jump;
+//                    }
+//                }
+//            } else {
+//                Move move = rules.bestMove(currentPlayer, nextPlayer, movingMan,
+//                        positionCoordinate[0], positionCoordinate[1], depth);
+//                if (move == null) continue;
+//                if (currentPlayer.isWhite()) {
+//                    if (bestMove == null || move.getEvaluation() < bestEvaluation) {
+//                        bestEvaluation = move.getEvaluation();
+//                        bestMove = move;
+//                    }
+//                } else {
+//                    if (bestMove == null || move.getEvaluation() > bestEvaluation) {
+//                        bestEvaluation = move.getEvaluation();
+//                        bestMove = move;
+//                    }
+//                }
+//            }
+//        }
+//        if (bestJump != null) {
+//            afterJump(currentPlayer, bestJump);
+//            if (possibleAnotherJump(currentPlayer, bestJump.getMan(), bestJump))
+//                computerMove(currentPlayer, nextPlayer, depth);
+//        }
+//        else afterMove(bestMove);
+//    }
 
     public void computerMove(Player currentPlayer, Player nextPlayer, int depth) {
-        int bestEvaluation = 0;
         Jump bestJump = null;
         Move bestMove = null;
+
+        Jump tempJump;
+        Move tempMove;
 
         List<int[]> positionsOfTheCurrentPlayer = board.getCoordinatesList(currentPlayer);
         for (int[] positionCoordinate : positionsOfTheCurrentPlayer) {
             Pieces movingMan = board.getCoordinate(positionCoordinate[0], positionCoordinate[1]);
-
             if (rules.isJumpingPossible(currentPlayer, movingMan, positionCoordinate[0], positionCoordinate[1])) {
-                Jump jump = rules.bestJump(currentPlayer, nextPlayer, movingMan,
+                tempJump = rules.bestJump(currentPlayer, nextPlayer, movingMan,
                         positionCoordinate[0], positionCoordinate[1], depth);
-                if (currentPlayer.isWhite()) {
-                    if (bestJump == null || bestEvaluation == 0 || jump.getEvaluation() > bestEvaluation) {
-                        bestEvaluation = jump.getEvaluation();
-                        bestJump = jump;
-                    }
-                } else {
-                    if (bestJump == null || bestEvaluation == 0 || jump.getEvaluation() < bestEvaluation) {
-                        bestEvaluation = jump.getEvaluation();
-                        bestJump = jump;
-                    }
-                }
+                if (bestJump == null || bestJump.getEvaluation() < tempJump.getEvaluation()) bestJump = tempJump;
             } else {
-                Move move = rules.bestMove(currentPlayer, nextPlayer, movingMan,
+                tempMove = rules.bestMove(currentPlayer, nextPlayer, movingMan,
                         positionCoordinate[0], positionCoordinate[1], depth);
-                if (move == null) continue;
-                if (currentPlayer.isWhite()) {
-                    if (bestMove == null || bestEvaluation == 0 || move.getEvaluation() > bestEvaluation) {
-                        bestEvaluation = move.getEvaluation();
-                        bestMove = move;
-                    }
-                } else {
-                    if (bestMove == null || bestEvaluation == 0 || move.getEvaluation() < bestEvaluation) {
-                        bestEvaluation = move.getEvaluation();
-                        bestMove = move;
-                    }
-                }
+                if (tempMove == null) continue;
+                if (bestMove == null || bestMove.getEvaluation() < tempMove.getEvaluation()) bestMove = tempMove;
             }
         }
         if (bestJump != null) {
             afterJump(currentPlayer, bestJump);
             if (possibleAnotherJump(currentPlayer, bestJump.getMan(), bestJump))
                 computerMove(currentPlayer, nextPlayer, depth);
-        }
-        else afterMove(bestMove);
+        } else afterMove(bestMove);
     }
 }
