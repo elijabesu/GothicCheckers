@@ -111,26 +111,6 @@ public class Game {
         }
     }
 
-    public String hint(Player player, Pieces movingMan, int originalRow, int originalColumn) {
-        StringBuilder str = new StringBuilder();
-
-        if (rules.isJumpingPossible(player, movingMan, originalRow, originalColumn)) {
-            List<Jump> possible = rules.getPossibleJumps(player, movingMan, originalRow, originalColumn);
-            for (Jump jump: possible) {
-                str.append(System.lineSeparator());
-                str.append(jump.toStringWithoutPlayer());
-            }
-        } else {
-            List<Move> possible = rules.getPossibleMoves(player, movingMan, originalRow, originalColumn);
-            if (possible != null) {
-                for (Move move : possible) {
-                    str.append(System.lineSeparator());
-                    str.append(move.toStringWithoutPlayer());
-                }
-            }
-        }
-        return str.toString();
-    }
 
     public String hint(Player currentPlayer, Player nextPlayer, Pieces movingMan, int originalRow, int originalColumn, int depth) {
         Move move = rules.bestMove(currentPlayer, nextPlayer, movingMan, originalRow, originalColumn, depth);
