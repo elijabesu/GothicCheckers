@@ -1,3 +1,6 @@
+import java.util.ArrayList;
+import java.util.List;
+
 public class Board {
     private final StringBuilder boardString;
     private final int size;
@@ -98,5 +101,25 @@ public class Board {
             }
         }
         return value;
+    }
+
+    public List<int[]> getCoordinatesList(Player player) {
+        List<int[]> coordList = new ArrayList<>();
+
+        for (int row = 0; row < size; row++) {
+            for (int column = 0; column < size; column++) {
+                Pieces currentPiece = getCoordinate(row, column);
+                if (currentPiece != Pieces.EMPTY) {
+                    if (currentPiece.isWhite() && player.isWhite()) {
+                        if (currentPiece.isKing()) coordList.add(new int[]{row, column, 1});
+                        else coordList.add(new int[]{row, column, 0});
+                    } else if (!currentPiece.isWhite() && !player.isWhite()) {
+                        if (currentPiece.isKing()) coordList.add(new int[]{row, column, 1});
+                        else coordList.add(new int[]{row, column, 0});
+                    }
+                }
+            }
+        }
+        return coordList;
     }
 }
