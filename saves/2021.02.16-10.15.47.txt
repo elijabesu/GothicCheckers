@@ -1,0 +1,4 @@
+A2 -> A3 (Ellie, o)
+A7 -> A6 (ai test 2, x)
+A3 -> A4 (Ellie, o)
+A8 -> A7 (ai test 2, x)
