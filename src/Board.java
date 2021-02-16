@@ -4,12 +4,17 @@ import java.util.List;
 public class Board {
     private final StringBuilder boardString;
     private final int size;
-    private final Pieces[][] coordinates;
+    private Pieces[][] coordinates;
 
     public Board(int size) {
         this.size = size;
         this.boardString = new StringBuilder();
         this.coordinates = new Pieces[size][size];
+    }
+
+    public Board(int size, Pieces[][] coordinates) {
+        this(size);
+        this.coordinates = coordinates;
     }
 
     public String displayBoard() {
@@ -85,24 +90,6 @@ public class Board {
         else coordinates[row][column] = Pieces.BLACK_KING;
     }
 
-    public int getBoardValue() { // kladna hodnota je, ze vyhrava cerna
-        int value = 0;
-        for (int row = 0; row < size; row++) {
-            for (int column = 0; column < size; column++) {
-                Pieces piece = coordinates[row][column];
-                if (piece == Pieces.EMPTY) continue;
-                if (piece.isWhite()) {
-                    if (piece.isKing()) value -= 5;
-                    else value -= 3;
-                } else {
-                    if (piece.isKing()) value += 5;
-                    else value += 3;
-                }
-            }
-        }
-        return value;
-    }
-
     public List<int[]> getCoordinatesList(Player player) {
         List<int[]> coordList = new ArrayList<>();
 
@@ -121,5 +108,59 @@ public class Board {
             }
         }
         return coordList;
+    }
+
+    public int getNumberOfWhiteKings() {
+        int result = 0;
+        for (int row = 0; row < size; row++) {
+            for (int column = 0; column < size; column++) {
+                Pieces currentPiece = getCoordinate(row, column);
+                if (currentPiece.isWhite() && currentPiece.isKing()) result++;
+            }
+        }
+        return result;
+    }
+
+    public int getNumberOfBlackKings() {
+        int result = 0;
+        for (int row = 0; row < size; row++) {
+            for (int column = 0; column < size; column++) {
+                Pieces currentPiece = getCoordinate(row, column);
+                if (!currentPiece.isWhite() && currentPiece.isKing()) result++;
+            }
+        }
+        return result;
+    }
+
+    public int getNumberOfWhiteMen() {
+        int result = 0;
+        for (int row = 0; row < size; row++) {
+            for (int column = 0; column < size; column++) {
+                Pieces currentPiece = getCoordinate(row, column);
+                if (currentPiece.isWhite() && !currentPiece.isKing()) result++;
+            }
+        }
+        return result;
+    }
+
+    public int getNumberOfBlackMen() {
+        int result = 0;
+        for (int row = 0; row < size; row++) {
+            for (int column = 0; column < size; column++) {
+                Pieces currentPiece = getCoordinate(row, column);
+                if (!currentPiece.isWhite() && !currentPiece.isKing()) result++;
+            }
+        }
+        return result;
+    }
+
+    public Board clone() {
+        Pieces[][] clonedCoordinates = new Pieces[size][size];
+        for (int row = 0; row < size; row++) {
+            for (int column = 0; column < size; column++) {
+                clonedCoordinates[row][column] = coordinates[row][column];
+            }
+        }
+        return new Board(size, clonedCoordinates);
     }
 }
