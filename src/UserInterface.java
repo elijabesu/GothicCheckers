@@ -201,11 +201,9 @@ public class UserInterface {
         System.out.print("Enter player's new name: ");
         String playerName = scanner.nextLine().trim();
         if (whichPlayer.equals("white")) {
-            if (playerName.contains("ai")) player1.changePlayer(playerName, true);
-            else player1.changePlayer(playerName, false);
+            player1.changePlayer(playerName, playerName.contains("ai"));
         } else if (whichPlayer.equals("black")) {
-            if (playerName.contains("ai")) player2.changePlayer(playerName, true);
-            else player2.changePlayer(playerName, false);
+            player2.changePlayer(playerName, playerName.contains("ai"));
         }
     }
 }
