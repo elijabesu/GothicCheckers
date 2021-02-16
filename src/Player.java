@@ -1,8 +1,8 @@
 public class Player {
     private int points;
-    private final String name;
+    private String name;
     private final boolean white; // true == white, false == black
-    private final boolean computer;
+    private boolean computer;
 
     public Player(String name, boolean white) {
         this(name, white, false);
@@ -28,8 +28,15 @@ public class Player {
         return white;
     }
 
+    public boolean isComputer() { return computer; }
+
     public String getName() {
         return name;
+    }
+
+    public void changePlayer(String name, boolean computer) {
+        this.computer = computer;
+        this.name = name;
     }
 
     @Override

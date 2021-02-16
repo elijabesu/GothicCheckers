@@ -10,12 +10,16 @@ public class UserInterface {
     private final String moveRegex;
     private final String hintRegex;
 
+    private final int depth;
+
     public UserInterface() {
         game = new Game();
         scanner = new Scanner(System.in);
 
         moveRegex = "[A-H][1-8] -> [A-H][1-8]";
         hintRegex = "[A-H][1-8] ->";
+
+        depth = 3;
     }
 
     public void startGame() {
@@ -23,12 +27,29 @@ public class UserInterface {
         printBoard();
 
         while (true) {
-            if (game.getPlayerBool()) System.out.println("\n\t\t" + player1.getName() + "'s turn:");
-            else System.out.println("\n\t\t" + player2.getName() + "'s turn:");
+            Player currentPlayer = null;
+            Player nextPlayer = null;
 
-            if (!readCommand()) break;
+            if (game.getPlayerBool()) {
+                currentPlayer = player1;
+                nextPlayer = player2;
+            }
+            else {
+                currentPlayer = player2;
+                nextPlayer = player1;
+            }
+
+            System.out.println("\n\t\t" + currentPlayer.getName() + "'s turn:");
+
+            if (currentPlayer.isComputer()) computerMove(currentPlayer, nextPlayer);
+            else if (!readCommand()) break;
 
             if (game.shouldEnd(player1, player2)) break;
+
+            if (currentPlayer.isComputer() && nextPlayer.isComputer()) {
+                System.out.print("Intervene? (y/n) ");
+                if (scanner.nextLine().trim().equals("y")) if (!readCommand()) break;
+            }
         }
         endGame();
     }
@@ -79,10 +100,14 @@ public class UserInterface {
 
     private void getPlayerNames() {
         System.out.print("Enter first player's name (white): ");
-        player1 = new Player(scanner.nextLine(), true);
+        String player1Name = scanner.nextLine();
+        if (player1Name.contains("ai")) player1 = new Player(player1Name, true, true);
+        else player1 = new Player(player1Name, true);
 
         System.out.print("Enter second player's name (black): ");
-        player2 = new Player(scanner.nextLine(), false);
+        String player2Name = scanner.nextLine();
+        if (player2Name.contains("ai")) player2 = new Player(player2Name, false, true);
+        else player2 = new Player(player2Name, false);
     }
 
     private Player whichPlayer() {
@@ -105,7 +130,7 @@ public class UserInterface {
             Player otherPlayer = whichPlayer();
             if (whichPlayer().equals(player1)) otherPlayer = player2;
             else otherPlayer = player1;
-            String hint = game.hint(whichPlayer(), otherPlayer, man, coordinate[0], coordinate[1], 5);
+            String hint = game.hint(whichPlayer(), otherPlayer, man, coordinate[0], coordinate[1], depth);
             if (hint.length() == 0) printInvalidMove();
             else {
                 System.out.println("Possible moves: " + hint);
@@ -149,18 +174,38 @@ public class UserInterface {
     }
 
     private boolean readCommand() {
-        System.out.print("\tCommand? (B2 -> C3, B2 ->, history, score, display, save, load, quit)\n\t\t");
-        String command = scanner.nextLine();
+        System.out.print("\tCommand? (B2 -> C3, B2 ->, history, score, display, change, save, load, quit)\n\t\t");
+        String command = scanner.nextLine().trim();
 
-        if (command.trim().equals("quit")) return false;
-        if (command.trim().equals("history")) System.out.println(game.getHistory());
-        if (command.trim().matches(moveRegex)) movement(command);
-        if (command.trim().matches(hintRegex)) hint(command);
-        if (command.trim().equals("score")) printScore();
-        if (command.trim().equals("display")) printBoard();
-        if (command.trim().equals("save")) saveGame();
-        if (command.trim().equals("load")) loadGame();
+        if (command.equals("quit")) return false;
+        if (command.equals("history")) System.out.println(game.getHistory());
+        if (command.matches(moveRegex)) movement(command);
+        if (command.matches(hintRegex)) hint(command);
+        if (command.equals("score")) printScore();
+        if (command.equals("display")) printBoard();
+        if (command.equals("save")) saveGame();
+        if (command.equals("load")) loadGame();
+        if (command.equals("change")) changePlayers();
 
         return true;
+    }
+
+    private void computerMove(Player currentPlayer, Player nextPlayer) {
+        game.computerMove(currentPlayer, nextPlayer, depth);
+        afterMove();
+    }
+
+    private void changePlayers() {
+        System.out.println("Which player? (white, black)");
+        String whichPlayer = scanner.nextLine().trim();
+        System.out.print("Enter player's new name: ");
+        String playerName = scanner.nextLine().trim();
+        if (whichPlayer.equals("white")) {
+            if (playerName.contains("ai")) player1.changePlayer(playerName, true);
+            else player1.changePlayer(playerName, false);
+        } else if (whichPlayer.equals("black")) {
+            if (playerName.contains("ai")) player2.changePlayer(playerName, true);
+            else player2.changePlayer(playerName, false);
+        }
     }
 }
