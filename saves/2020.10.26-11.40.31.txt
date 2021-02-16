@@ -1,6 +1,0 @@
-A2 -> A3 (Ellie, o)
-B7 -> C6 (Oliver, x)
-A3 -> B4 (Ellie, o)
-C6 -> C5 (Oliver, x)
-B4 -> D6 (Ellie, o, +1)
-D7 -> D5 (Oliver, x, +1)
