@@ -113,9 +113,7 @@ public class Game {
 
     public String hint(Player currentPlayer, Player nextPlayer, Pieces movingMan, int originalRow, int originalColumn, int depth) {
         Move move;
-        if (rules.isJumpingPossible(currentPlayer, movingMan, originalRow, originalColumn))
-            move = rules.bestJump(currentPlayer, nextPlayer, movingMan, originalRow, originalColumn, depth);
-        else move = rules.bestMove(currentPlayer, nextPlayer, movingMan, originalRow, originalColumn, depth);
+        move = rules.bestMove(currentPlayer, nextPlayer, movingMan, originalRow, originalColumn, depth);
         if (move == null) return "";
         return move.toStringWithoutPlayer();
     }
@@ -158,54 +156,6 @@ public class Game {
         return rules.possibleAnotherJump(player, movingMan, jump);
     }
 
-//    public void computerMove(Player currentPlayer, Player nextPlayer, int depth) {
-//        int bestEvaluation = 0;
-//        Jump bestJump = null;
-//        Move bestMove = null;
-//
-//        List<int[]> positionsOfTheCurrentPlayer = board.getCoordinatesList(currentPlayer);
-//        for (int[] positionCoordinate : positionsOfTheCurrentPlayer) {
-//            Pieces movingMan = board.getCoordinate(positionCoordinate[0], positionCoordinate[1]);
-//
-//            if (rules.isJumpingPossible(currentPlayer, movingMan, positionCoordinate[0], positionCoordinate[1])) {
-//                Jump jump = rules.bestJump(currentPlayer, nextPlayer, movingMan,
-//                        positionCoordinate[0], positionCoordinate[1], depth);
-//                if (currentPlayer.isWhite()) {
-//                    if (bestJump == null || jump.getEvaluation() < bestEvaluation) {
-//                        bestEvaluation = jump.getEvaluation();
-//                        bestJump = jump;
-//                    }
-//                } else {
-//                    if (bestJump == null || jump.getEvaluation() > bestEvaluation) {
-//                        bestEvaluation = jump.getEvaluation();
-//                        bestJump = jump;
-//                    }
-//                }
-//            } else {
-//                Move move = rules.bestMove(currentPlayer, nextPlayer, movingMan,
-//                        positionCoordinate[0], positionCoordinate[1], depth);
-//                if (move == null) continue;
-//                if (currentPlayer.isWhite()) {
-//                    if (bestMove == null || move.getEvaluation() < bestEvaluation) {
-//                        bestEvaluation = move.getEvaluation();
-//                        bestMove = move;
-//                    }
-//                } else {
-//                    if (bestMove == null || move.getEvaluation() > bestEvaluation) {
-//                        bestEvaluation = move.getEvaluation();
-//                        bestMove = move;
-//                    }
-//                }
-//            }
-//        }
-//        if (bestJump != null) {
-//            afterJump(currentPlayer, bestJump);
-//            if (possibleAnotherJump(currentPlayer, bestJump.getMan(), bestJump))
-//                computerMove(currentPlayer, nextPlayer, depth);
-//        }
-//        else afterMove(bestMove);
-//    }
-
     public void computerMove(Player currentPlayer, Player nextPlayer, int depth) {
         Jump bestJump = null;
         Move bestMove = null;
@@ -216,15 +166,16 @@ public class Game {
         List<int[]> positionsOfTheCurrentPlayer = board.getCoordinatesList(currentPlayer);
         for (int[] positionCoordinate : positionsOfTheCurrentPlayer) {
             Pieces movingMan = board.getCoordinate(positionCoordinate[0], positionCoordinate[1]);
-            if (rules.isJumpingPossible(currentPlayer, movingMan, positionCoordinate[0], positionCoordinate[1])) {
-                tempJump = rules.bestJump(currentPlayer, nextPlayer, movingMan,
-                        positionCoordinate[0], positionCoordinate[1], depth);
-                if (bestJump == null || bestJump.getEvaluation() < tempJump.getEvaluation()) bestJump = tempJump;
+            tempMove = rules.bestMove(currentPlayer, nextPlayer, movingMan,
+                    positionCoordinate[0], positionCoordinate[1], depth);
+            if (tempMove == null) continue;
+            if (tempMove.isJump()) {
+                tempJump = rules.convertMoveIntoJump(tempMove);
+                if (bestJump == null || bestJump.getEvaluation() < tempJump.getEvaluation())
+                    bestJump = tempJump;
             } else {
-                tempMove = rules.bestMove(currentPlayer, nextPlayer, movingMan,
-                        positionCoordinate[0], positionCoordinate[1], depth);
-                if (tempMove == null) continue;
-                if (bestMove == null || bestMove.getEvaluation() < tempMove.getEvaluation()) bestMove = tempMove;
+                if (bestMove == null || bestMove.getEvaluation() < tempMove.getEvaluation())
+                    bestMove = tempMove;
             }
         }
         if (bestJump != null) {
