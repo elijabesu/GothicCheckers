@@ -32,7 +32,7 @@ public class History {
     }
 
     public void save() throws IOException {
-        Files.write(Paths.get(System.getProperty("user.dir") + "\\saves\\" +
+        Files.write(Paths.get(System.getProperty("user.dir") + "/saves/" +
                 java.time.LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy.MM.dd-HH.mm.ss"))
                         + ".txt"),
                 history.stream().map(String::valueOf).collect(Collectors.toList()));
@@ -40,7 +40,7 @@ public class History {
 
     public void load(Game game, Player player1, Player player2, String fileName) throws IOException {
         // FIXME loading king moves
-        Files.lines(Paths.get(System.getProperty("user.dir") + "\\saves\\" + fileName))
+        Files.lines(Paths.get(System.getProperty("user.dir") + "/saves/" + fileName))
                 .map(row -> row.split(" "))
                 .filter(parts -> parts.length >= 5)
                 .forEach(parts -> {
