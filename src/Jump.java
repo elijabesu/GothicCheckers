@@ -1,9 +1,6 @@
 import java.util.Objects;
 
 public class Jump extends Move {
-    private final int jumpedRow;
-    private final int jumpedColumn;
-    private final Pieces jumpedMan;
 
     public Jump(Player player, Pieces movingMan, int originalRow, int originalColumn,
                 int jumpedRow, int jumpedColumn, Pieces jumpedMan,
@@ -14,22 +11,9 @@ public class Jump extends Move {
     public Jump(Player player, Pieces movingMan, int originalRow, int originalColumn,
                 int jumpedRow, int jumpedColumn, Pieces jumpedMan,
                 int newRow, int newColumn, double evaluation) {
-        super(player, movingMan, originalRow, originalColumn, newRow, newColumn, evaluation);
-        this.jumpedRow = jumpedRow;
-        this.jumpedColumn = jumpedColumn;
-        this.jumpedMan = jumpedMan;
-    }
-
-    public int getJumpedRow() {
-        return jumpedRow;
-    }
-
-    public int getJumpedColumn() {
-        return jumpedColumn;
-    }
-
-    public Pieces getJumpedMan() {
-        return jumpedMan;
+        super(player, movingMan, originalRow, originalColumn,
+                jumpedRow, jumpedColumn, jumpedMan,
+                newRow, newColumn, evaluation, true);
     }
 
     @Override
