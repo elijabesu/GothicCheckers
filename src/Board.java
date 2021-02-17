@@ -91,23 +91,23 @@ public class Board {
     }
 
     public List<int[]> getCoordinatesList(Player player) {
-        List<int[]> coordList = new ArrayList<>();
+        List<int[]> coordinatesList = new ArrayList<>();
 
         for (int row = 0; row < size; row++) {
             for (int column = 0; column < size; column++) {
                 Pieces currentPiece = getCoordinate(row, column);
                 if (currentPiece != Pieces.EMPTY) {
                     if (currentPiece.isWhite() && player.isWhite()) {
-                        if (currentPiece.isKing()) coordList.add(new int[]{row, column, 1});
-                        else coordList.add(new int[]{row, column, 0});
+                        if (currentPiece.isKing()) coordinatesList.add(new int[]{row, column, 1});
+                        else coordinatesList.add(new int[]{row, column, 0});
                     } else if (!currentPiece.isWhite() && !player.isWhite()) {
-                        if (currentPiece.isKing()) coordList.add(new int[]{row, column, 1});
-                        else coordList.add(new int[]{row, column, 0});
+                        if (currentPiece.isKing()) coordinatesList.add(new int[]{row, column, 1});
+                        else coordinatesList.add(new int[]{row, column, 0});
                     }
                 }
             }
         }
-        return coordList;
+        return coordinatesList;
     }
 
     public int getNumberOfWhiteKings() {
@@ -155,12 +155,6 @@ public class Board {
     }
 
     public Board clone() {
-        Pieces[][] clonedCoordinates = new Pieces[size][size];
-        for (int row = 0; row < size; row++) {
-            for (int column = 0; column < size; column++) {
-                clonedCoordinates[row][column] = coordinates[row][column];
-            }
-        }
-        return new Board(size, clonedCoordinates);
+        return new Board(size, coordinates.clone());
     }
 }
