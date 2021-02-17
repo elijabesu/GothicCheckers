@@ -27,8 +27,8 @@ public class UserInterface {
         printBoard();
 
         while (true) {
-            Player currentPlayer = null;
-            Player nextPlayer = null;
+            Player currentPlayer;
+            Player nextPlayer;
 
             if (game.getPlayerBool()) {
                 currentPlayer = player1;
@@ -55,9 +55,9 @@ public class UserInterface {
     }
 
     private void movement(String movement) {
-        int[] origCoords = Utils.getCoordinate(movement, 1, 0);
+        int[] origCoordinates = Utils.getCoordinate(movement, 1, 0);
 
-        Pieces man = game.getManByPosition(origCoords[0], origCoords[1]);
+        Pieces man = game.getManByPosition(origCoordinates[0], origCoordinates[1]);
 
         if (man == Pieces.EMPTY) printInvalidMove();
         else {
@@ -126,7 +126,7 @@ public class UserInterface {
         if (man == Pieces.EMPTY) printInvalidMove();
         else {
             //String hint = game.hint(whichPlayer(), man, coordinate[0], coordinate[1]);
-            Player otherPlayer = whichPlayer();
+            Player otherPlayer;
             if (whichPlayer().equals(player1)) otherPlayer = player2;
             else otherPlayer = player1;
             String hint = game.hint(whichPlayer(), otherPlayer, man, coordinate[0], coordinate[1], depth);

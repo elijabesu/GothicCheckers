@@ -1,9 +1,9 @@
 public enum Pieces {
-    WHITE(),            // ordinal: 0
-    WHITE_KING(),       // ordinal: 1
-    EMPTY(),            // ordinal: 2
-    BLACK(),            // ordinal: 3
-    BLACK_KING();       // ordinal: 5
+    WHITE(),
+    WHITE_KING(),
+    EMPTY(),
+    BLACK(),
+    BLACK_KING();
 
     public boolean isSameColourAs(Pieces value) {
         if (isWhite(value) && isWhite()) return true;
