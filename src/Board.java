@@ -155,6 +155,12 @@ public class Board {
     }
 
     public Board clone() {
-        return new Board(size, coordinates.clone());
+        Pieces[][] clonedCoordinates = new Pieces[size][size];
+        for (int row = 0; row < size; row++) {
+            for (int column = 0; column < size; column++) {
+                clonedCoordinates[row][column] = coordinates[row][column];
+            }
+        }
+        return new Board(size, clonedCoordinates);
     }
 }
