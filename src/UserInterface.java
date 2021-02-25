@@ -24,6 +24,7 @@ public class UserInterface {
 
     public void startGame() {
         getPlayerNames();
+        askForDifficulty();
         printBoard();
 
         while (true) {
@@ -108,6 +109,15 @@ public class UserInterface {
         String player2Name = scanner.nextLine();
         if (player2Name.contains("ai")) player2 = new Player(player2Name, false, true);
         else player2 = new Player(player2Name, false);
+    }
+
+    private void askForDifficulty() {
+        System.out.print("Choose a difficulty (easy, normal, hard): ");
+        String difficulty = scanner.nextLine().trim();
+        if (difficulty.equals("easy")) game.setDifficulty(0);
+        else if (difficulty.equals("normal")) game.setDifficulty(1);
+        else if (difficulty.equals("hard")) game.setDifficulty(2);
+        else askForDifficulty();
     }
 
     private Player whichPlayer() {

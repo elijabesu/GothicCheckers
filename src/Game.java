@@ -20,6 +20,7 @@ public class Game {
     public String displayBoard() {
         return board.displayBoard();
     }
+    public void setDifficulty(int difficulty) { rules.setDifficulty(difficulty); }
 
     public void generateMen() {
         // black

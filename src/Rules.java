@@ -1,14 +1,15 @@
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Random;
+import java.util.*;
 
 public class Rules {
-    Board board;
+    private Board board;
+    private int difficulty;
 
     public Rules(Board board) {
         this.board = board;
+        this.difficulty = 2; // default being hard
     }
+
+    public void setDifficulty(int difficulty) { this.difficulty = difficulty; }
 
     public boolean isValid(Player player, Pieces movingMan, Move move) {
         List<List<? extends Move>> movesAndJumps = generateMoves(player, movingMan,
@@ -225,6 +226,7 @@ public class Rules {
     private double getHeuristicValue(Board board, Player currentPlayer) {
         double kingWeight = 1.5;
         double result;
+        double random = new Random().nextDouble();
 
         if (currentPlayer.isWhite()) result = board.getNumberOfWhiteKings() * kingWeight +
                 board.getNumberOfWhiteMen() - board.getNumberOfBlackKings() * kingWeight -
@@ -233,6 +235,8 @@ public class Rules {
                 board.getNumberOfBlackMen() - board.getNumberOfWhiteKings() * kingWeight -
                 board.getNumberOfWhiteMen();
 
+        if (difficulty == 1) result = result * 0.75 + random * 0.25;
+        if (difficulty == 0) result = result * 0.5 + random * 0.5;
         return result;
     }
 
