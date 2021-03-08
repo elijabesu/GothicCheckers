@@ -72,8 +72,14 @@ public class Utils {
         return rows[row];
     }
 
-    public static int[] generateArrayOfThree(int middle) {
-        return new int[] {middle - 1, middle, middle + 1};
+    public static List<Integer> generateListOfAvailable(int middle) {
+        int[] arrayOfThree = new int[] {middle - 1, middle, middle + 1};
+        List<Integer> available = new ArrayList<>();
+
+        for (int i = 0; i < arrayOfThree.length; i++) {
+            if (arrayOfThree[i] >= 0 || arrayOfThree[i] <= 7) available.add(arrayOfThree[i]);
+        }
+        return available;
     }
 
     public static boolean listOfArraysContains(List<int[]> listOfIntArrays, int row, int column) {

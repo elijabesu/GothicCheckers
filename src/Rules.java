@@ -31,13 +31,11 @@ public class Rules {
                     possibilities, possibleMoves, possibleJumps);
         }
 
-        int[] rows = Utils.generateArrayOfThree(coordinate.getRow());
-        int[] columns = Utils.generateArrayOfThree(coordinate.getColumn());
+        List<Integer> rows = Utils.generateListOfAvailable(coordinate.getRow());
+        List<Integer> columns = Utils.generateListOfAvailable(coordinate.getColumn());
 
         for (int row: rows) {
-            if (row < 0 || row > 7) continue;
             for (int column: columns) {
-                if (column < 0 || column > 7) continue;
                 Coordinate newCoordinate = new Coordinate(row, column);
                 if (board.isOccupied(newCoordinate)) generateJump(player, movingMan,
                         coordinate, newCoordinate, possibleJumps);

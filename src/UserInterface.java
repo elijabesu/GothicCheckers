@@ -50,7 +50,7 @@ public class UserInterface {
 
             if (currentPlayer.isComputer() && nextPlayer.isComputer()) {
                 boolean toContinue = true;
-                while (toContinue == true) {
+                while (toContinue) {
                     System.out.print("Intervene? (y/n) ");
                     if (scanner.nextLine().trim().equals("y")) {
                         if (!readCommand()) {
