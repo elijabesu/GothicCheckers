@@ -58,20 +58,20 @@ public class Board {
         return size;
     }
 
-    public void placeMan(Pieces man, Coordinate coord) {
-        coordinates[coord.getRow()][coord.getColumn()] = man;
+    public void placeMan(Pieces man, Coordinate coordinate) {
+        coordinates[coordinate.getRow()][coordinate.getColumn()] = man;
     }
 
-    public void removeMan(Coordinate coord) {
-        coordinates[coord.getRow()][coord.getColumn()] = Pieces.EMPTY;
+    public void removeMan(Coordinate coordinate) {
+        coordinates[coordinate.getRow()][coordinate.getColumn()] = Pieces.EMPTY;
     }
 
-    public Pieces getCoordinate(Coordinate coord) {
-        return coordinates[coord.getRow()][coord.getColumn()];
+    public Pieces getCoordinate(Coordinate coordinate) {
+        return coordinates[coordinate.getRow()][coordinate.getColumn()];
     }
 
-    public boolean isOccupied(Coordinate coord) {
-        return (coordinates[coord.getRow()][coord.getColumn()] != Pieces.EMPTY);
+    public boolean isOccupied(Coordinate coordinate) {
+        return (coordinates[coordinate.getRow()][coordinate.getColumn()] != Pieces.EMPTY);
     }
 
     public void moved(Move move) {
@@ -88,6 +88,12 @@ public class Board {
         removeMan(jump.getOriginal());
         removeMan(jump.getJumped());
         placeMan(jump.getMan(), jump.getNew());
+    }
+
+    public void unjumped(Jump jump) {
+        placeMan(jump.getMan(), jump.getOriginal());
+        placeMan(jump.getJumpedMan(), jump.getJumped());
+        removeMan(jump.getNew());
     }
 
     public void promoted(Pieces man, Coordinate coordinate) {

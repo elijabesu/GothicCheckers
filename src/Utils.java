@@ -42,19 +42,14 @@ public class Utils {
     }
 
     public static List<Coordinate> getCoordinates(String string, boolean bool) {
-        List<Coordinate> coordinates = new ArrayList<>();
-        coordinates.addAll(getCoordinates(string));
+        List<Coordinate> coordinates = new ArrayList<>(getCoordinates(string));
         coordinates.add(new Coordinate(getJumpedRow(bool, coordinates.get(0).getRow(), coordinates.get(1).getRow()),
                 getJumpedColumn(coordinates.get(0).getColumn(), coordinates.get(1).getColumn())));
         return coordinates;
     }
 
     private static int convertRow(int row) {
-        int[] rows = new int[] {8, 7, 6, 5, 4, 3, 2, 1};
-        for (int i = 0; i < rows.length; i++) {
-            if (rows[i] == row) return i;
-        }
-        return -1;
+        return -(row - 8);
     }
 
     public static String whichMan(Pieces man) {
@@ -67,29 +62,26 @@ public class Utils {
         return "-";
     }
 
-    public static int convertRowForToString(int row) {
-        int[] rows = new int[] {8, 7, 6, 5, 4, 3, 2, 1};
-        return rows[row];
+    public static int convertRowToString(int row) {
+        return 8 - row;
     }
 
-    public static List<Integer> generateListOfAvailable(int middle) {
-        int[] arrayOfThree = new int[] {middle - 1, middle, middle + 1};
+    public static List<Integer> generateListOfAvailable(int middle, int extra) {
         List<Integer> available = new ArrayList<>();
-
-        for (int i = 0; i < arrayOfThree.length; i++) {
-            if (arrayOfThree[i] >= 0 || arrayOfThree[i] <= 7) available.add(arrayOfThree[i]);
+        for (int i: new int[] {middle - (extra + 1), middle, middle + (extra + 1)}) {
+            if (i >= 0 && i <= 7) available.add(i);
         }
         return available;
     }
 
-    public static boolean listOfArraysContains(List<int[]> listOfIntArrays, int row, int column) {
-        for (int[] arrayInList: listOfIntArrays) {
-            if (arrayInList[0] == row && arrayInList[1] == column) return true;
+    public static boolean listOfArraysContains(List<Coordinate> coordinates, Coordinate lookingFor) {
+        for (Coordinate coordinate: coordinates) {
+            if (coordinate.equals(lookingFor)) return true;
         }
         return false;
     }
 
-    public static void ignorePositions(Coordinate starting, Coordinate next, List<int[]> skipPositions) {
+    public static void ignorePositions(Coordinate starting, Coordinate next, List<Coordinate> skipPositions) {
         if (starting.getRow() < next.getRow()) {
             for (int row = starting.getRow(); row < 8; row++) {
                 ignoreRow(row, starting.getColumn(), next.getColumn(), skipPositions);
@@ -101,14 +93,14 @@ public class Utils {
         }
     }
 
-    private static void ignoreRow(int row, int startingColumn, int nextColumn, List<int[]> skipPositions) {
+    private static void ignoreRow(int row, int startingColumn, int nextColumn, List<Coordinate> skipPositions) {
         if (startingColumn < nextColumn) {
             for (int column = startingColumn; column < 8; column++) {
-                skipPositions.add(new int[] {row, column});
+                skipPositions.add(new Coordinate(row, column));
             }
         } else {
             for (int column = startingColumn; column > 0; column--) {
-                skipPositions.add(new int[] {row, column});
+                skipPositions.add(new Coordinate(row, column));
             }
         }
     }

@@ -15,7 +15,7 @@ public class Coordinate {
 
     @Override
     public String toString() {
-        return "" + Columns.values()[column] + Utils.convertRowForToString(row);
+        return "" + Columns.values()[column] + Utils.convertRowToString(row);
     }
 
     @Override

@@ -1,7 +1,7 @@
 import java.util.*;
 
 public class Rules {
-    private Board board;
+    private final Board board;
     private int difficulty;
 
     public Rules(Board board) {
@@ -31,8 +31,8 @@ public class Rules {
                     possibilities, possibleMoves, possibleJumps);
         }
 
-        List<Integer> rows = Utils.generateListOfAvailable(coordinate.getRow());
-        List<Integer> columns = Utils.generateListOfAvailable(coordinate.getColumn());
+        List<Integer> rows = Utils.generateListOfAvailable(coordinate.getRow(), 0);
+        List<Integer> columns = Utils.generateListOfAvailable(coordinate.getColumn(), 0);
 
         for (int row: rows) {
             for (int column: columns) {
@@ -130,14 +130,12 @@ public class Rules {
                                                          Coordinate coordinate,
                                                          List<List<? extends Move>> possibilities,
                                                          List<Move> possibleMoves, List<Jump> possibleJumps) {
-        List<int[]> skipPositions = new ArrayList<>();
+        List<Coordinate> skipPositions = new ArrayList<>();
 
         for (int i = 0; i < board.getSize(); i++) {
-            for (int row: new int[] {coordinate.getRow(), coordinate.getRow() - (i + 1), coordinate.getRow() + (i + 1)}) {
-                if (row < 0 || row > 7) continue;
-                for (int column: new int[] {coordinate.getColumn(), coordinate.getColumn() - (i + 1), coordinate.getColumn() + (i + 1)}) {
-                    if (column < 0 || column > 7) continue;
-                    if (Utils.listOfArraysContains(skipPositions, row, column)) continue;
+            for (int row: Utils.generateListOfAvailable(coordinate.getRow(), i)) {
+                for (int column: Utils.generateListOfAvailable(coordinate.getColumn(), i)) {
+                    if (Utils.listOfArraysContains(skipPositions, new Coordinate(row, column))) continue;
                     Coordinate newCoordinate = new Coordinate(row, column);
                     if (board.isOccupied(newCoordinate))
                         generateKingJump(player, movingMan, coordinate, newCoordinate, skipPositions, possibleJumps);
@@ -152,7 +150,7 @@ public class Rules {
     }
 
     private void generateKingJump(Player player, Pieces movingMan, Coordinate originalCoordinate,
-                                  Coordinate coordinate, List<int[]> skipPositions, List<Jump> possibleJumps) {
+                                  Coordinate coordinate, List<Coordinate> skipPositions, List<Jump> possibleJumps) {
         if (movingMan.isSameColourAs(board.getCoordinate(coordinate))) return;// if they are the same colour
 
         for (int i = 1; i < board.getSize(); i++) {
@@ -177,7 +175,7 @@ public class Rules {
                     coordinate, board.getCoordinate(coordinate),
                     nextCoordinate));
 
-            skipPositions.add(new int[]{nextRow, nextColumn});
+            skipPositions.add(new Coordinate(nextRow, nextColumn));
         }
     }
 
