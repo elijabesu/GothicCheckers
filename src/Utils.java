@@ -1,3 +1,4 @@
+import java.util.ArrayList;
 import java.util.List;
 
 public class Utils {
@@ -29,23 +30,22 @@ public class Utils {
         return original + 1;
     }
 
-    public static int[] getCoordinate(String string, int row, int column) {
-        return new int[] {getRow(string.charAt(row)), getColumn(string.charAt(column))};
+    public static Coordinate getCoordinate(String string, int row, int column) {
+        return new Coordinate(getRow(string.charAt(row)), getColumn(string.charAt(column)));
     }
 
-    private static int[] getCoordinates(String string) {
-        int[] original = getCoordinate(string, 1, 0); // row (1 - 8), column (A - H)
-        int[] next = getCoordinate(string, 7, 6);
-
-        return new int[] {original[0], original[1], next[0], next[1], 0, 0};
+    private static List<Coordinate> getCoordinates(String string) {
+        List<Coordinate> coordinates = new ArrayList<>();
+        coordinates.add(getCoordinate(string, 1, 0));
+        coordinates.add(getCoordinate(string, 7, 6));
+        return coordinates;
     }
 
-    public static int[] getCoordinates(String string, boolean bool) {
-        int[] coordinates = getCoordinates(string);
-
-        coordinates[4] = getJumpedRow(bool, coordinates[0], coordinates[2]);
-        coordinates[5] = getJumpedColumn(coordinates[1], coordinates[3]);
-
+    public static List<Coordinate> getCoordinates(String string, boolean bool) {
+        List<Coordinate> coordinates = new ArrayList<>();
+        coordinates.addAll(getCoordinates(string));
+        coordinates.add(new Coordinate(getJumpedRow(bool, coordinates.get(0).getRow(), coordinates.get(1).getRow()),
+                getJumpedColumn(coordinates.get(0).getColumn(), coordinates.get(1).getColumn())));
         return coordinates;
     }
 
@@ -67,13 +67,6 @@ public class Utils {
         return "-";
     }
 
-    public static boolean containsMinus(int[] array) {
-        for (int i: array) {
-            if (i < 0) return true;
-        }
-        return false;
-    }
-
     public static int convertRowForToString(int row) {
         int[] rows = new int[] {8, 7, 6, 5, 4, 3, 2, 1};
         return rows[row];
@@ -90,14 +83,14 @@ public class Utils {
         return false;
     }
 
-    public static void ignorePositions(int startingRow, int startingColumn, int nextRow, int nextColumn, List<int[]> skipPositions) {
-        if (startingRow < nextRow) {
-            for (int row = startingRow; row < 8; row++) {
-                ignoreRow(row, startingColumn, nextColumn, skipPositions);
+    public static void ignorePositions(Coordinate starting, Coordinate next, List<int[]> skipPositions) {
+        if (starting.getRow() < next.getRow()) {
+            for (int row = starting.getRow(); row < 8; row++) {
+                ignoreRow(row, starting.getColumn(), next.getColumn(), skipPositions);
             }
         } else {
-            for (int row = startingRow; row > 0; row--) {
-                ignoreRow(row, startingColumn, nextColumn, skipPositions);
+            for (int row = starting.getRow(); row > 0; row--) {
+                ignoreRow(row, starting.getColumn(), next.getColumn(), skipPositions);
             }
         }
     }
@@ -112,5 +105,12 @@ public class Utils {
                 skipPositions.add(new int[] {row, column});
             }
         }
+    }
+
+    public static boolean containsMinusCoordinate(List<Coordinate> coordinates) {
+        for (Coordinate coordinate: coordinates) {
+            if (coordinate.getRow() < 0 || coordinate.getColumn() < 0) return true;
+        }
+        return false;
     }
 }

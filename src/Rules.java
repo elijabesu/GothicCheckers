@@ -12,16 +12,14 @@ public class Rules {
     public void setDifficulty(int difficulty) { this.difficulty = difficulty; }
 
     public boolean isValid(Player player, Pieces movingMan, Move move) {
-        List<List<? extends Move>> movesAndJumps = generateMoves(player, movingMan,
-                move.getOriginalRow(), move.getOriginalColumn());
+        List<List<? extends Move>> movesAndJumps = generateMoves(player, movingMan, move.getOriginal());
         List<Move> possibilities = addIntoPossibilities((List<Move>) movesAndJumps.get(0),
                 (List<Jump>) movesAndJumps.get(1));
         if (possibilities.isEmpty()) return false;
         return possibilities.contains(move);
     }
 
-    public List<List<? extends Move>> generateMoves(Player player, Pieces movingMan,
-                                                    int originalRow, int originalColumn) {
+    public List<List<? extends Move>> generateMoves(Player player, Pieces movingMan, Coordinate coordinate) {
         if (player.isWhite() != movingMan.isWhite()) return null;
 
         List<Move> possibleMoves = new ArrayList<>();
@@ -29,21 +27,22 @@ public class Rules {
         List<List<? extends Move>> possibilities = new ArrayList<>();
 
         if (movingMan.isKing()) {
-            return generateKingMoves(player, movingMan, originalRow, originalColumn,
+            return generateKingMoves(player, movingMan, coordinate,
                     possibilities, possibleMoves, possibleJumps);
         }
 
-        int[] rows = Utils.generateArrayOfThree(originalRow);
-        int[] columns = Utils.generateArrayOfThree(originalColumn);
+        int[] rows = Utils.generateArrayOfThree(coordinate.getRow());
+        int[] columns = Utils.generateArrayOfThree(coordinate.getColumn());
 
         for (int row: rows) {
             if (row < 0 || row > 7) continue;
             for (int column: columns) {
                 if (column < 0 || column > 7) continue;
-                if (board.isOccupied(row, column)) generateJump(player, movingMan,
-                        originalRow, originalColumn, row, column, possibleJumps);
+                Coordinate newCoordinate = new Coordinate(row, column);
+                if (board.isOccupied(newCoordinate)) generateJump(player, movingMan,
+                        coordinate, newCoordinate, possibleJumps);
                 else {
-                    Move maybeMove = new Move(player, movingMan, originalRow, originalColumn, row, column);
+                    Move maybeMove = new Move(player, movingMan, coordinate, newCoordinate);
                     if (isValidMove(player, maybeMove)) possibleMoves.add(maybeMove);
                 }
             }
@@ -55,27 +54,29 @@ public class Rules {
         return possibilities;
     }
 
-    private void generateJump(Player player, Pieces movingMan, int originalRow, int originalColumn,
-                              int row, int column, List<Jump> possibleJumps) {
-        if (movingMan.isSameColourAs(board.getCoordinate(row, column))) return;
+    private void generateJump(Player player, Pieces movingMan, Coordinate originalCoordinate,
+                              Coordinate coordinate, List<Jump> possibleJumps) {
+        if (movingMan.isSameColourAs(board.getCoordinate(coordinate))) return;
 
-        int nextRow = row - (originalRow - row);
-        int nextColumn = column - (originalColumn - column);
+        int nextRow = coordinate.getRow() - (originalCoordinate.getRow() - coordinate.getRow());
+        int nextColumn = coordinate.getColumn() - (originalCoordinate.getColumn() - coordinate.getColumn());
+        Coordinate nexCoordinate = new Coordinate(nextRow, nextColumn);
 
         if (nextRow < 0 || nextRow > 7 || nextColumn < 0 || nextColumn > 7) return;
 
-        if (board.isOccupied(nextRow, nextColumn)) return;
-        Move maybeJump = new Move(player, movingMan, originalRow, originalColumn,
-                row, column, board.getCoordinate(row, column), // jumpedRow, jumpedColumn, jumpedValue
-                nextRow, nextColumn);
-        if (isValidJump(player, convertMoveIntoJump(maybeJump), board.isOccupied(nextRow, nextColumn))) possibleJumps.add(convertMoveIntoJump(maybeJump));
+        if (board.isOccupied(nexCoordinate)) return;
+        Move maybeJump = new Move(player, movingMan, originalCoordinate,
+                coordinate, board.getCoordinate(coordinate),
+                nexCoordinate);
+        if (isValidJump(player, convertMoveIntoJump(maybeJump), board.isOccupied(nexCoordinate)))
+            possibleJumps.add(convertMoveIntoJump(maybeJump));
     }
 
     private boolean isValidMove(Player player, Move move) {
         if (!(basicValidation(player, move, false))) return false;
 
-        int rowDifference = Math.abs(move.getOriginalRow() - move.getNewRow());
-        int columnDifference = Math.abs(move.getOriginalColumn() - move.getNewColumn());
+        int rowDifference = Math.abs(move.getOriginal().getRow() - move.getNew().getRow());
+        int columnDifference = Math.abs(move.getOriginal().getColumn() - move.getNew().getColumn());
 
         return (rowDifference == 0 && columnDifference == 1) ||
                 (rowDifference == 1 && (columnDifference == 0 || columnDifference == 1));
@@ -88,8 +89,8 @@ public class Rules {
 
         if (jumpedMan == Pieces.EMPTY) return false;
 
-        int rowDifference = Math.abs(jump.getOriginalRow() - jump.getNewRow());
-        int columnDifference = Math.abs(jump.getOriginalColumn() - jump.getNewColumn());
+        int rowDifference = Math.abs(jump.getOriginal().getRow() - jump.getNew().getRow());
+        int columnDifference = Math.abs(jump.getOriginal().getColumn() - jump.getNew().getColumn());
 
         if (player.isWhite()) {
             if (jumpedMan.isWhite()) return false; // if the WHITE player is trying to jump over another WHITE man -> NOPE
@@ -115,33 +116,34 @@ public class Rules {
         if (movingMan.isKing()) return true; // if it's a King -> YEP
 
         // if they are trying to move backwards -> NOPE
-        if (movingMan.isWhite() && move.getNewRow() > move.getOriginalRow()) return false;
-        if (!(movingMan.isWhite()) && move.getNewRow() < move.getOriginalRow()) return false;
+        if (movingMan.isWhite() && move.getNew().getRow() > move.getOriginal().getRow()) return false;
+        if (!(movingMan.isWhite()) && move.getNew().getRow() < move.getOriginal().getRow()) return false;
 
         // everything else:
         return true;
     }
 
     public boolean possibleAnotherJump(Player player, Pieces movingMan, Jump jump) {
-        List<Jump> maybeMoreJumps = getPossibleJumps(player, movingMan, jump.getNewRow(), jump.getNewColumn());
+        List<Jump> maybeMoreJumps = getPossibleJumps(player, movingMan, jump.getNew());
         return !(maybeMoreJumps == null || maybeMoreJumps.isEmpty());
     }
 
     private List<List<? extends Move>> generateKingMoves(Player player, Pieces movingMan,
-                                                         int originalRow, int originalColumn,
+                                                         Coordinate coordinate,
                                                          List<List<? extends Move>> possibilities,
                                                          List<Move> possibleMoves, List<Jump> possibleJumps) {
         List<int[]> skipPositions = new ArrayList<>();
 
         for (int i = 0; i < board.getSize(); i++) {
-            for (int row: new int[] {originalRow, originalRow - (i + 1), originalRow + (i + 1)}) {
+            for (int row: new int[] {coordinate.getRow(), coordinate.getRow() - (i + 1), coordinate.getRow() + (i + 1)}) {
                 if (row < 0 || row > 7) continue;
-                for (int column: new int[] {originalColumn, originalColumn - (i + 1), originalColumn + (i + 1)}) {
+                for (int column: new int[] {coordinate.getColumn(), coordinate.getColumn() - (i + 1), coordinate.getColumn() + (i + 1)}) {
                     if (column < 0 || column > 7) continue;
                     if (Utils.listOfArraysContains(skipPositions, row, column)) continue;
-                    if (board.isOccupied(row, column))generateKingJump(player, movingMan, originalRow, originalColumn,
-                            row, column, skipPositions, possibleJumps);
-                    else possibleMoves.add(new Move(player, movingMan, originalRow, originalColumn, row, column));
+                    Coordinate newCoordinate = new Coordinate(row, column);
+                    if (board.isOccupied(newCoordinate))
+                        generateKingJump(player, movingMan, coordinate, newCoordinate, skipPositions, possibleJumps);
+                    else possibleMoves.add(new Move(player, movingMan, coordinate, newCoordinate));
                 }
             }
         }
@@ -151,29 +153,31 @@ public class Rules {
         return possibilities;
     }
 
-    private void generateKingJump(Player player, Pieces movingMan, int originalRow, int originalColumn,
-                                  int row, int column, List<int[]> skipPositions, List<Jump> possibleJumps) {
-        if (movingMan.isSameColourAs(board.getCoordinate(row, column))) return;// if they are the same colour
+    private void generateKingJump(Player player, Pieces movingMan, Coordinate originalCoordinate,
+                                  Coordinate coordinate, List<int[]> skipPositions, List<Jump> possibleJumps) {
+        if (movingMan.isSameColourAs(board.getCoordinate(coordinate))) return;// if they are the same colour
 
         for (int i = 1; i < board.getSize(); i++) {
-            int nextRow = row;
-            if (originalRow - nextRow < 0) nextRow = row + i;
-            else if (originalRow - nextRow > 0) nextRow = row - i;
+            int nextRow = coordinate.getRow();
+            if (originalCoordinate.getRow() - nextRow < 0) nextRow += i;
+            else if (originalCoordinate.getRow() - nextRow > 0) nextRow = nextRow - i;
 
-            int nextColumn = column;
-            if (originalColumn - nextColumn < 0) nextColumn = column + i;
-            else if (originalColumn - nextColumn > 0) nextColumn = column - i;
+            int nextColumn = coordinate.getColumn();
+            if (originalCoordinate.getColumn() - nextColumn < 0) nextColumn += i;
+            else if (originalCoordinate.getColumn() - nextColumn > 0) nextColumn -= i;
 
             if (nextRow < 0 || nextRow > 7 || nextColumn < 0 || nextColumn > 7) return;
 
-            if (board.isOccupied(nextRow, nextColumn)) {
-                Utils.ignorePositions(row, column, nextRow, nextColumn, skipPositions);
+            Coordinate nextCoordinate = new Coordinate(nextRow, nextColumn);
+
+            if (board.isOccupied(nextCoordinate)) {
+                Utils.ignorePositions(coordinate, nextCoordinate, skipPositions);
                 return;
             }
 
-            possibleJumps.add(new Jump(player, movingMan, originalRow, originalColumn,
-                    row, column, board.getCoordinate(row, column), // jumpedRow, jumpedColumn, jumpedValue
-                    nextRow, nextColumn));
+            possibleJumps.add(new Jump(player, movingMan, originalCoordinate,
+                    coordinate, board.getCoordinate(coordinate),
+                    nextCoordinate));
 
             skipPositions.add(new int[]{nextRow, nextColumn});
         }
@@ -184,41 +188,38 @@ public class Rules {
     }
 
     public Jump convertMoveIntoJump(Move move) {
-        return new Jump(move.getPlayer(), move.getMan(),
-                move.getOriginalRow(), move.getOriginalColumn(),
-                move.getJumpedRow(), move.getJumpedColumn(), move.getJumpedMan(),
-                move.getNewRow(), move.getNewColumn(),
-                move.getEvaluation());
+        return new Jump(move.getPlayer(), move.getMan(), move.getOriginal(),
+                move.getJumped(), move.getJumpedMan(), move.getNew(), move.getEvaluation());
     }
 
     private List<Move> addIntoPossibilities(List<Move> possibleMoves, List<Jump> possibleJumps) {
         List<Move> possibilities = new ArrayList<>();
 
-        possibilities.addAll(possibleJumps);
-        possibilities.addAll(possibleMoves);
+        if (possibleJumps != null) possibilities.addAll(possibleJumps);
+        if (possibleMoves != null) possibilities.addAll(possibleMoves);
 
         return possibilities;
     }
 
-    public List<Move> getPossibleMoves(Player player, Pieces movingMan, int originalRow, int originalColumn) {
-        List<List<? extends Move>> possibilities = generateMoves(player, movingMan, originalRow, originalColumn);
+    public List<Move> getPossibleMoves(Player player, Pieces movingMan, Coordinate coordinate) {
+        List<List<? extends Move>> possibilities = generateMoves(player, movingMan, coordinate);
         if (possibilities == null || possibilities.isEmpty()) return null;
         return (List<Move>) possibilities.get(0);
     }
 
-    public List<Jump> getPossibleJumps(Player player, Pieces movingMan, int originalRow, int originalColumn) {
-        List<List<? extends Move>> possibilities = generateMoves(player, movingMan, originalRow, originalColumn);
+    public List<Jump> getPossibleJumps(Player player, Pieces movingMan, Coordinate coordinate) {
+        List<List<? extends Move>> possibilities = generateMoves(player, movingMan, coordinate);
         if (possibilities == null || possibilities.isEmpty()) return null;
         return (List<Jump>) possibilities.get(1);
     }
 
-    public List<Move> getAllPossibilities(Player player, Pieces movingMan, int originalRow, int originalColumn) {
-        return addIntoPossibilities(getPossibleMoves(player, movingMan, originalRow, originalColumn),
-                getPossibleJumps(player, movingMan, originalRow, originalColumn));
+    public List<Move> getAllPossibilities(Player player, Pieces movingMan, Coordinate coordinate) {
+        return addIntoPossibilities(getPossibleMoves(player, movingMan, coordinate),
+                getPossibleJumps(player, movingMan, coordinate));
     }
 
-    public boolean isJumpingPossible(Player player, Pieces movingMan, int originalRow, int originalColumn) {
-        List <Jump> possibleJumps = getPossibleJumps(player, movingMan, originalRow, originalColumn);
+    public boolean isJumpingPossible(Player player, Pieces movingMan, Coordinate coordinate) {
+        List <Jump> possibleJumps = getPossibleJumps(player, movingMan, coordinate);
         if (possibleJumps == null) return false;
         return possibleJumps.size() != 0;
     }
@@ -241,10 +242,10 @@ public class Rules {
     }
 
     private double minimax(Board board, Player currentPlayer, Player nextPlayer, Pieces movingMan,
-                           int originalRow, int originalColumn, int depth, double alpha, double beta) {
+                           Coordinate coordinate, int depth, double alpha, double beta) {
         if (depth == 0) return getHeuristicValue(board, currentPlayer);
 
-        List<Move> possibleMoves = getAllPossibilities(currentPlayer, movingMan, originalRow, originalColumn);
+        List<Move> possibleMoves = getAllPossibilities(currentPlayer, movingMan, coordinate);
         double initialValue;
         Board tempBoard;
 
@@ -253,10 +254,10 @@ public class Rules {
             for (Move possibleMove : possibleMoves) {
                 tempBoard = board.clone();
                 tempBoard.moved(possibleMove);
-                for (int[] positionOfEnemy : tempBoard.getCoordinatesList(nextPlayer)) {
+                for (Coordinate enemyCoordinate : tempBoard.getCoordinatesList(nextPlayer)) {
                     double result = minimax(tempBoard, nextPlayer, currentPlayer,
-                            tempBoard.getCoordinate(positionOfEnemy[0], positionOfEnemy[1]),
-                            positionOfEnemy[0], positionOfEnemy[1], depth - 1, alpha, beta);
+                            tempBoard.getCoordinate(enemyCoordinate),
+                            enemyCoordinate, depth - 1, alpha, beta);
 
                     initialValue = Math.min(result, initialValue);
                     alpha = Math.min(alpha, initialValue);
@@ -270,10 +271,10 @@ public class Rules {
             for (Move possibleMove : possibleMoves) {
                 tempBoard = board.clone();
                 tempBoard.moved(possibleMove);
-                for (int[] positionOfEnemy : tempBoard.getCoordinatesList(nextPlayer)) {
+                for (Coordinate enemyCoordinate : tempBoard.getCoordinatesList(nextPlayer)) {
                     double result = minimax(tempBoard, nextPlayer, currentPlayer,
-                            tempBoard.getCoordinate(positionOfEnemy[0], positionOfEnemy[1]),
-                            positionOfEnemy[0], positionOfEnemy[1], depth - 1, alpha, beta);
+                            tempBoard.getCoordinate(enemyCoordinate),
+                            enemyCoordinate, depth - 1, alpha, beta);
 
                     initialValue = Math.max(result, initialValue);
                     alpha = Math.max(alpha, initialValue);
@@ -287,11 +288,11 @@ public class Rules {
     }
 
     public Move bestMove(Player currentPlayer, Player nextPlayer, Pieces movingMan,
-                         int originalRow, int originalColumn, int depth) {
+                         Coordinate coordinate, int depth) {
         double alpha = Double.NEGATIVE_INFINITY;
         double beta = Double.POSITIVE_INFINITY;
 
-        List<Move> possibleMoves = getAllPossibilities(currentPlayer, movingMan, originalRow, originalColumn);
+        List<Move> possibleMoves = getAllPossibilities(currentPlayer, movingMan, coordinate);
         if (possibleMoves.isEmpty()) return null;
 
         List<Double> heuristics = new ArrayList<>();
@@ -301,10 +302,10 @@ public class Rules {
         for (Move possibleMove : possibleMoves) {
             tempBoard = board.clone();
             tempBoard.moved(possibleMove);
-            for (int[] positionOfEnemy : tempBoard.getCoordinatesList(nextPlayer)) {
+            for (Coordinate enemyCoordinate : tempBoard.getCoordinatesList(nextPlayer)) {
                 possibleMove.setEvaluation(minimax(tempBoard, nextPlayer, currentPlayer,
-                        tempBoard.getCoordinate(positionOfEnemy[0], positionOfEnemy[1]),
-                        positionOfEnemy[0], positionOfEnemy[1], depth - 1, alpha, beta));
+                        tempBoard.getCoordinate(enemyCoordinate),
+                        enemyCoordinate, depth - 1, alpha, beta));
                 tempHeuristics.add(possibleMove.getEvaluation());
             }
             heuristics.add(Collections.max(tempHeuristics));

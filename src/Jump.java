@@ -2,18 +2,18 @@ import java.util.Objects;
 
 public class Jump extends Move {
 
-    public Jump(Player player, Pieces movingMan, int originalRow, int originalColumn,
-                int jumpedRow, int jumpedColumn, Pieces jumpedMan,
-                int newRow, int newColumn) {
-        this(player, movingMan, originalRow, originalColumn, jumpedRow, jumpedColumn, jumpedMan, newRow, newColumn, 0);
+    public Jump(Player player, Pieces movingMan, Coordinate originalCoord,
+                Coordinate jumpedCoord, Pieces jumpedMan,
+                Coordinate newCoord) {
+        this(player, movingMan, originalCoord, jumpedCoord, jumpedMan, newCoord, 0);
     }
 
-    public Jump(Player player, Pieces movingMan, int originalRow, int originalColumn,
-                int jumpedRow, int jumpedColumn, Pieces jumpedMan,
-                int newRow, int newColumn, double evaluation) {
-        super(player, movingMan, originalRow, originalColumn,
-                jumpedRow, jumpedColumn, jumpedMan,
-                newRow, newColumn, evaluation, true);
+    public Jump(Player player, Pieces movingMan, Coordinate originalCoord,
+                Coordinate jumpedCoord, Pieces jumpedMan,
+                Coordinate newCoord, double evaluation) {
+        super(player, movingMan, originalCoord,
+                jumpedCoord, jumpedMan,
+                newCoord, evaluation, true);
     }
 
     @Override
@@ -22,13 +22,12 @@ public class Jump extends Move {
         if (o == null || getClass() != o.getClass()) return false;
         if (!super.equals(o)) return false;
         Jump jump = (Jump) o;
-        return jumpedRow == jump.jumpedRow &&
-                jumpedColumn == jump.jumpedColumn &&
+        return jumpedCoord == jump.jumpedCoord &&
                 jumpedMan == jump.jumpedMan;
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(super.hashCode(), jumpedRow, jumpedColumn, jumpedMan);
+        return Objects.hash(super.hashCode(), jumpedCoord, jumpedMan);
     }
 }

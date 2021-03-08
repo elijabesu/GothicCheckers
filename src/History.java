@@ -51,9 +51,9 @@ public class History {
                         player = player2;
                         which = false;
                     }
-                    int[] coordinates = Utils.getCoordinates(movement, which);
-                    Pieces man = game.getManByPosition(coordinates[0], coordinates[1]);
-                    if (man.isKing() || Utils.containsMinus(coordinates)) game.move(player, man, coordinates);
+                    List<Coordinate> coordinates = Utils.getCoordinates(movement, which);
+                    Pieces man = game.getManByPosition(coordinates.get(0));
+                    if (man.isKing() || coordinates.size() < 3) game.move(player, man, coordinates);
                     else game.jump(player, man, coordinates);
                     game.switchPlayers();
                 });

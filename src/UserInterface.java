@@ -1,3 +1,4 @@
+import java.util.List;
 import java.util.Scanner;
 
 public class UserInterface {
@@ -48,27 +49,36 @@ public class UserInterface {
             if (game.shouldEnd(player1, player2)) break;
 
             if (currentPlayer.isComputer() && nextPlayer.isComputer()) {
-                System.out.print("Intervene? (y/n) ");
-                if (scanner.nextLine().trim().equals("y")) if (!readCommand()) break;
+                boolean toContinue = true;
+                while (toContinue == true) {
+                    System.out.print("Intervene? (y/n) ");
+                    if (scanner.nextLine().trim().equals("y")) {
+                        if (!readCommand()) {
+                            toContinue = false;
+                            break;
+                        }
+                    } else break;
+                }
+                if (!toContinue) break;
             }
         }
         endGame();
     }
 
     private void movement(String movement) {
-        int[] origCoordinates = Utils.getCoordinate(movement, 1, 0);
+        Coordinate origCoordinate = Utils.getCoordinate(movement, 1, 0);
 
-        Pieces man = game.getManByPosition(origCoordinates[0], origCoordinates[1]);
+        Pieces man = game.getManByPosition(origCoordinate);
 
         if (man == Pieces.EMPTY) printInvalidMove();
         else {
-            int[] coordinates = Utils.getCoordinates(movement, whichPlayer().isWhite());
-            if (man.isKing() || Utils.containsMinus(coordinates)) move(man, coordinates);
+            List<Coordinate> coordinates = Utils.getCoordinates(movement, whichPlayer().isWhite());
+            if (man.isKing() || Utils.containsMinusCoordinate(coordinates)) move(man, coordinates);
             else jump(man, coordinates);
         }
     }
 
-    private void move(Pieces man, int[] coordinates) {
+    private void move(Pieces man, List<Coordinate> coordinates) {
         if (man.isKing()) {
             Move gameKingMove = game.moveKing(whichPlayer(), man, coordinates);
             if (gameKingMove != null) afterMove();
@@ -85,7 +95,7 @@ public class UserInterface {
         }
     }
 
-    private void jump(Pieces man, int[] coordinates) {
+    private void jump(Pieces man, List<Coordinate> coordinates) {
         Jump gameJump = game.jump(whichPlayer(), man, coordinates);
         if (gameJump != null) afterJump(whichPlayer(), man, gameJump);
         else printInvalidMove();
@@ -131,15 +141,15 @@ public class UserInterface {
     }
 
     private void hint(String command) {
-        int[] coordinate = Utils.getCoordinate(command, 1, 0);
-        Pieces man = game.getManByPosition(coordinate[0], coordinate[1]);
+        Coordinate coordinate = Utils.getCoordinate(command, 1, 0);
+        Pieces man = game.getManByPosition(coordinate);
         if (man == Pieces.EMPTY) printInvalidMove();
         else {
             //String hint = game.hint(whichPlayer(), man, coordinate[0], coordinate[1]);
             Player otherPlayer;
             if (whichPlayer().equals(player1)) otherPlayer = player2;
             else otherPlayer = player1;
-            String hint = game.hint(whichPlayer(), otherPlayer, man, coordinate[0], coordinate[1], depth);
+            String hint = game.hint(whichPlayer(), otherPlayer, man, coordinate, depth);
             if (hint.length() == 0) printInvalidMove();
             else {
                 System.out.println("Possible moves: " + hint);

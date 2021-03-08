@@ -3,55 +3,44 @@ import java.util.Objects;
 public class Move {
     protected final Player player;
     protected final Pieces movingMan;
-    protected final int originalRow;
-    protected final int originalColumn;
-    protected final int jumpedRow;
-    protected final int jumpedColumn;
+    protected final Coordinate originalCoord;
+    protected final Coordinate jumpedCoord;
     protected final Pieces jumpedMan;
-    protected final int newRow;
-    protected final int newColumn;
+    protected final Coordinate newCoord;
     protected double evaluation;
     protected final boolean isJump;
 
-    public Move(Player player, Pieces movingMan, int originalRow, int originalColumn,
-                int newRow, int newColumn) {
-        this(player, movingMan, originalRow, originalColumn,
-                -1, -1, null,
-                newRow, newColumn, 0, false);
+    public Move(Player player, Pieces movingMan, Coordinate originalCoord,
+                Coordinate newCoord) {
+        this(player, movingMan, originalCoord, null, null, newCoord, 0, false);
     }
 
-    public Move(Player player, Pieces movingMan, int originalRow, int originalColumn,
-                int jumpedRow, int jumpedColumn, Pieces jumpedMan,
-                int newRow, int newColumn) {
-        this(player, movingMan, originalRow, originalColumn,
-                jumpedRow, jumpedColumn, jumpedMan,
-                newRow, newColumn, 0, true);
+    public Move(Player player, Pieces movingMan, Coordinate originalCoord,
+                Coordinate jumpedCoord, Pieces jumpedMan,
+                Coordinate newCoord) {
+        this(player, movingMan, originalCoord,
+                jumpedCoord, jumpedMan,
+                newCoord, 0, true);
     }
-    public Move(Player player, Pieces movingMan, int originalRow, int originalColumn,
-                int jumpedRow, int jumpedColumn, Pieces jumpedMan,
-                int newRow, int newColumn, double evaluation, boolean isJump) {
+    public Move(Player player, Pieces movingMan, Coordinate originalCoord,
+                Coordinate jumpedCoord, Pieces jumpedMan,
+                Coordinate newCoord, double evaluation, boolean isJump) {
         this.player = player;
         this.movingMan = movingMan;
-        this.originalRow = originalRow;
-        this.originalColumn = originalColumn;
-        this.jumpedRow = jumpedRow;
-        this.jumpedColumn = jumpedColumn;
+        this.originalCoord = originalCoord;
+        this.jumpedCoord = jumpedCoord;
         this.jumpedMan = jumpedMan;
-        this.newRow = newRow;
-        this.newColumn = newColumn;
+        this.newCoord = newCoord;
         this.evaluation = evaluation;
         this.isJump = isJump;
     }
 
-    public int getOriginalRow() { return originalRow; }
+    public Coordinate getOriginal() { return originalCoord; }
 
-    public int getOriginalColumn() { return originalColumn; }
 
     public Pieces getMan() { return movingMan; }
 
-    public int getNewRow() { return newRow; }
-
-    public int getNewColumn() { return newColumn; }
+    public Coordinate getNew() { return newCoord; }
 
     public void setEvaluation(double evaluation) { this.evaluation = evaluation; }
 
@@ -59,9 +48,7 @@ public class Move {
 
     public boolean isJump() { return this.isJump; }
 
-    public int getJumpedRow() { return jumpedRow; }
-
-    public int getJumpedColumn() { return jumpedColumn; }
+    public Coordinate getJumped() { return jumpedCoord; }
 
     public Pieces getJumpedMan() { return jumpedMan; }
 
@@ -73,8 +60,7 @@ public class Move {
     }
 
     public String toStringWithoutPlayer() {
-        return "" + Columns.values()[originalColumn] + Utils.convertRowForToString(originalRow) + " -> " +
-                Columns.values()[newColumn] + Utils.convertRowForToString(newRow);
+        return "" + originalCoord.toString() + " -> " + newCoord.toString();
     }
 
     @Override
@@ -82,21 +68,16 @@ public class Move {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Move move = (Move) o;
-        return originalRow == move.originalRow &&
-                originalColumn == move.originalColumn &&
-                jumpedRow == move.jumpedRow &&
-                jumpedColumn == move.jumpedColumn &&
-                newRow == move.newRow &&
-                newColumn == move.newColumn &&
+        return originalCoord.equals(move.originalCoord) &&
+                newCoord.equals(move.newCoord) &&
                 Double.compare(move.evaluation, evaluation) == 0 &&
                 isJump == move.isJump &&
                 Objects.equals(player, move.player) &&
-                movingMan == move.movingMan &&
-                jumpedMan == move.jumpedMan;
+                movingMan == move.movingMan;
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(player, movingMan, originalRow, originalColumn, jumpedRow, jumpedColumn, jumpedMan, newRow, newColumn, evaluation, isJump);
+        return Objects.hash(player, movingMan, originalCoord, newCoord, evaluation, isJump);
     }
 }

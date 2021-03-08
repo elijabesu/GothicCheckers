@@ -58,63 +58,67 @@ public class Board {
         return size;
     }
 
-    public void placeMan(Pieces man, int row, int column) {
-        coordinates[row][column] = man;
+    public void placeMan(Pieces man, Coordinate coord) {
+        coordinates[coord.getRow()][coord.getColumn()] = man;
     }
 
-    public void removeMan(int row, int column) {
-        coordinates[row][column] = Pieces.EMPTY;
+    public void removeMan(Coordinate coord) {
+        coordinates[coord.getRow()][coord.getColumn()] = Pieces.EMPTY;
     }
 
-    public Pieces getCoordinate(int row, int column) {
-        return coordinates[row][column];
+    public Pieces getCoordinate(Coordinate coord) {
+        return coordinates[coord.getRow()][coord.getColumn()];
     }
 
-    public boolean isOccupied(int row, int column) {
-        return (coordinates[row][column] != Pieces.EMPTY);
+    public boolean isOccupied(Coordinate coord) {
+        return (coordinates[coord.getRow()][coord.getColumn()] != Pieces.EMPTY);
     }
 
     public void moved(Move move) {
-        removeMan(move.getOriginalRow(), move.getOriginalColumn());
-        placeMan(move.getMan(), move.getNewRow(), move.getNewColumn());
+        removeMan(move.getOriginal());
+        placeMan(move.getMan(), move.getNew());
+    }
+
+    public void unmoved(Move move) {
+        removeMan(move.getNew());
+        placeMan(move.getMan(), move.getOriginal());
     }
 
     public void jumped(Jump jump) {
-        removeMan(jump.getOriginalRow(), jump.getOriginalColumn());
-        removeMan(jump.getJumpedRow(), jump.getJumpedColumn());
-        placeMan(jump.getMan(), jump.getNewRow(), jump.getNewColumn());
+        removeMan(jump.getOriginal());
+        removeMan(jump.getJumped());
+        placeMan(jump.getMan(), jump.getNew());
     }
 
-    public void promoted(Pieces man, int row, int column) {
-        if (man.isWhite()) coordinates[row][column] = Pieces.WHITE_KING;
-        else coordinates[row][column] = Pieces.BLACK_KING;
+    public void promoted(Pieces man, Coordinate coordinate) {
+        if (man.isWhite()) coordinates[coordinate.getRow()][coordinate.getColumn()] = Pieces.WHITE_KING;
+        else coordinates[coordinate.getRow()][coordinate.getColumn()] = Pieces.BLACK_KING;
     }
 
-    public List<int[]> getCoordinatesList(Player player) {
-        List<int[]> coordinatesList = new ArrayList<>();
+    public List<Coordinate> getCoordinatesList(Player player) {
+        List<Coordinate> coordinates = new ArrayList<>();
 
         for (int row = 0; row < size; row++) {
             for (int column = 0; column < size; column++) {
-                Pieces currentPiece = getCoordinate(row, column);
+                Coordinate coordinate = new Coordinate(row, column);
+                Pieces currentPiece = getCoordinate(coordinate);
                 if (currentPiece != Pieces.EMPTY) {
                     if (currentPiece.isWhite() && player.isWhite()) {
-                        if (currentPiece.isKing()) coordinatesList.add(new int[]{row, column, 1});
-                        else coordinatesList.add(new int[]{row, column, 0});
+                        coordinates.add(coordinate);
                     } else if (!currentPiece.isWhite() && !player.isWhite()) {
-                        if (currentPiece.isKing()) coordinatesList.add(new int[]{row, column, 1});
-                        else coordinatesList.add(new int[]{row, column, 0});
+                        coordinates.add(coordinate);
                     }
                 }
             }
         }
-        return coordinatesList;
+        return coordinates;
     }
 
     public int getNumberOfWhiteKings() {
         int result = 0;
         for (int row = 0; row < size; row++) {
             for (int column = 0; column < size; column++) {
-                Pieces currentPiece = getCoordinate(row, column);
+                Pieces currentPiece = getCoordinate(new Coordinate(row, column));
                 if (currentPiece.isWhite() && currentPiece.isKing()) result++;
             }
         }
@@ -125,7 +129,7 @@ public class Board {
         int result = 0;
         for (int row = 0; row < size; row++) {
             for (int column = 0; column < size; column++) {
-                Pieces currentPiece = getCoordinate(row, column);
+                Pieces currentPiece = getCoordinate(new Coordinate(row, column));
                 if (!currentPiece.isWhite() && currentPiece.isKing()) result++;
             }
         }
@@ -136,7 +140,7 @@ public class Board {
         int result = 0;
         for (int row = 0; row < size; row++) {
             for (int column = 0; column < size; column++) {
-                Pieces currentPiece = getCoordinate(row, column);
+                Pieces currentPiece = getCoordinate(new Coordinate(row, column));
                 if (currentPiece.isWhite() && !currentPiece.isKing()) result++;
             }
         }
@@ -147,7 +151,7 @@ public class Board {
         int result = 0;
         for (int row = 0; row < size; row++) {
             for (int column = 0; column < size; column++) {
-                Pieces currentPiece = getCoordinate(row, column);
+                Pieces currentPiece = getCoordinate(new Coordinate(row, column));
                 if (!currentPiece.isWhite() && !currentPiece.isKing()) result++;
             }
         }

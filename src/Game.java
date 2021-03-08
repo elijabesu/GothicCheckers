@@ -26,45 +26,45 @@ public class Game {
         // black
         for (int i = 0; i < 2; i++) {
             for (int j = 0; j < board.getSize(); j++) {
-                board.placeMan(Pieces.BLACK, i, j);
+                board.placeMan(Pieces.BLACK, new Coordinate(i, j));
             }
         }
 
         // white
         for (int i = board.getSize() - 2; i < board.getSize(); i++) {
             for (int j = 0; j < board.getSize(); j++) {
-                board.placeMan(Pieces.WHITE, i, j);
+                board.placeMan(Pieces.WHITE, new Coordinate(i, j));
             }
         }
     }
 
-    public Move move(Player player, Pieces movingMan, int[] coordinates) {
-        if (rules.isJumpingPossible(player, movingMan, coordinates[0], coordinates[1])) return null;
-        Move move = new Move(player, movingMan, coordinates[0], coordinates[1], // the man we are currently moving
-                coordinates[2], coordinates[3]); // the position where we want to move
+    public Move move(Player player, Pieces movingMan, List<Coordinate> coordinates) {
+        if (rules.isJumpingPossible(player, movingMan, coordinates.get(0))) return null;
+        Move move = new Move(player, movingMan, coordinates.get(0), // the man we are currently moving
+                coordinates.get(1)); // the position where we want to move
 
         if (!(rules.isValid(player, movingMan, move))) return null;
         afterMove(move);
         return move;
     }
 
-    public Jump jump(Player player, Pieces movingMan, int[] coordinates) {
-        Pieces jumpedMan = getManByPosition(coordinates[4], coordinates[5]);
+    public Jump jump(Player player, Pieces movingMan, List<Coordinate> coordinates) {
+        Pieces jumpedMan = getManByPosition(coordinates.get(2));
         if (jumpedMan == null) return null;
 
-        Jump jump = new Jump(player, movingMan, coordinates[0], coordinates[1], // the man we are currently moving
-                coordinates[4], coordinates[5], jumpedMan,
-                coordinates[2], coordinates[3]); // the position where we want to move
+        Jump jump = new Jump(player, movingMan, coordinates.get(0), // the man we are currently moving
+                coordinates.get(2), jumpedMan,
+                coordinates.get(1)); // the position where we want to move
 
         if (!(rules.isValid(player, movingMan, jump))) return null;
         afterJump(player, jump);
         return jump;
     }
 
-    public Move moveKing(Player player, Pieces movingMan, int[] coordinates) {
-        if (rules.isJumpingPossible(player, movingMan, coordinates[0], coordinates[1])) return null;
-        Move maybeMove = rules.getPossibleMoves(player, movingMan, coordinates[0], coordinates[1]).stream()
-                .filter(move -> move.getNewRow() == coordinates[2] && move.getNewColumn() == coordinates[3])
+    public Move moveKing(Player player, Pieces movingMan, List<Coordinate> coordinates) {
+        if (rules.isJumpingPossible(player, movingMan, coordinates.get(0))) return null;
+        Move maybeMove = rules.getPossibleMoves(player, movingMan, coordinates.get(0)).stream()
+                .filter(move -> move.getNew().getRow() == coordinates.get(1).getRow() && move.getNew().getColumn() == coordinates.get(1).getColumn())
                 .findFirst().orElse(null);
         if (maybeMove != null) {
             afterMove(maybeMove);
@@ -73,9 +73,9 @@ public class Game {
         return null;
     }
 
-    public Jump jumpKing(Player player, Pieces movingMan, int[] coordinates) {
-        Jump maybeJump = rules.getPossibleJumps(player, movingMan, coordinates[0], coordinates[1]).stream()
-                .filter(jump -> jump.getNewRow() == coordinates[2] && jump.getNewColumn() == coordinates[3])
+    public Jump jumpKing(Player player, Pieces movingMan, List<Coordinate> coordinates) {
+        Jump maybeJump = rules.getPossibleJumps(player, movingMan, coordinates.get(0)).stream()
+                .filter(jump -> jump.getNew().getRow() == coordinates.get(1).getRow() && jump.getNew().getColumn() == coordinates.get(1).getColumn())
                 .findFirst().orElse(null);
         if (maybeJump != null) {
             afterJump(player, maybeJump);
@@ -84,8 +84,8 @@ public class Game {
         return null;
     }
 
-    public Pieces getManByPosition(int row, int column) {
-        return board.getCoordinate(row, column);
+    public Pieces getManByPosition(Coordinate coordinate) {
+        return board.getCoordinate(coordinate);
     }
 
     public String getHistory() {
@@ -112,9 +112,9 @@ public class Game {
         }
     }
 
-    public String hint(Player currentPlayer, Player nextPlayer, Pieces movingMan, int originalRow, int originalColumn, int depth) {
+    public String hint(Player currentPlayer, Player nextPlayer, Pieces movingMan, Coordinate coordinate, int depth) {
         Move move;
-        move = rules.bestMove(currentPlayer, nextPlayer, movingMan, originalRow, originalColumn, depth);
+        move = rules.bestMove(currentPlayer, nextPlayer, movingMan, coordinate, depth);
         if (move == null) return "";
         return move.toStringWithoutPlayer();
     }
@@ -136,8 +136,8 @@ public class Game {
 
         board.jumped(jump);
 
-        if (rules.needsPromotion(jump.getMan(), jump.getNewRow()))
-            board.promoted(jump.getMan(), jump.getNewRow(), jump.getNewColumn());
+        if (rules.needsPromotion(jump.getMan(), jump.getNew().getRow()))
+            board.promoted(jump.getMan(), jump.getNew());
 
         history.add(jump);
         movesWithoutJump = 0;
@@ -146,8 +146,8 @@ public class Game {
     private void afterMove(Move move) {
         board.moved(move);
 
-        if (rules.needsPromotion(move.getMan(), move.getNewRow()))
-            board.promoted(move.getMan(), move.getNewRow(), move.getNewColumn());
+        if (rules.needsPromotion(move.getMan(), move.getNew().getRow()))
+            board.promoted(move.getMan(), move.getNew());
 
         history.add(move);
         ++movesWithoutJump;
@@ -164,11 +164,9 @@ public class Game {
         Jump tempJump;
         Move tempMove;
 
-        List<int[]> positionsOfTheCurrentPlayer = board.getCoordinatesList(currentPlayer);
-        for (int[] positionCoordinate : positionsOfTheCurrentPlayer) {
-            Pieces movingMan = board.getCoordinate(positionCoordinate[0], positionCoordinate[1]);
-            tempMove = rules.bestMove(currentPlayer, nextPlayer, movingMan,
-                    positionCoordinate[0], positionCoordinate[1], depth);
+        for (Coordinate positionCoordinate : board.getCoordinatesList(currentPlayer)) {
+            Pieces movingMan = board.getCoordinate(positionCoordinate);
+            tempMove = rules.bestMove(currentPlayer, nextPlayer, movingMan, positionCoordinate, depth);
             if (tempMove == null) continue;
             if (tempMove.isJump()) {
                 tempJump = rules.convertMoveIntoJump(tempMove);
