@@ -89,11 +89,7 @@ public class Rules {
         int rowDifference = Math.abs(jump.getOriginal().getRow() - jump.getNew().getRow());
         int columnDifference = Math.abs(jump.getOriginal().getColumn() - jump.getNew().getColumn());
 
-        if (player.isWhite()) {
-            if (jumpedMan.isWhite()) return false; // if the WHITE player is trying to jump over another WHITE man -> NOPE
-        } else {
-            if (!jumpedMan.isWhite()) return false; // if the BLACK player is trying to jump over another BLACK man -> NOPE
-        }
+        if (player.isWhite() == jumpedMan.isWhite()) return false;
 
         return (rowDifference == 0 && columnDifference == 2) ||
                 (rowDifference == 2 && (columnDifference == 0 || columnDifference == 2));
@@ -104,20 +100,13 @@ public class Rules {
 
         if (newPositionOccupied) return false; // if the position is occupied -> NOPE
 
-        if (player.isWhite()) {
-            if (!(movingMan.isWhite())) return false; // if the WHITE player is trying to move any of the BLACK men -> NOPE
-        } else {
-            if (movingMan.isWhite()) return false; // if the BLACK player is trying to move any of the WHITE men -> NOPE
-        }
+        if (player.isWhite() != movingMan.isWhite()) return false;
 
         if (movingMan.isKing()) return true; // if it's a King -> YEP
+        if (move.getNew().getRow() == move.getOriginal().getRow()) return true; // same row
 
-        // if they are trying to move backwards -> NOPE
-        if (movingMan.isWhite() && move.getNew().getRow() > move.getOriginal().getRow()) return false;
-        if (!(movingMan.isWhite()) && move.getNew().getRow() < move.getOriginal().getRow()) return false;
-
-        // everything else:
-        return true;
+        return (movingMan.isWhite() && move.getNew().getRow() < move.getOriginal().getRow()) ||
+                (!movingMan.isWhite() && move.getNew().getRow() > move.getOriginal().getRow());
     }
 
     public boolean possibleAnotherJump(Player player, Pieces movingMan, Jump jump) {
