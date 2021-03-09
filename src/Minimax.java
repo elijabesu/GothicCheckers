@@ -54,18 +54,8 @@ public class Minimax {
         if (possibleMoves.isEmpty()) return null;
 
         List<Double> heuristics = new ArrayList<>();
-        List<Double> tempHeuristics = new ArrayList<>();
 
         for (Move possibleMove : possibleMoves) {
-            board.moved(possibleMove);
-            for (Coordinate enemyCoordinate : board.getCoordinatesList(nextPlayer)) {
-                tempHeuristics.add(minimax(rules, board, difficulty, nextPlayer, currentPlayer,
-                        board.getCoordinate(enemyCoordinate),
-                        enemyCoordinate, depth - 1, alpha, beta));
-            }
-            heuristics.add(Collections.max(tempHeuristics));
-            tempHeuristics.clear();
-            board.unmoved(possibleMove);
             heuristics.add(getEvaluation(rules, board, difficulty, possibleMove,
                     nextPlayer, currentPlayer, depth, alpha, beta));
         }
