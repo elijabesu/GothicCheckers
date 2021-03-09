@@ -1,13 +1,16 @@
 import java.util.Objects;
 
 public class Move {
+    /*
+    Storing information about the move.
+     */
     protected final Player player;
     protected final Pieces movingMan;
     protected final Coordinate originalCoord;
     protected final Coordinate jumpedCoord;
     protected final Pieces jumpedMan;
     protected final Coordinate newCoord;
-    protected double evaluation;
+    protected double evaluation; // TODO remove
     protected final boolean isJump;
 
     public Move(Player player, Pieces movingMan, Coordinate originalCoord,

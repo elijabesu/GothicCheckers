@@ -1,15 +1,14 @@
 import java.util.*;
 
 public class Rules {
+    /*
+    Generating and validating all possible moves.
+     */
     private final Board board;
-    private int difficulty;
 
     public Rules(Board board) {
         this.board = board;
-        this.difficulty = 2; // default being hard
     }
-
-    public void setDifficulty(int difficulty) { this.difficulty = difficulty; }
 
     public boolean isValid(Player player, Pieces movingMan, Move move) {
         List<List<? extends Move>> movesAndJumps = generateMoves(player, movingMan, move.getOriginal());
@@ -66,8 +65,8 @@ public class Rules {
         Move maybeJump = new Move(player, movingMan, originalCoordinate,
                 coordinate, board.getCoordinate(coordinate),
                 nexCoordinate);
-        if (isValidJump(player, convertMoveIntoJump(maybeJump), board.isOccupied(nexCoordinate)))
-            possibleJumps.add(convertMoveIntoJump(maybeJump));
+        if (isValidJump(player, Utils.convertMoveIntoJump(maybeJump), board.isOccupied(nexCoordinate)))
+            possibleJumps.add(Utils.convertMoveIntoJump(maybeJump));
     }
 
     private boolean isValidMove(Player player, Move move) {
@@ -183,11 +182,6 @@ public class Rules {
         return (!movingMan.isWhite() && newRow == 7) || (movingMan.isWhite() && newRow == 0);
     }
 
-    public Jump convertMoveIntoJump(Move move) {
-        return new Jump(move.getPlayer(), move.getMan(), move.getOriginal(),
-                move.getJumped(), move.getJumpedMan(), move.getNew(), move.getEvaluation());
-    }
-
     private List<Move> addIntoPossibilities(List<Move> possibleMoves, List<Jump> possibleJumps) {
         List<Move> possibilities = new ArrayList<>();
 
@@ -218,113 +212,5 @@ public class Rules {
         List <Jump> possibleJumps = getPossibleJumps(player, movingMan, coordinate);
         if (possibleJumps == null) return false;
         return possibleJumps.size() != 0;
-    }
-
-    private double getHeuristicValue(Board board, Player currentPlayer) {
-        double kingWeight = 1.5;
-        double result;
-        double random = new Random().nextDouble();
-
-        if (currentPlayer.isWhite()) result = board.getNumberOfWhiteKings() * kingWeight +
-                board.getNumberOfWhiteMen() - board.getNumberOfBlackKings() * kingWeight -
-                board.getNumberOfBlackMen();
-        else result = board.getNumberOfBlackKings() * kingWeight +
-                board.getNumberOfBlackMen() - board.getNumberOfWhiteKings() * kingWeight -
-                board.getNumberOfWhiteMen();
-
-        if (difficulty == 1) result = result * 0.75 + random * 0.25;
-        if (difficulty == 0) result = result * 0.5 + random * 0.5;
-        return result;
-    }
-
-    private double minimax(Board board, Player currentPlayer, Player nextPlayer, Pieces movingMan,
-                           Coordinate coordinate, int depth, double alpha, double beta) {
-        if (depth == 0) return getHeuristicValue(board, currentPlayer);
-
-        List<Move> possibleMoves = getAllPossibilities(currentPlayer, movingMan, coordinate);
-        double initialValue;
-        Board tempBoard;
-
-        if (currentPlayer.isWhite()) {
-            initialValue = Double.POSITIVE_INFINITY;
-            for (Move possibleMove : possibleMoves) {
-                tempBoard = board.clone();
-                tempBoard.moved(possibleMove);
-                for (Coordinate enemyCoordinate : tempBoard.getCoordinatesList(nextPlayer)) {
-                    double result = minimax(tempBoard, nextPlayer, currentPlayer,
-                            tempBoard.getCoordinate(enemyCoordinate),
-                            enemyCoordinate, depth - 1, alpha, beta);
-
-                    initialValue = Math.min(result, initialValue);
-                    alpha = Math.min(alpha, initialValue);
-
-                    if (alpha >= beta) break;
-                }
-                if (alpha >= beta) break;
-            }
-        } else {
-            initialValue = Double.NEGATIVE_INFINITY;
-            for (Move possibleMove : possibleMoves) {
-                tempBoard = board.clone();
-                tempBoard.moved(possibleMove);
-                for (Coordinate enemyCoordinate : tempBoard.getCoordinatesList(nextPlayer)) {
-                    double result = minimax(tempBoard, nextPlayer, currentPlayer,
-                            tempBoard.getCoordinate(enemyCoordinate),
-                            enemyCoordinate, depth - 1, alpha, beta);
-
-                    initialValue = Math.max(result, initialValue);
-                    alpha = Math.max(alpha, initialValue);
-
-                    if (alpha >= beta) break;
-                }
-                if (alpha >= beta) break;
-            }
-        }
-        return initialValue;
-    }
-
-    public Move bestMove(Player currentPlayer, Player nextPlayer, Pieces movingMan,
-                         Coordinate coordinate, int depth) {
-        double alpha = Double.NEGATIVE_INFINITY;
-        double beta = Double.POSITIVE_INFINITY;
-
-        List<Move> possibleMoves = getAllPossibilities(currentPlayer, movingMan, coordinate);
-        if (possibleMoves.isEmpty()) return null;
-
-        List<Double> heuristics = new ArrayList<>();
-        List<Double> tempHeuristics = new ArrayList<>();
-        Board tempBoard;
-
-        for (Move possibleMove : possibleMoves) {
-            tempBoard = board.clone();
-            tempBoard.moved(possibleMove);
-            for (Coordinate enemyCoordinate : tempBoard.getCoordinatesList(nextPlayer)) {
-                possibleMove.setEvaluation(minimax(tempBoard, nextPlayer, currentPlayer,
-                        tempBoard.getCoordinate(enemyCoordinate),
-                        enemyCoordinate, depth - 1, alpha, beta));
-                tempHeuristics.add(possibleMove.getEvaluation());
-            }
-            heuristics.add(Collections.max(tempHeuristics));
-            tempHeuristics.clear();
-        }
-
-        double maxHeuristics = Double.NEGATIVE_INFINITY;
-
-        Random rand = new Random();
-        for(int i = heuristics.size() - 1; i >= 0; i--) {
-            if (heuristics.get(i) >= maxHeuristics) {
-                maxHeuristics = heuristics.get(i);
-            }
-        }
-        for(int i = 0; i < heuristics.size(); i++)
-        {
-            if(heuristics.get(i) < maxHeuristics)
-            {
-                heuristics.remove(i);
-                possibleMoves.remove(i);
-                i--;
-            }
-        }
-        return possibleMoves.get(rand.nextInt(possibleMoves.size()));
     }
 }

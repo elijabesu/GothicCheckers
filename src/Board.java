@@ -2,9 +2,12 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class Board {
+    /*
+    Storing information about the playing board.
+     */
     private final StringBuilder boardString;
     private final int size;
-    private Pieces[][] coordinates;
+    private Pieces[][] coordinates; // TODO Coordinate[][]
 
     public Board(int size) {
         this.size = size;
@@ -164,7 +167,7 @@ public class Board {
         return result;
     }
 
-    public Board clone() {
+    public Board clone() { // TODO remove
         Pieces[][] clonedCoordinates = new Pieces[size][size];
         for (int row = 0; row < size; row++) {
             for (int column = 0; column < size; column++) {

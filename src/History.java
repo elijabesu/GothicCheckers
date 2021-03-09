@@ -7,6 +7,9 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 public class History {
+    /*
+    Displaying, storing, and loading the history.
+     */
     private final List<Move> history;
 
     public History() {

@@ -1,4 +1,7 @@
 public class Player {
+    /*
+    Storing information about the player.
+     */
     private int points;
     private String name;
     private final boolean white; // true == white, false == black

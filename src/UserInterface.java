@@ -2,6 +2,9 @@ import java.util.List;
 import java.util.Scanner;
 
 public class UserInterface {
+    /*
+    Interacting with the player(s).
+    */
     private final Game game;
     private final Scanner scanner;
 

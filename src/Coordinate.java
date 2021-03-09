@@ -1,8 +1,12 @@
 import java.util.Objects;
 
 public class Coordinate {
+    /*
+    Storing information about the coordinate.
+     */
     private final int row;
     private final int column;
+    private Pieces piece;
 
 
     public Coordinate(int row, int column) {
@@ -12,6 +16,9 @@ public class Coordinate {
 
     public int getRow() { return row; }
     public int getColumn() { return column; }
+
+    public Pieces getPiece() { return piece; }
+    public void setPiece(Pieces piece) { this.piece = piece; }
 
     @Override
     public String toString() {

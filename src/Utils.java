@@ -2,6 +2,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class Utils {
+    /*
+    All utility methods.
+     */
 
     private static int getColumn(char column) {
         return Columns.valueOf(String.valueOf(column)).ordinal();
@@ -110,5 +113,19 @@ public class Utils {
             if (coordinate.getRow() < 0 || coordinate.getColumn() < 0) return true;
         }
         return false;
+    }
+
+    public static Jump convertMoveIntoJump(Move move) {
+        return new Jump(move.getPlayer(), move.getMan(), move.getOriginal(),
+                move.getJumped(), move.getJumpedMan(), move.getNew(), move.getEvaluation());
+    }
+
+    public static double getValueDependingOnColour(boolean isWhite, int white, int whiteKings,
+                                                int black, int blackKings, double kingWeight) {
+        double whiteValue = whiteKings * kingWeight + white;
+        double blackValue = blackKings * kingWeight + black;
+
+        if (isWhite) return whiteValue - blackValue;
+        return blackValue - whiteValue;
     }
 }

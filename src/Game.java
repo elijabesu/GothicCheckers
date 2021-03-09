@@ -1,10 +1,14 @@
 import java.util.List;
 
 public class Game {
+    /*
+    Core of the game. Interacting with other classes.
+     */
     private final Board board;
     private final Rules rules;
     private final History history;
     private int movesWithoutJump;
+    private int difficulty;
     private boolean playerBool; // true == player1, false == player2
 
     public Game() {
@@ -13,6 +17,7 @@ public class Game {
         history = new History();
         movesWithoutJump = 0;
         playerBool = true;
+        difficulty = 2; // default being hard
 
         generateMen();
     }
@@ -20,7 +25,8 @@ public class Game {
     public String displayBoard() {
         return board.displayBoard();
     }
-    public void setDifficulty(int difficulty) { rules.setDifficulty(difficulty); }
+    public void setDifficulty(int difficulty) { this.difficulty = difficulty; }
+    public int getDifficulty() { return difficulty; }
 
     public void generateMen() {
         // black
@@ -114,7 +120,7 @@ public class Game {
 
     public String hint(Player currentPlayer, Player nextPlayer, Pieces movingMan, Coordinate coordinate, int depth) {
         Move move;
-        move = rules.bestMove(currentPlayer, nextPlayer, movingMan, coordinate, depth);
+        move = Minimax.bestMove(rules, board, difficulty, currentPlayer, nextPlayer, movingMan, coordinate, depth);
         if (move == null) return "";
         return move.toStringWithoutPlayer();
     }
@@ -166,10 +172,10 @@ public class Game {
 
         for (Coordinate positionCoordinate : board.getCoordinatesList(currentPlayer)) {
             Pieces movingMan = board.getCoordinate(positionCoordinate);
-            tempMove = rules.bestMove(currentPlayer, nextPlayer, movingMan, positionCoordinate, depth);
+            tempMove = Minimax.bestMove(rules, board, difficulty, currentPlayer, nextPlayer, movingMan, positionCoordinate, depth);
             if (tempMove == null) continue;
             if (tempMove.isJump()) {
-                tempJump = rules.convertMoveIntoJump(tempMove);
+                tempJump = Utils.convertMoveIntoJump(tempMove);
                 if (bestJump == null || bestJump.getEvaluation() < tempJump.getEvaluation())
                     bestJump = tempJump;
             } else {
