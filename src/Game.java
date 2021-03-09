@@ -176,10 +176,12 @@ public class Game {
             if (tempMove == null) continue;
             if (tempMove.isJump()) {
                 tempJump = Utils.convertMoveIntoJump(tempMove);
-                if (bestJump == null || bestJump.getEvaluation() < tempJump.getEvaluation())
+                if (bestJump == null || getEvaluation(currentPlayer, nextPlayer, depth, bestJump)
+                        < getEvaluation(currentPlayer, nextPlayer, depth, tempJump))
                     bestJump = tempJump;
             } else {
-                if (bestMove == null || bestMove.getEvaluation() < tempMove.getEvaluation())
+                if (bestMove == null || getEvaluation(currentPlayer, nextPlayer, depth, bestMove)
+                        < getEvaluation(currentPlayer, nextPlayer, depth, tempMove))
                     bestMove = tempMove;
             }
         }
@@ -188,5 +190,10 @@ public class Game {
             if (possibleAnotherJump(currentPlayer, bestJump.getMan(), bestJump))
                 computerMove(currentPlayer, nextPlayer, depth);
         } else afterMove(bestMove);
+    }
+
+    private double getEvaluation(Player currentPlayer, Player nextPlayer, int depth, Move move) {
+        return Minimax.getEvaluation(rules, board, difficulty, move,
+                nextPlayer, currentPlayer, depth, Double.NEGATIVE_INFINITY, Double.POSITIVE_INFINITY);
     }
 }

@@ -5,18 +5,11 @@ public class Jump extends Move {
     Extension to the Move class.    TODO maybe remove?
      */
 
-    public Jump(Player player, Pieces movingMan, Coordinate originalCoord,
-                Coordinate jumpedCoord, Pieces jumpedMan,
-                Coordinate newCoord) {
-        this(player, movingMan, originalCoord, jumpedCoord, jumpedMan, newCoord, 0);
-    }
-
-    public Jump(Player player, Pieces movingMan, Coordinate originalCoord,
-                Coordinate jumpedCoord, Pieces jumpedMan,
-                Coordinate newCoord, double evaluation) {
-        super(player, movingMan, originalCoord,
-                jumpedCoord, jumpedMan,
-                newCoord, evaluation, true);
+    public Jump(Player player, Pieces movingMan, Coordinate originalCoordinate,
+                Coordinate jumpedCoordinate, Pieces jumpedMan, Coordinate newCoordinate) {
+        super(player, movingMan, originalCoordinate,
+                jumpedCoordinate, jumpedMan,
+                newCoordinate, true);
     }
 
     @Override
@@ -25,12 +18,12 @@ public class Jump extends Move {
         if (o == null || getClass() != o.getClass()) return false;
         if (!super.equals(o)) return false;
         Jump jump = (Jump) o;
-        return jumpedCoord == jump.jumpedCoord &&
+        return jumpedCoordinate == jump.jumpedCoordinate &&
                 jumpedMan == jump.jumpedMan;
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(super.hashCode(), jumpedCoord, jumpedMan);
+        return Objects.hash(super.hashCode(), jumpedCoordinate, jumpedMan);
     }
 }

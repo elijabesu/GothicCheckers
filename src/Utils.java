@@ -117,7 +117,7 @@ public class Utils {
 
     public static Jump convertMoveIntoJump(Move move) {
         return new Jump(move.getPlayer(), move.getMan(), move.getOriginal(),
-                move.getJumped(), move.getJumpedMan(), move.getNew(), move.getEvaluation());
+                move.getJumped(), move.getJumpedMan(), move.getNew());
     }
 
     public static double getValueDependingOnColour(boolean isWhite, int white, int whiteKings,

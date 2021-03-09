@@ -59,14 +59,15 @@ public class Minimax {
         for (Move possibleMove : possibleMoves) {
             board.moved(possibleMove);
             for (Coordinate enemyCoordinate : board.getCoordinatesList(nextPlayer)) {
-                possibleMove.setEvaluation(minimax(rules, board, difficulty, nextPlayer, currentPlayer,
+                tempHeuristics.add(minimax(rules, board, difficulty, nextPlayer, currentPlayer,
                         board.getCoordinate(enemyCoordinate),
                         enemyCoordinate, depth - 1, alpha, beta));
-                tempHeuristics.add(possibleMove.getEvaluation());
             }
             heuristics.add(Collections.max(tempHeuristics));
             tempHeuristics.clear();
             board.unmoved(possibleMove);
+            heuristics.add(getEvaluation(rules, board, difficulty, possibleMove,
+                    nextPlayer, currentPlayer, depth, alpha, beta));
         }
 
         double maxHeuristics = Double.NEGATIVE_INFINITY;
@@ -87,5 +88,19 @@ public class Minimax {
             }
         }
         return possibleMoves.get(rand.nextInt(possibleMoves.size()));
+    }
+
+    public static double getEvaluation(Rules rules, Board board, int difficulty, Move move,
+                                           Player nextPlayer, Player currentPlayer,
+                                           int depth, double alpha, double beta) {
+        List<Double> heuristics = new ArrayList<>();
+        board.moved(move);
+        for (Coordinate enemyCoordinate : board.getCoordinatesList(nextPlayer)) {
+            heuristics.add(minimax(rules, board, difficulty, nextPlayer, currentPlayer,
+                    board.getCoordinate(enemyCoordinate),
+                    enemyCoordinate, depth - 1, alpha, beta));
+        }
+        board.unmoved(move);
+        return Collections.max(heuristics);
     }
 }

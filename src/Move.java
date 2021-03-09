@@ -6,52 +6,46 @@ public class Move {
      */
     protected final Player player;
     protected final Pieces movingMan;
-    protected final Coordinate originalCoord;
-    protected final Coordinate jumpedCoord;
+    protected final Coordinate originalCoordinate;
+    protected final Coordinate jumpedCoordinate;
     protected final Pieces jumpedMan;
-    protected final Coordinate newCoord;
-    protected double evaluation; // TODO remove
+    protected final Coordinate newCoordinate;
     protected final boolean isJump;
 
-    public Move(Player player, Pieces movingMan, Coordinate originalCoord,
-                Coordinate newCoord) {
-        this(player, movingMan, originalCoord, null, null, newCoord, 0, false);
+    public Move(Player player, Pieces movingMan, Coordinate originalCoordinate,
+                Coordinate newCoordinate) {
+        this(player, movingMan, originalCoordinate, null, null, newCoordinate, false);
     }
 
-    public Move(Player player, Pieces movingMan, Coordinate originalCoord,
+    public Move(Player player, Pieces movingMan, Coordinate originalCoordinate,
                 Coordinate jumpedCoord, Pieces jumpedMan,
-                Coordinate newCoord) {
-        this(player, movingMan, originalCoord,
+                Coordinate newCoordinate) {
+        this(player, movingMan, originalCoordinate,
                 jumpedCoord, jumpedMan,
-                newCoord, 0, true);
+                newCoordinate, true);
     }
-    public Move(Player player, Pieces movingMan, Coordinate originalCoord,
-                Coordinate jumpedCoord, Pieces jumpedMan,
-                Coordinate newCoord, double evaluation, boolean isJump) {
+    public Move(Player player, Pieces movingMan, Coordinate originalCoordinate,
+                Coordinate jumpedCoordinate, Pieces jumpedMan,
+                Coordinate newCoordinate, boolean isJump) {
         this.player = player;
         this.movingMan = movingMan;
-        this.originalCoord = originalCoord;
-        this.jumpedCoord = jumpedCoord;
+        this.originalCoordinate = originalCoordinate;
+        this.jumpedCoordinate = jumpedCoordinate;
         this.jumpedMan = jumpedMan;
-        this.newCoord = newCoord;
-        this.evaluation = evaluation;
+        this.newCoordinate = newCoordinate;
         this.isJump = isJump;
     }
 
-    public Coordinate getOriginal() { return originalCoord; }
+    public Coordinate getOriginal() { return originalCoordinate; }
 
 
     public Pieces getMan() { return movingMan; }
 
-    public Coordinate getNew() { return newCoord; }
-
-    public void setEvaluation(double evaluation) { this.evaluation = evaluation; }
-
-    public double getEvaluation() { return evaluation; }
+    public Coordinate getNew() { return newCoordinate; }
 
     public boolean isJump() { return this.isJump; }
 
-    public Coordinate getJumped() { return jumpedCoord; }
+    public Coordinate getJumped() { return jumpedCoordinate; }
 
     public Pieces getJumpedMan() { return jumpedMan; }
 
@@ -63,7 +57,7 @@ public class Move {
     }
 
     public String toStringWithoutPlayer() {
-        return "" + originalCoord.toString() + " -> " + newCoord.toString();
+        return "" + originalCoordinate.toString() + " -> " + newCoordinate.toString();
     }
 
     @Override
@@ -71,9 +65,8 @@ public class Move {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Move move = (Move) o;
-        return originalCoord.equals(move.originalCoord) &&
-                newCoord.equals(move.newCoord) &&
-                Double.compare(move.evaluation, evaluation) == 0 &&
+        return originalCoordinate.equals(move.originalCoordinate) &&
+                newCoordinate.equals(move.newCoordinate) &&
                 isJump == move.isJump &&
                 Objects.equals(player, move.player) &&
                 movingMan == move.movingMan;
@@ -81,6 +74,6 @@ public class Move {
 
     @Override
     public int hashCode() {
-        return Objects.hash(player, movingMan, originalCoord, newCoord, evaluation, isJump);
+        return Objects.hash(player, movingMan, originalCoordinate, newCoordinate, isJump);
     }
 }
