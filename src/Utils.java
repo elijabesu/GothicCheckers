@@ -128,4 +128,10 @@ public class Utils {
         if (isWhite) return whiteValue - blackValue;
         return blackValue - whiteValue;
     }
+
+    public static double getValueDependingOnColour(boolean isWhite, double one, double two) {
+        if (isWhite) return Math.min(one, two);
+        return Math.max(one, two);
+
+    }
 }
