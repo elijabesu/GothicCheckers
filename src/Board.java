@@ -15,11 +15,6 @@ public class Board {
         this.coordinates = new Pieces[size][size];
     }
 
-    public Board(int size, Pieces[][] coordinates) {
-        this(size);
-        this.coordinates = coordinates;
-    }
-
     public String displayBoard() {
         boardString.delete(0, boardString.length());
         appendColumnsNames();
@@ -165,15 +160,5 @@ public class Board {
             }
         }
         return result;
-    }
-
-    public Board clone() { // TODO remove
-        Pieces[][] clonedCoordinates = new Pieces[size][size];
-        for (int row = 0; row < size; row++) {
-            for (int column = 0; column < size; column++) {
-                clonedCoordinates[row][column] = coordinates[row][column];
-            }
-        }
-        return new Board(size, clonedCoordinates);
     }
 }
