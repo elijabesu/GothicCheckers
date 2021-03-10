@@ -6,9 +6,7 @@ public enum Pieces {
     BLACK_KING();
 
     public boolean isSameColourAs(Pieces value) {
-        if (isWhite(value) && isWhite()) return true;
-        if (!isWhite(value) && !isWhite()) return true;
-        return false;
+        return isWhite(value) == isWhite();
     }
 
     public boolean isWhite() {

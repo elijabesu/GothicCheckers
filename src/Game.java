@@ -25,7 +25,24 @@ public class Game {
     public String displayBoard() {
         return board.displayBoard();
     }
+
     public void setDifficulty(int difficulty) { this.difficulty = difficulty; }
+
+    public boolean getPlayerBool() {
+        return playerBool;
+    }
+
+    public void switchPlayers() {
+        playerBool = !playerBool;
+    }
+
+    public Pieces getManByPosition(Coordinate coordinate) {
+        return board.getCoordinate(coordinate);
+    }
+
+    public boolean shouldEnd(Player player1, Player player2) {
+        return movesWithoutJump == 30 || player1.getPoints() == 16 || player2.getPoints() == 16;
+    }
 
     public void generateMen() {
         // black
@@ -43,6 +60,7 @@ public class Game {
         }
     }
 
+    // MOVING
     public Move move(Player player, Pieces movingMan, List<Coordinate> coordinates) {
         if (rules.isJumpingPossible(player, movingMan, coordinates.get(0))) return null;
         Move move = new Move(player, movingMan, coordinates.get(0), // the man we are currently moving
@@ -53,6 +71,20 @@ public class Game {
         return move;
     }
 
+    public Move moveKing(Player player, Pieces movingMan, List<Coordinate> coordinates) {
+        if (rules.isJumpingPossible(player, movingMan, coordinates.get(0))) return null;
+        Move maybeMove = rules.getPossibleMoves(player, movingMan, coordinates.get(0)).stream()
+                .filter(move -> move.getNew().getRow() == coordinates.get(1).getRow() &&
+                        move.getNew().getColumn() == coordinates.get(1).getColumn())
+                .findFirst().orElse(null);
+        if (maybeMove != null) {
+            afterMove(maybeMove);
+            return maybeMove;
+        }
+        return null;
+    }
+
+    // JUMPING
     public Jump jump(Player player, Pieces movingMan, List<Coordinate> coordinates) {
         Pieces jumpedMan = getManByPosition(coordinates.get(2));
         if (jumpedMan == null) return null;
@@ -66,21 +98,10 @@ public class Game {
         return jump;
     }
 
-    public Move moveKing(Player player, Pieces movingMan, List<Coordinate> coordinates) {
-        if (rules.isJumpingPossible(player, movingMan, coordinates.get(0))) return null;
-        Move maybeMove = rules.getPossibleMoves(player, movingMan, coordinates.get(0)).stream()
-                .filter(move -> move.getNew().getRow() == coordinates.get(1).getRow() && move.getNew().getColumn() == coordinates.get(1).getColumn())
-                .findFirst().orElse(null);
-        if (maybeMove != null) {
-            afterMove(maybeMove);
-            return maybeMove;
-        }
-        return null;
-    }
-
     public Jump jumpKing(Player player, Pieces movingMan, List<Coordinate> coordinates) {
         Jump maybeJump = rules.getPossibleJumps(player, movingMan, coordinates.get(0)).stream()
-                .filter(jump -> jump.getNew().getRow() == coordinates.get(1).getRow() && jump.getNew().getColumn() == coordinates.get(1).getColumn())
+                .filter(jump -> jump.getNew().getRow() == coordinates.get(1).getRow() &&
+                        jump.getNew().getColumn() == coordinates.get(1).getColumn())
                 .findFirst().orElse(null);
         if (maybeJump != null) {
             afterJump(player, maybeJump);
@@ -89,10 +110,38 @@ public class Game {
         return null;
     }
 
-    public Pieces getManByPosition(Coordinate coordinate) {
-        return board.getCoordinate(coordinate);
+    public boolean possibleAnotherJump(Player player, Pieces movingMan, Jump jump) {
+        return rules.possibleAnotherJump(player, movingMan, jump);
     }
 
+    // AFTER MOVEMENT
+    private void after(Move move) {
+        board.moveOrJump(move);
+
+        if (rules.needsPromotion(move.getMan(), move.getNew().getRow()))
+            board.promote(move.getMan(), move.getNew());
+
+        history.add(move);
+    }
+
+    private void afterMove(Move move) {
+        after(move);
+        ++movesWithoutJump;
+    }
+
+    private void afterJump(Player player, Jump jump) {
+        after(jump);
+        player.addPoint();
+        movesWithoutJump = 0;
+    }
+
+    public String hint(Player currentPlayer, Player nextPlayer, Pieces movingMan, Coordinate coordinate, int depth) {
+        Move move = Minimax.bestMove(rules, board, difficulty, currentPlayer, nextPlayer, movingMan, coordinate, depth);
+        if (move == null) return "";
+        return move.toStringWithoutPlayer();
+    }
+
+    // HISTORY
     public String getHistory() {
         return history.toString();
     }
@@ -117,51 +166,7 @@ public class Game {
         }
     }
 
-    public String hint(Player currentPlayer, Player nextPlayer, Pieces movingMan, Coordinate coordinate, int depth) {
-        Move move;
-        move = Minimax.bestMove(rules, board, difficulty, currentPlayer, nextPlayer, movingMan, coordinate, depth);
-        if (move == null) return "";
-        return move.toStringWithoutPlayer();
-    }
-
-    public boolean shouldEnd(Player player1, Player player2) {
-        return movesWithoutJump == 30 || player1.getPoints() == 16 || player2.getPoints() == 16;
-    }
-
-    public boolean getPlayerBool() {
-        return playerBool;
-    }
-
-    public void switchPlayers() {
-        playerBool = !playerBool;
-    }
-
-    private void afterJump(Player player, Jump jump) {
-        player.addPoint();
-
-        board.jumped(jump);
-
-        if (rules.needsPromotion(jump.getMan(), jump.getNew().getRow()))
-            board.promoted(jump.getMan(), jump.getNew());
-
-        history.add(jump);
-        movesWithoutJump = 0;
-    }
-
-    private void afterMove(Move move) {
-        board.moved(move);
-
-        if (rules.needsPromotion(move.getMan(), move.getNew().getRow()))
-            board.promoted(move.getMan(), move.getNew());
-
-        history.add(move);
-        ++movesWithoutJump;
-    }
-
-    public boolean possibleAnotherJump(Player player, Pieces movingMan, Jump jump) {
-        return rules.possibleAnotherJump(player, movingMan, jump);
-    }
-
+    // AI MOVEMENT
     public void computerMove(Player currentPlayer, Player nextPlayer, int depth) {
         Jump bestJump = null;
         Move bestMove = null;
@@ -175,12 +180,12 @@ public class Game {
             if (tempMove == null) continue;
             if (tempMove.isJump()) {
                 tempJump = Utils.convertMoveIntoJump(tempMove);
-                if (bestJump == null || getEvaluation(currentPlayer, nextPlayer, depth, bestJump)
-                        < getEvaluation(currentPlayer, nextPlayer, depth, tempJump))
+                if (bestJump == null || getMoveEvaluation(currentPlayer, nextPlayer, depth, bestJump)
+                        < getMoveEvaluation(currentPlayer, nextPlayer, depth, tempJump))
                     bestJump = tempJump;
             } else {
-                if (bestMove == null || getEvaluation(currentPlayer, nextPlayer, depth, bestMove)
-                        < getEvaluation(currentPlayer, nextPlayer, depth, tempMove))
+                if (bestMove == null || getMoveEvaluation(currentPlayer, nextPlayer, depth, bestMove)
+                        < getMoveEvaluation(currentPlayer, nextPlayer, depth, tempMove))
                     bestMove = tempMove;
             }
         }
@@ -191,8 +196,8 @@ public class Game {
         } else afterMove(bestMove);
     }
 
-    private double getEvaluation(Player currentPlayer, Player nextPlayer, int depth, Move move) {
-        return Minimax.getEvaluation(rules, board, difficulty, move,
+    private double getMoveEvaluation(Player currentPlayer, Player nextPlayer, int depth, Move move) {
+        return Minimax.getMoveEvaluation(rules, board, difficulty, move,
                 nextPlayer, currentPlayer, depth, Double.NEGATIVE_INFINITY, Double.POSITIVE_INFINITY);
     }
 }

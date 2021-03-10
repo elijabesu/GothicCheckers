@@ -1,4 +1,5 @@
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 public class Utils {
@@ -6,21 +7,13 @@ public class Utils {
     All utility methods.
      */
 
-    private static int getColumn(char column) {
-        return Columns.valueOf(String.valueOf(column)).ordinal();
-    }
-
     private static int getRow(char row) {
         int inputRow = Integer.parseInt(String.valueOf(row)); // 1 - 8
         return convertRow(inputRow);
     }
 
-    private static int getJumpedColumn(int original, int next) {
-        int difference = Math.abs(original - next);
-        if (difference == 0) return original;
-        if (difference != 2) return -1;
-        if (original > next) return original - 1;
-        return original + 1;
+    private static int getColumn(char column) {
+        return Columns.valueOf(String.valueOf(column)).ordinal();
     }
 
     private static int getJumpedRow(boolean bool, int original, int next) {
@@ -30,6 +23,14 @@ public class Utils {
         if (bool) { // if WHITE
             if (original > next) return original - 1;
         }
+        return original + 1;
+    }
+
+    private static int getJumpedColumn(int original, int next) {
+        int difference = Math.abs(original - next);
+        if (difference == 0) return original;
+        if (difference != 2) return -1;
+        if (original > next) return original - 1;
         return original + 1;
     }
 
@@ -52,7 +53,11 @@ public class Utils {
     }
 
     private static int convertRow(int row) {
-        return -(row - 8);
+        return - (row - 8);
+    }
+
+    public static int convertRowToString(int row) {
+        return 8 - row;
     }
 
     public static String whichMan(Pieces man) {
@@ -63,10 +68,6 @@ public class Utils {
             case WHITE_KING: return "O";
         }
         return "-";
-    }
-
-    public static int convertRowToString(int row) {
-        return 8 - row;
     }
 
     public static List<Integer> generateListOfAvailable(int middle, int extra) {
@@ -132,6 +133,10 @@ public class Utils {
     public static double getValueDependingOnColour(boolean isWhite, double one, double two) {
         if (isWhite) return Math.min(one, two);
         return Math.max(one, two);
+    }
 
+    public static double getValueDependingOnColour(boolean isWhite, List<Double> collection) {
+        if (isWhite) return Collections.min(collection);
+        return Collections.max(collection);
     }
 }

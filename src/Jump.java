@@ -2,7 +2,7 @@ import java.util.Objects;
 
 public class Jump extends Move {
     /*
-    Extension to the Move class.    TODO maybe remove?
+    Extension to the Move class.    TODO maybe remove this class?
      */
 
     public Jump(Player player, Pieces movingMan, Coordinate originalCoordinate,

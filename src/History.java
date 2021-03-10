@@ -20,20 +20,6 @@ public class History {
         history.add(move);
     }
 
-    @Override
-    public String toString() {
-        if (history.size() == 0) return "~~ HISTORY ~~\nNo records.";
-        StringBuilder s = new StringBuilder();
-        s.append("~~ HISTORY ~~");
-
-        for (Move move: history) {
-            s.append(System.lineSeparator());
-            s.append(move.toString());
-        }
-
-        return s.toString();
-    }
-
     public void save() throws IOException {
         Files.write(Paths.get(System.getProperty("user.dir") + "/saves/" +
                 java.time.LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy.MM.dd-HH.mm.ss"))
@@ -42,7 +28,6 @@ public class History {
     }
 
     public void load(Game game, Player player1, Player player2, String fileName) throws IOException {
-        // FIXME loading king moves
         Files.lines(Paths.get(System.getProperty("user.dir") + "/saves/" + fileName))
                 .map(row -> row.split(" "))
                 .filter(parts -> parts.length >= 5)
@@ -60,5 +45,19 @@ public class History {
                     else game.jump(player, man, coordinates);
                     game.switchPlayers();
                 });
+    }
+
+    @Override
+    public String toString() {
+        if (history.size() == 0) return "~~ HISTORY ~~\nNo records.";
+        StringBuilder s = new StringBuilder();
+        s.append("~~ HISTORY ~~");
+
+        for (Move move: history) {
+            s.append(System.lineSeparator());
+            s.append(move.toString());
+        }
+
+        return s.toString();
     }
 }

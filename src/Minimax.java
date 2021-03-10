@@ -1,5 +1,4 @@
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import java.util.Random;
 
@@ -9,8 +8,9 @@ public class Minimax {
         double kingWeight = 1.5;
         double random = new Random().nextDouble();
 
-        double result = Utils.getValueDependingOnColour(currentPlayer.isWhite(), board.getNumberOfWhiteKings(),
-                board.getNumberOfWhiteMen(), board.getNumberOfBlackKings(), board.getNumberOfBlackMen(), kingWeight);
+        double result = Utils.getValueDependingOnColour(currentPlayer.isWhite(),
+                board.getNumberOf(true, true), board.getNumberOf(true, false),
+                board.getNumberOf(false, true), board.getNumberOf(false, false), kingWeight);
 
         if (difficulty == 1) result = result * 0.75 + random * 0.25;
         if (difficulty == 0) result = result * 0.5 + random * 0.5;
@@ -28,7 +28,7 @@ public class Minimax {
         else initialValue = Double.NEGATIVE_INFINITY;
 
         for (Move possibleMove : possibleMoves) {
-            board.moved(possibleMove);
+            board.moveOrJump(possibleMove);
             for (Coordinate enemyCoordinate : board.getCoordinatesList(nextPlayer)) {
                 double result = minimax(rules, board, difficulty, nextPlayer, currentPlayer,
                         board.getCoordinate(enemyCoordinate),
@@ -39,7 +39,7 @@ public class Minimax {
 
                 if (alpha >= beta) break;
             }
-            board.unmoved(possibleMove);
+            board.undoMoveOrJump(possibleMove);
             if (alpha >= beta) break;
         }
         return initialValue;
@@ -56,7 +56,7 @@ public class Minimax {
         List<Double> heuristics = new ArrayList<>();
 
         for (Move possibleMove : possibleMoves) {
-            heuristics.add(getEvaluation(rules, board, difficulty, possibleMove,
+            heuristics.add(getMoveEvaluation(rules, board, difficulty, possibleMove,
                     nextPlayer, currentPlayer, depth, alpha, beta));
         }
 
@@ -80,17 +80,17 @@ public class Minimax {
         return possibleMoves.get(rand.nextInt(possibleMoves.size()));
     }
 
-    public static double getEvaluation(Rules rules, Board board, int difficulty, Move move,
-                                           Player nextPlayer, Player currentPlayer,
+    public static double getMoveEvaluation(Rules rules, Board board, int difficulty, Move move,
+                                           Player currentPlayer, Player nextPlayer,
                                            int depth, double alpha, double beta) {
         List<Double> heuristics = new ArrayList<>();
-        board.moved(move);
+        board.moveOrJump(move);
         for (Coordinate enemyCoordinate : board.getCoordinatesList(nextPlayer)) {
             heuristics.add(minimax(rules, board, difficulty, nextPlayer, currentPlayer,
                     board.getCoordinate(enemyCoordinate),
                     enemyCoordinate, depth - 1, alpha, beta));
         }
-        board.unmoved(move);
-        return Collections.max(heuristics);
+        board.undoMoveOrJump(move);
+        return Utils.getValueDependingOnColour(currentPlayer.isWhite(), heuristics);
     }
 }
