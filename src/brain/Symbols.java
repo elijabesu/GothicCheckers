@@ -1,3 +1,5 @@
+package brain;
+
 public enum Symbols {
     EMPTY("     "),
     WHITE("  o  "),

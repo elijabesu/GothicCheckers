@@ -1,3 +1,5 @@
+package brain;
+
 public class Player {
     /*
     Storing information about the player.
@@ -15,7 +17,7 @@ public class Player {
         this.white = white;
         this.computer = computer;
         this.points = 0;
-        if (name.isEmpty()) name = "Player";
+        if (name.isEmpty()) name = "brain.Player";
         this.name = name;
     }
 

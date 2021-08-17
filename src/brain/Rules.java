@@ -1,3 +1,5 @@
+package brain;
+
 import java.util.*;
 
 public class Rules {

@@ -1,3 +1,5 @@
+package brain;
+
 public enum Pieces {
     WHITE(),
     WHITE_KING(),
