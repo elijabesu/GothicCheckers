@@ -1,4 +1,4 @@
-package brain;
+package shared;
 
 public enum Pieces {
     WHITE(),

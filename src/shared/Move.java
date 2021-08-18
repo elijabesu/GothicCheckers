@@ -1,4 +1,4 @@
-package brain;
+package shared;
 
 import java.util.Objects;
 

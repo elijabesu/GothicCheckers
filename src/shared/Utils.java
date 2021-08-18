@@ -1,4 +1,10 @@
-package brain;
+package shared;
+
+import shared.Coordinate;
+import shared.Jump;
+import shared.Move;
+import shared.Pieces;
+import ui.Columns;
 
 import java.util.ArrayList;
 import java.util.Collections;

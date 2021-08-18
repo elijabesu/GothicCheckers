@@ -1,4 +1,6 @@
-package brain;
+package shared;
+
+import ui.Columns;
 
 import java.util.Objects;
 
