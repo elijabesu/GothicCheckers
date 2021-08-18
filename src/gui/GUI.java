@@ -1,22 +1,39 @@
 package gui;
 
+import shared.Player;
+
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.ItemEvent;
-import java.awt.event.KeyEvent;
+import java.awt.event.*;
+import java.io.File;
+import java.util.Arrays;
 
 public class GUI extends JFrame {
 
     private JLabel difficultyBar;
+    private Game game;
+    private BoardPanel boardPanel;
+
+    private Player player1;
+    private Player player2;
+
+    private final int boardSize = 8;
+    private final int depth = 3;
 
     public GUI() {
         this.setTitle("Gothic Checkers");
         this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
-        createMenuBar();
+        player1 = new Player("White", true, false);
+        player2 = new Player("Black", false, true);
 
-        BoardPanel boardPanel = new BoardPanel(8);
-        this.add(boardPanel);
+        boardPanel = new BoardPanel(boardSize);
+        this.add(boardPanel, BorderLayout.CENTER);
+
+        game = new Game(boardPanel);
+        System.out.println("Game started."); // TODO delete
+
+        createMenuBar();
 
         RightPanel rightPanel = new RightPanel();
         this.add(rightPanel, BorderLayout.EAST);
@@ -57,6 +74,22 @@ public class GUI extends JFrame {
         load.setMnemonic(KeyEvent.VK_L);
         save.setMnemonic(KeyEvent.VK_S);
 
+        newMenu.addActionListener((e) -> {
+            int result = JOptionPane.showConfirmDialog(
+                    this,
+                    "Are you sure?",
+                    "New game",
+                    JOptionPane.YES_NO_OPTION,
+                    JOptionPane.QUESTION_MESSAGE);
+            if (result == JOptionPane.YES_OPTION) {
+                boardPanel = new BoardPanel(boardSize);
+                game = new Game(boardPanel);
+                System.out.println("New game started."); // TODO delete
+            }
+        });
+        load.addActionListener((e) -> loadGame());
+        save.addActionListener((e) -> saveGame());
+
         fileMenu.add(newMenu);
         fileMenu.add(load);
         fileMenu.add(save);
@@ -68,31 +101,56 @@ public class GUI extends JFrame {
         JMenu difMenu = new JMenu("Difficulty");
         difMenu.setMnemonic(KeyEvent.VK_D);
         ButtonGroup difGroup = new ButtonGroup();
+        String[] difficulties = {"Easy", "Normal", "Hard"};
 
-        JRadioButtonMenuItem easy = new JRadioButtonMenuItem("Easy");
-        easy.addItemListener((e) -> {
-            if (e.getStateChange() == ItemEvent.SELECTED) { difficultyBar.setText("Difficulty: Easy");}
-        });
+        for (String d : difficulties) {
+            JRadioButtonMenuItem radio = new JRadioButtonMenuItem(d);
+            if (d.equals("Hard")) radio.setSelected(true);
+            radio.addItemListener((e) -> {
+                if (e.getStateChange() == ItemEvent.SELECTED) {
+                    difficultyBar.setText("Difficulty: " + d);
+                    game.setDifficulty(Arrays.asList(difficulties).indexOf(d));
+                }
+            });
 
-        JRadioButtonMenuItem medium = new JRadioButtonMenuItem("Medium");
-        medium.addItemListener((e) -> {
-            if (e.getStateChange() == ItemEvent.SELECTED) { difficultyBar.setText("Difficulty: Medium");}
-        });
-
-        JRadioButtonMenuItem hard = new JRadioButtonMenuItem("Hard");
-        hard.setSelected(true);
-        hard.addItemListener((e) -> {
-            if (e.getStateChange() == ItemEvent.SELECTED) { difficultyBar.setText("Difficulty: Hard");}
-        });
-
-        difMenu.add(easy);
-        difMenu.add(medium);
-        difMenu.add(hard);
-
-        difGroup.add(easy);
-        difGroup.add(medium);
-        difGroup.add(hard);
+            difMenu.add(radio);
+            difGroup.add(radio);
+        }
 
         return difMenu;
+    }
+
+    private void loadGame() {
+        JFileChooser fileChooser = new JFileChooser();
+        fileChooser.setDialogTitle("Loading saved game");
+        fileChooser.setCurrentDirectory(new File(System.getProperty("user.home")));
+
+        int selection = fileChooser.showOpenDialog(this);
+        if (selection == JFileChooser.APPROVE_OPTION) {
+            if (!game.load(game, player1, player2, fileChooser.getSelectedFile().getAbsolutePath())) {
+                JOptionPane.showConfirmDialog(
+                        this,
+                        "Couldn't load the game.",
+                        "Saving",
+                        JOptionPane.DEFAULT_OPTION);
+            }
+        }
+    }
+
+    private void saveGame() {
+        JFileChooser fileChooser = new JFileChooser();
+        fileChooser.setDialogTitle("Saving current game");
+
+        int selection = fileChooser.showSaveDialog(this);
+        if (selection == JFileChooser.APPROVE_OPTION) {
+            String str;
+            if (game.save(fileChooser.getSelectedFile().getAbsolutePath()))
+                str = "Successfully saved the game.";
+            else str = "Couldn't save the game.";
+
+            JOptionPane.showConfirmDialog(
+                    this, str, "Saving", JOptionPane.DEFAULT_OPTION
+            );
+        }
     }
 }
