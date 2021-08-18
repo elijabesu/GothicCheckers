@@ -3,6 +3,7 @@ package gui;
 import shared.Player;
 
 import javax.swing.*;
+import javax.swing.filechooser.FileFilter;
 import java.awt.*;
 import java.awt.event.*;
 import java.io.File;
@@ -10,7 +11,7 @@ import java.util.Arrays;
 
 public class GUI extends JFrame {
 
-    private JLabel difficultyBar;
+    private final JLabel difficultyBar;
     private Game game;
     private BoardPanel boardPanel;
 
@@ -87,8 +88,8 @@ public class GUI extends JFrame {
                 System.out.println("New game started."); // TODO delete
             }
         });
-        load.addActionListener((e) -> loadGame());
-        save.addActionListener((e) -> saveGame());
+        load.addActionListener((e) -> saveOrLoad(false));
+        save.addActionListener((e) -> saveOrLoad(true));
 
         fileMenu.add(newMenu);
         fileMenu.add(load);
@@ -120,37 +121,55 @@ public class GUI extends JFrame {
         return difMenu;
     }
 
-    private void loadGame() {
+    private void saveOrLoad(boolean save) {
         JFileChooser fileChooser = new JFileChooser();
-        fileChooser.setDialogTitle("Loading saved game");
-        fileChooser.setCurrentDirectory(new File(System.getProperty("user.home")));
 
-        int selection = fileChooser.showOpenDialog(this);
-        if (selection == JFileChooser.APPROVE_OPTION) {
-            if (!game.load(game, player1, player2, fileChooser.getSelectedFile().getAbsolutePath())) {
-                JOptionPane.showConfirmDialog(
-                        this,
-                        "Couldn't load the game.",
-                        "Saving",
-                        JOptionPane.DEFAULT_OPTION);
+        fileChooser.setFileFilter(new FileFilter() {
+            public String getDescription() {
+                return "Text Documents (*.txt)";
             }
+
+            public boolean accept(File f) {
+                if (f.isDirectory()) {
+                    return true;
+                } else {
+                    return f.getName().toLowerCase().endsWith(".txt");
+                }
+            }
+        });
+
+        int selection;
+        String str = "";
+        String title;
+
+        if (save) {
+            fileChooser.setDialogTitle("Saving current game");
+            selection = fileChooser.showSaveDialog(this);
+            if (selection == JFileChooser.APPROVE_OPTION) {
+                if (game.save(checkExtension(fileChooser.getSelectedFile())))
+                    str = "Successfully saved the game.";
+                else str = "Couldn't save the game.";
+            }
+            title = "Saving";
+        } else {
+            fileChooser.setDialogTitle("Loading saved game");
+            selection = fileChooser.showOpenDialog(this);
+            if (selection == JFileChooser.APPROVE_OPTION) {
+                if (game.load(game, player1, player2, checkExtension(fileChooser.getSelectedFile())))
+                    str = "Successfully loaded the game.";
+                else str = "Couldn't load the game.";
+            }
+            title = "Loading";
         }
+
+        JOptionPane.showConfirmDialog(
+                this, str, title, JOptionPane.DEFAULT_OPTION
+        );
     }
 
-    private void saveGame() {
-        JFileChooser fileChooser = new JFileChooser();
-        fileChooser.setDialogTitle("Saving current game");
-
-        int selection = fileChooser.showSaveDialog(this);
-        if (selection == JFileChooser.APPROVE_OPTION) {
-            String str;
-            if (game.save(fileChooser.getSelectedFile().getAbsolutePath()))
-                str = "Successfully saved the game.";
-            else str = "Couldn't save the game.";
-
-            JOptionPane.showConfirmDialog(
-                    this, str, "Saving", JOptionPane.DEFAULT_OPTION
-            );
-        }
+    private String checkExtension(File file) {
+        String path = file.getAbsolutePath();
+        if (!path.endsWith(".txt")) path += ".txt";
+        return path;
     }
 }
