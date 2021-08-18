@@ -1,4 +1,6 @@
-import brain.*;
+package ui;
+
+import shared.*;
 
 import java.util.List;
 import java.util.Scanner;

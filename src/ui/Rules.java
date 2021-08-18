@@ -1,4 +1,7 @@
-package brain;
+package ui;
+
+import shared.*;
+import ui.Board;
 
 import java.util.*;
 

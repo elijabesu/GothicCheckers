@@ -1,4 +1,6 @@
-package brain;
+package ui;
+
+import shared.*;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -20,7 +22,7 @@ public class Minimax {
     }
 
     private static double minimax(Rules rules, Board board, int difficulty, Player currentPlayer, Player nextPlayer, Pieces movingMan,
-                           Coordinate coordinate, int depth, double alpha, double beta) {
+                                  Coordinate coordinate, int depth, double alpha, double beta) {
         if (depth == 0) return getHeuristicValue(board, currentPlayer, difficulty);
 
         List<Move> possibleMoves = rules.getAllPossibilities(currentPlayer, movingMan, coordinate);

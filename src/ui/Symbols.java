@@ -1,4 +1,4 @@
-package brain;
+package ui;
 
 public enum Symbols {
     EMPTY("     "),

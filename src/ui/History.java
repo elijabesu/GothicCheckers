@@ -1,4 +1,6 @@
-package brain;
+package ui;
+
+import shared.*;
 
 import java.io.IOException;
 import java.nio.file.Files;
