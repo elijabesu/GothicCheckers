@@ -31,7 +31,7 @@ public class GUI extends JFrame {
         };
 
         boardPanel = new BoardPanel(boardSize);
-        this.add(boardPanel, BorderLayout.CENTER);
+        this.getContentPane().add(boardPanel, BorderLayout.CENTER);
 
         game = new Game(boardPanel);
         System.out.println("Game started."); // TODO delete
@@ -39,13 +39,13 @@ public class GUI extends JFrame {
         createMenuBar();
 
         RightPanel rightPanel = new RightPanel(players);
-        this.add(rightPanel, BorderLayout.EAST);
+        this.getContentPane().add(rightPanel, BorderLayout.EAST);
 
-        this.add(new JPanel(), BorderLayout.WEST);
+        this.getContentPane().add(new JPanel(), BorderLayout.WEST);
 
         difficultyBar = new JLabel("Difficulty: Hard");
         difficultyBar.setBorder(BorderFactory.createEtchedBorder());
-        this.add(difficultyBar, BorderLayout.SOUTH);
+        this.getContentPane().add(difficultyBar, BorderLayout.SOUTH);
 
         this.setSize(new Dimension(600, 500));
 //        this.setResizable(false);
@@ -59,8 +59,9 @@ public class GUI extends JFrame {
         JMenuBar menuBar = new JMenuBar();
 
         menuBar.add(createFileMenu());
-//        menuBar.add(Box.createHorizontalGlue());
         menuBar.add(createDifficultyMenu());
+        menuBar.add(Box.createHorizontalGlue());
+        menuBar.add(createHelpMenu());
 
         setJMenuBar(menuBar);
     }
@@ -123,6 +124,15 @@ public class GUI extends JFrame {
         return difMenu;
     }
 
+    private JMenu createHelpMenu() {
+        JMenu helpMenu = new JMenu("Help");
+        helpMenu.setMnemonic(KeyEvent.VK_H);
+
+        // TODO help menu
+
+        return helpMenu;
+    }
+
     private void saveOrLoad(boolean save) {
         JFileChooser fileChooser = new JFileChooser();
 
@@ -151,7 +161,7 @@ public class GUI extends JFrame {
                 if (game.save(Utils.checkExtension(fileChooser.getSelectedFile())))
                     str = "Successfully saved the game.";
                 else str = "Couldn't save the game.";
-            }
+            } else str = "Saving cancelled";
             title = "Saving";
         } else {
             fileChooser.setDialogTitle("Loading saved game");
@@ -160,7 +170,7 @@ public class GUI extends JFrame {
                 if (game.load(game, players, Utils.checkExtension(fileChooser.getSelectedFile())))
                     str = "Successfully loaded the game.";
                 else str = "Couldn't load the game.";
-            }
+            } else str = "Loading cancelled";
             title = "Loading";
         }
 
