@@ -105,12 +105,19 @@ public class BoardPanel extends JPanel {
                 int colSize = col * squareSize;
 
                 graphics.fillRect(rowSize, colSize, squareSize, squareSize);
-                if (coordinates[row][col] == Pieces.WHITE) graphics.drawImage(
-                        yellow, rowSize + 5, colSize + 5,40, 40, this
-                );
-                if (coordinates[row][col] == Pieces.BLACK) graphics.drawImage(
-                        purple, rowSize + 5, colSize + 5,40, 40, this
-                );
+                if (coordinates[row][col] == Pieces.WHITE) {
+                    graphics.drawImage(
+                            yellow, rowSize + 5, colSize + 5, 40, 40, this
+                    );
+                } else if (coordinates[row][col] == Pieces.BLACK) {
+                    graphics.drawImage(
+                            purple, rowSize + 5, colSize + 5, 40, 40, this
+                    );
+                } else if (coordinates[row][col] == Pieces.WHITE_KING) {
+                    // TODO white king drawing
+                } else if (coordinates[row][col] == Pieces.BLACK_KING) {
+                    // TODO black king drawing
+                }
             }
         }
     }

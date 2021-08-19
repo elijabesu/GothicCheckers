@@ -27,7 +27,7 @@ public class History {
     }
 
     public void load(Game game, Player[] players, String fileName) throws IOException {
-        System.out.println("Loaded"); // TODO fix
+        System.out.println("Loaded"); // TODO history loading
 //        Files.lines(Paths.get(System.getProperty("user.dir") + "/saves/" + fileName))
 //                .map(row -> row.split(" "))
 //                .filter(parts -> parts.length >= 5)
