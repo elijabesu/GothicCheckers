@@ -6,6 +6,7 @@ import shared.Move;
 import shared.Pieces;
 import ui.Columns;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -146,5 +147,11 @@ public class Utils {
     public static double getValueDependingOnColour(boolean isWhite, List<Double> collection) {
         if (isWhite) return Collections.min(collection);
         return Collections.max(collection);
+    }
+
+    public static String checkExtension(File file) {
+        String path = file.getAbsolutePath();
+        if (!path.endsWith(".txt")) path += ".txt";
+        return path;
     }
 }
