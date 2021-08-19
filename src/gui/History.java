@@ -26,7 +26,7 @@ public class History {
                 history.stream().map(String::valueOf).collect(Collectors.toList()));
     }
 
-    public void load(Game game, Player player1, Player player2, String fileName) throws IOException {
+    public void load(Game game, Player[] players, String fileName) throws IOException {
         System.out.println("Loaded"); // TODO fix
 //        Files.lines(Paths.get(System.getProperty("user.dir") + "/saves/" + fileName))
 //                .map(row -> row.split(" "))

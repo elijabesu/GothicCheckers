@@ -1,6 +1,7 @@
 package gui;
 
 import shared.Player;
+import shared.Utils;
 
 import javax.swing.*;
 import javax.swing.filechooser.FileFilter;
@@ -15,8 +16,7 @@ public class GUI extends JFrame {
     private Game game;
     private BoardPanel boardPanel;
 
-    private Player player1;
-    private Player player2;
+    private Player[] players;
 
     private final int boardSize = 8;
     private final int depth = 3;
@@ -25,8 +25,10 @@ public class GUI extends JFrame {
         this.setTitle("Gothic Checkers");
         this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
-        player1 = new Player("White", true, false);
-        player2 = new Player("Black", false, true);
+        players = new Player[] {
+                new Player("White", true, false),
+                new Player("Black", false, false)
+        };
 
         boardPanel = new BoardPanel(boardSize);
         this.add(boardPanel, BorderLayout.CENTER);
@@ -36,7 +38,7 @@ public class GUI extends JFrame {
 
         createMenuBar();
 
-        RightPanel rightPanel = new RightPanel();
+        RightPanel rightPanel = new RightPanel(players);
         this.add(rightPanel, BorderLayout.EAST);
 
         this.add(new JPanel(), BorderLayout.WEST);
@@ -146,7 +148,7 @@ public class GUI extends JFrame {
             fileChooser.setDialogTitle("Saving current game");
             selection = fileChooser.showSaveDialog(this);
             if (selection == JFileChooser.APPROVE_OPTION) {
-                if (game.save(checkExtension(fileChooser.getSelectedFile())))
+                if (game.save(Utils.checkExtension(fileChooser.getSelectedFile())))
                     str = "Successfully saved the game.";
                 else str = "Couldn't save the game.";
             }
@@ -155,7 +157,7 @@ public class GUI extends JFrame {
             fileChooser.setDialogTitle("Loading saved game");
             selection = fileChooser.showOpenDialog(this);
             if (selection == JFileChooser.APPROVE_OPTION) {
-                if (game.load(game, player1, player2, checkExtension(fileChooser.getSelectedFile())))
+                if (game.load(game, players, Utils.checkExtension(fileChooser.getSelectedFile())))
                     str = "Successfully loaded the game.";
                 else str = "Couldn't load the game.";
             }
@@ -165,11 +167,5 @@ public class GUI extends JFrame {
         JOptionPane.showConfirmDialog(
                 this, str, title, JOptionPane.DEFAULT_OPTION
         );
-    }
-
-    private String checkExtension(File file) {
-        String path = file.getAbsolutePath();
-        if (!path.endsWith(".txt")) path += ".txt";
-        return path;
     }
 }

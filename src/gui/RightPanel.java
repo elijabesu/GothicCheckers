@@ -1,15 +1,21 @@
 package gui;
 
+import shared.Player;
+
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.ItemEvent;
 
 public class RightPanel extends JPanel {
     private JTextArea historyArea;
     private final JButton pauseButton;
-    public JLabel stateBar;
+    private final JLabel stateLabel;
+    private final Player[] players;
 
-    public RightPanel() {
-        stateBar = new JLabel("Game in progress");
+    public RightPanel(Player[] players) {
+        this.players = players;
+
+        stateLabel = new JLabel("Game in progress");
         this.setPreferredSize(new Dimension(150, 450));
 //        this.setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
         this.setLayout(new FlowLayout(FlowLayout.LEFT));
@@ -17,10 +23,10 @@ public class RightPanel extends JPanel {
         pauseButton = new JButton("Pause");
         pauseButton.addActionListener((e) -> {
             if (pauseButton.getText().equals( "Pause")) {
-                stateBar.setText("Game paused");
+                stateLabel.setText("Game paused");
                 pauseButton.setText("Resume");
             } else {
-                stateBar.setText("Game in progress");
+                stateLabel.setText("Game in progress");
                 pauseButton.setText("Pause");
             }
         });
@@ -40,10 +46,10 @@ public class RightPanel extends JPanel {
 //        panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
 
         panel.add(new JLabel("Player 1:"));
-        panel.add(createPlayerPanel(true));
+        panel.add(createPlayerPanel(players[0]));
 
         panel.add(new JLabel("Player 2:"));
-        panel.add(createPlayerPanel(false));
+        panel.add(createPlayerPanel(players[1]));
 
         return panel;
     }
@@ -73,7 +79,7 @@ public class RightPanel extends JPanel {
         JPanel panel = new JPanel();
         panel.setPreferredSize(new Dimension(130, 50));
 //        panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
-        panel.add(stateBar);
+        panel.add(stateLabel);
         panel.add(pauseButton);
 
 //        panel.setSize(150, 50);
@@ -81,22 +87,33 @@ public class RightPanel extends JPanel {
         return panel;
     }
 
-    private JPanel createPlayerPanel(boolean isHuman) {
-
+    private JPanel createPlayerPanel(Player player) {
         JPanel playerPanel = new JPanel();
         ButtonGroup playerGroup = new ButtonGroup();
 
-        JRadioButton ai = new JRadioButton("AI");
-        JRadioButton human = new JRadioButton("Human");
+        for (int i = 0; i < 2; i++) {
+            String buttonText;
+            boolean isAI;
 
-        if (isHuman) human.setSelected(true);
-        else ai.setSelected(true);
+            if (i == 0) {
+                buttonText = "AI";
+                isAI = true;
+            } else {
+                buttonText = "Human";
+                isAI = false;
+            }
 
-        playerGroup.add(human);
-        playerGroup.add(ai);
+            JRadioButton radioButton = new JRadioButton(buttonText);
+            if (player.isComputer() == isAI) radioButton.setSelected(true);
+            radioButton.addItemListener((e) -> {
+                if (e.getStateChange() == ItemEvent.SELECTED) {
+                    player.changePlayer(player.getName(), isAI);
+                }
+            });
 
-        playerPanel.add(human);
-        playerPanel.add(ai);
+            playerGroup.add(radioButton);
+            playerPanel.add(radioButton);
+        }
 
         return playerPanel;
     }

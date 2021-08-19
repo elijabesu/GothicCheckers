@@ -151,9 +151,9 @@ public class Game {
         }
     }
 
-    public boolean load(Game game, Player player1, Player player2, String fileName) {
+    public boolean load(Game game, Player[] players, String fileName) {
         try {
-            history.load(game, player1, player2, fileName);
+            history.load(game, players, fileName);
             return true;
         } catch (Exception e) {
             System.out.println("Error loading a file: " + e);
