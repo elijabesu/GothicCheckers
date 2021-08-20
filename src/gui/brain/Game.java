@@ -15,7 +15,7 @@ public class Game {
     private int difficulty;
     private boolean playerBool;
 
-    private ImageIcon[] pieces;
+    private CustomImageIcon[] pieces;
 
 //    public Game(BoardPanel boardPanel) {
 //        board = boardPanel;
@@ -29,7 +29,7 @@ public class Game {
 //        generateMen();
     }
 
-    public void setPieces(ImageIcon[] pieces) { this.pieces = pieces; }
+    public void setPieces(CustomImageIcon[] pieces) { this.pieces = pieces; }
 
     public void setDifficulty(int difficulty) { this.difficulty = difficulty; }
 
@@ -143,16 +143,15 @@ public class Game {
         }
     }
 
-    public boolean canPlayerMoveThis(ImageIcon piece, Player player) {
-        return player.isWhite() == (piece == pieces[0] || piece == pieces[1]);
+    public boolean canPlayerMoveThis(CustomImageIcon piece, Player player) {
+        return player.isWhite() == piece.isWhite();
     }
 
-    public boolean canPlayerReplaceThis(ImageIcon original, ImageIcon moving) {
-        if (moving == original) return false;
-        return true;
+    public boolean canPlayerReplaceThis(CustomImageIcon original, CustomImageIcon moving) {
+        return moving.isWhite() != original.isWhite();
     }
 
-    public boolean checkValidityAndMove(ImageIcon originalPiece, ImageIcon movingPiece,
+    public boolean checkValidityAndMove(CustomImageIcon originalPiece, CustomImageIcon movingPiece,
                                  Point originalPosition, Point newPosition, Player player) {
         if (!canPlayerReplaceThis(originalPiece, movingPiece)) return false;
         if (!canPlayerMoveThis(movingPiece, player)) return false;

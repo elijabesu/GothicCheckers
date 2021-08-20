@@ -1,35 +1,33 @@
 package gui.brain;
 
 import shared.Player;
-import shared.Utils;
-import ui.Pieces;
 
 import javax.swing.*;
 import java.awt.*;
 
 public class Move {
     private final Player player;
-    private final ImageIcon movingMan;
+    private final CustomImageIcon movingMan;
     private final Point originalCoordinate;
     private final Point jumpedCoordinate;
-    private final ImageIcon jumpedMan;
+    private final CustomImageIcon jumpedMan;
     private final Point newCoordinate;
     private final boolean isJump;
 
-    public Move(Player player, ImageIcon movingMan, Point originalCoordinate,
+    public Move(Player player, CustomImageIcon movingMan, Point originalCoordinate,
                 Point newCoordinate) {
         this(player, movingMan, originalCoordinate, null, null, newCoordinate, false);
     }
 
-    public Move(Player player, ImageIcon movingMan, Point originalCoordinate,
-                Point jumpedCoord, ImageIcon jumpedMan,
+    public Move(Player player, CustomImageIcon movingMan, Point originalCoordinate,
+                Point jumpedCoord, CustomImageIcon jumpedMan,
                 Point newCoordinate) {
         this(player, movingMan, originalCoordinate,
                 jumpedCoord, jumpedMan,
                 newCoordinate, true);
     }
-    public Move(Player player, ImageIcon movingMan, Point originalCoordinate,
-                Point jumpedCoordinate, ImageIcon jumpedMan,
+    public Move(Player player, CustomImageIcon movingMan, Point originalCoordinate,
+                Point jumpedCoordinate, CustomImageIcon jumpedMan,
                 Point newCoordinate, boolean isJump) {
         this.player = player;
         this.movingMan = movingMan;

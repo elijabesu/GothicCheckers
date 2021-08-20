@@ -1,5 +1,6 @@
 package gui;
 
+import gui.brain.CustomImageIcon;
 import gui.brain.Game;
 import shared.*;
 
@@ -22,10 +23,10 @@ public class BoardPanel extends JLayeredPane implements MouseListener, MouseMoti
     private int x;
     private int y;
 
-    private ImageIcon white;
-    private ImageIcon whiteKing;
-    private ImageIcon black;
-    private ImageIcon blackKing;
+    private CustomImageIcon white;
+    private CustomImageIcon whiteKing;
+    private CustomImageIcon black;
+    private CustomImageIcon blackKing;
 
     public BoardPanel(int size, Game game, Player[] players) {
         this.game = game;
@@ -34,7 +35,7 @@ public class BoardPanel extends JLayeredPane implements MouseListener, MouseMoti
 //        coordinates = new Pieces[size][size];
 
         prepareImages();
-        game.setPieces(new ImageIcon[] {white, whiteKing, black, blackKing});
+        game.setPieces(new CustomImageIcon[] {white, whiteKing, black, blackKing});
 
         Dimension boardSize = new Dimension(400, 400);
         setPreferredSize(boardSize);
@@ -63,10 +64,10 @@ public class BoardPanel extends JLayeredPane implements MouseListener, MouseMoti
         Image resizedBlackKing = new ImageIcon(getClass().getResource("resources/blackKing.png"))
                 .getImage().getScaledInstance(45, 45, Image.SCALE_SMOOTH);
 
-        white = new ImageIcon(resizedWhite);
-        black = new ImageIcon(resizedBlack);
-        whiteKing = new ImageIcon(resizedWhiteKing);
-        blackKing = new ImageIcon(resizedBlackKing);
+        white = new CustomImageIcon(resizedWhite, true, false);
+        black = new CustomImageIcon(resizedBlack, false, false);
+        whiteKing = new CustomImageIcon(resizedWhiteKing, true, true);
+        blackKing = new CustomImageIcon(resizedBlackKing, false, true);
     }
 
     private void generateTiles() {
@@ -189,7 +190,7 @@ public class BoardPanel extends JLayeredPane implements MouseListener, MouseMoti
         // we only need JLabels
         if (componentAt instanceof JPanel) return;
         if (!game.canPlayerMoveThis(
-                (ImageIcon) ((JLabel) componentAt).getIcon(),
+                (CustomImageIcon) ((JLabel) componentAt).getIcon(),
                 currentPlayer)
         ) return;
 
@@ -211,15 +212,18 @@ public class BoardPanel extends JLayeredPane implements MouseListener, MouseMoti
     public void mouseReleased(MouseEvent e) {
         if (currentPiece == null) return;
 
-        currentPiece.setVisible(false);
         Component componentAt = boardPanel.findComponentAt(e.getX(), e.getY());
+        if (componentAt.getLocation().equals(currentPieceOriginalPosition)) return;
+
+        currentPiece.setVisible(false);
 
         Container parent;
         boolean valid = true;
+
         if (componentAt instanceof JLabel) {
             if (!game.checkValidityAndMove(
-                    (ImageIcon) ((JLabel) componentAt).getIcon(),
-                    (ImageIcon) currentPiece.getIcon(),
+                    (CustomImageIcon) ((JLabel) componentAt).getIcon(),
+                    (CustomImageIcon) currentPiece.getIcon(),
                     currentPieceOriginalPosition,
                     componentAt.getLocation(),
                     currentPlayer
