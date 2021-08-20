@@ -1,5 +1,6 @@
 package gui;
 
+import gui.brain.Game;
 import shared.Player;
 import shared.Utils;
 
@@ -30,10 +31,10 @@ public class GUI extends JFrame {
                 new Player("Black", false, false)
         };
 
-        boardPanel = new BoardPanel(boardSize);
+        game = new Game();
+        boardPanel = new BoardPanel(boardSize, game, players);
         this.getContentPane().add(boardPanel, BorderLayout.CENTER);
 
-        game = new Game(boardPanel);
         System.out.println("Game started."); // TODO delete
 
         createMenuBar();
@@ -86,8 +87,8 @@ public class GUI extends JFrame {
                     JOptionPane.YES_NO_OPTION,
                     JOptionPane.QUESTION_MESSAGE);
             if (result == JOptionPane.YES_OPTION) {
-                boardPanel = new BoardPanel(boardSize);
-                game = new Game(boardPanel);
+                game = new Game();
+                boardPanel = new BoardPanel(boardSize, game, players);
                 System.out.println("New game started."); // TODO delete
             }
         });
