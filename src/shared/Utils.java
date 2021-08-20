@@ -1,10 +1,6 @@
 package shared;
 
-import shared.Coordinate;
-import shared.Jump;
-import shared.Move;
-import shared.Pieces;
-import ui.Columns;
+import ui.*;
 
 import java.io.File;
 import java.util.ArrayList;

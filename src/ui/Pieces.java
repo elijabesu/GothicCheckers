@@ -1,4 +1,4 @@
-package shared;
+package ui;
 
 public enum Pieces {
     WHITE(),

@@ -1,4 +1,6 @@
-package shared;
+package ui;
+
+import shared.Player;
 
 import java.util.Objects;
 
