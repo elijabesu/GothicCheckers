@@ -64,6 +64,7 @@ public class RightPanel extends JPanel {
 
         historyArea = new JTextArea(10, 10);
         historyArea.setLineWrap(true);
+        historyArea.setEditable(false);
 
         JScrollPane scrollPane = new JScrollPane(historyArea);
         scrollPane.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS);
