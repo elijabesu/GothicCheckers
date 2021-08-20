@@ -1,28 +1,35 @@
-package gui;
+package gui.brain;
 
 import shared.*;
-import ui.Minimax;
+import ui.Jump;
 
-import java.util.List;
+import javax.swing.*;
+import java.awt.*;
+import java.awt.image.ImageFilter;
 
 public class Game {
-    private final BoardPanel board;
+//    private final BoardPanel board;
 //    private final Rules rules;
     private final History history;
     private int movesWithoutJump;
     private int difficulty;
     private boolean playerBool;
 
-    public Game(BoardPanel boardPanel) {
-        board = boardPanel;
+    private ImageIcon[] pieces;
+
+//    public Game(BoardPanel boardPanel) {
+//        board = boardPanel;
 //        rules = new Rules(board);
+    public Game() {
         history = new History();
         movesWithoutJump = 0;
         playerBool = true;
         difficulty = 2; // default being hard
 
-        generateMen();
+//        generateMen();
     }
+
+    public void setPieces(ImageIcon[] pieces) { this.pieces = pieces; }
 
     public void setDifficulty(int difficulty) { this.difficulty = difficulty; }
 
@@ -34,26 +41,12 @@ public class Game {
         playerBool = !playerBool;
     }
 
-    public Pieces getManByPosition(Coordinate coordinate) {
-        return board.getCoordinate(coordinate);
-    }
+//    public Pieces getManByPosition(Coordinate coordinate) {
+//        return board.getCoordinate(coordinate);
+//    }
 
     public boolean shouldEnd(Player player1, Player player2) {
         return movesWithoutJump == 30 || player1.getPoints() == 16 || player2.getPoints() == 16;
-    }
-
-    public void generateMen() {
-        for (int row = 0; row < board.getBoardSize(); row++) {
-            for (int col = 0; col < board.getBoardSize(); col++) {
-                if (col < 2) {
-                    board.placeMan(Pieces.WHITE, new Coordinate(row, col));
-                } else if (col > 5) {
-                    board.placeMan(Pieces.BLACK, new Coordinate(row, col));
-                } else {
-                    board.placeMan(Pieces.EMPTY, new Coordinate(row, col));
-                }
-            }
-        }
     }
 
     // MOVING // TODO
@@ -112,26 +105,15 @@ public class Game {
 //    }
 
     // AFTER MOVEMENT
-    private void after(Move move) {
-        board.moveOrJump(move);
+//    private void after(Move move) {
+//        board.moveOrJump(move);
 
         // TODO promotions
 //        if (rules.needsPromotion(move.getMan(), move.getNew().getRow()))
 //            board.promote(move.getMan(), move.getNew());
 
-        history.add(move);
-    }
-
-    private void afterMove(Move move) {
-        after(move);
-        ++movesWithoutJump;
-    }
-
-    private void afterJump(Player player, Jump jump) {
-        after(jump);
-        player.addPoint();
-        movesWithoutJump = 0;
-    }
+//        history.add(move);
+//    }
 
     // TODO hinting
 //    public String hint(Player currentPlayer, Player nextPlayer, Pieces movingMan, Coordinate coordinate, int depth) {
@@ -159,5 +141,29 @@ public class Game {
             System.out.println("Error loading a file: " + e);
             return false;
         }
+    }
+
+    public boolean canPlayerMoveThis(ImageIcon piece, Player player) {
+        return player.isWhite() == (piece == pieces[0] || piece == pieces[1]);
+    }
+
+    public boolean canPlayerReplaceThis(ImageIcon original, ImageIcon moving) {
+        if (moving == original) return false;
+        return true;
+    }
+
+    public boolean checkValidityAndMove(ImageIcon originalPiece, ImageIcon movingPiece,
+                                 Point originalPosition, Point newPosition, Player player) {
+        if (!canPlayerReplaceThis(originalPiece, movingPiece)) return false;
+        if (!canPlayerMoveThis(movingPiece, player)) return false;
+
+        Move move = new Move(player, movingPiece, originalPosition, newPosition);
+        history.add(move);
+        if (move.isJump()) {
+            player.addPoint();
+            movesWithoutJump = 0;
+        }
+        else ++movesWithoutJump;
+        return true;
     }
 }
