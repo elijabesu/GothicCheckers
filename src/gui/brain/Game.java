@@ -1,11 +1,8 @@
 package gui.brain;
 
 import shared.*;
-import ui.Jump;
 
-import javax.swing.*;
 import java.awt.*;
-import java.awt.image.ImageFilter;
 
 public class Game {
 //    private final BoardPanel board;
@@ -15,7 +12,7 @@ public class Game {
     private int difficulty;
     private boolean playerBool;
 
-    private CustomImageIcon[] pieces;
+    private Piece[] pieces;
 
 //    public Game(BoardPanel boardPanel) {
 //        board = boardPanel;
@@ -29,7 +26,7 @@ public class Game {
 //        generateMen();
     }
 
-    public void setPieces(CustomImageIcon[] pieces) { this.pieces = pieces; }
+    public void setPieces(Piece[] pieces) { this.pieces = pieces; }
 
     public void setDifficulty(int difficulty) { this.difficulty = difficulty; }
 
@@ -143,16 +140,16 @@ public class Game {
         }
     }
 
-    public boolean canPlayerMoveThis(CustomImageIcon piece, Player player) {
+    public boolean canPlayerMoveThis(Piece piece, Player player) {
         return player.isWhite() == piece.isWhite();
     }
 
-    public boolean canPlayerReplaceThis(CustomImageIcon original, CustomImageIcon moving) {
+    public boolean canPlayerReplaceThis(Piece original, Piece moving) {
         return moving.isWhite() != original.isWhite();
     }
 
-    public boolean checkValidityAndMove(CustomImageIcon originalPiece, CustomImageIcon movingPiece,
-                                 Point originalPosition, Point newPosition, Player player) {
+    public boolean checkValidityAndMove(Piece originalPiece, Piece movingPiece,
+                                        Point originalPosition, Point newPosition, Player player) {
         if (!canPlayerReplaceThis(originalPiece, movingPiece)) return false;
         if (!canPlayerMoveThis(movingPiece, player)) return false;
 

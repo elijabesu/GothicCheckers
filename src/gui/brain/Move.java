@@ -7,27 +7,27 @@ import java.awt.*;
 
 public class Move {
     private final Player player;
-    private final CustomImageIcon movingMan;
+    private final Piece movingMan;
     private final Point originalCoordinate;
     private final Point jumpedCoordinate;
-    private final CustomImageIcon jumpedMan;
+    private final Piece jumpedMan;
     private final Point newCoordinate;
     private final boolean isJump;
 
-    public Move(Player player, CustomImageIcon movingMan, Point originalCoordinate,
+    public Move(Player player, Piece movingMan, Point originalCoordinate,
                 Point newCoordinate) {
         this(player, movingMan, originalCoordinate, null, null, newCoordinate, false);
     }
 
-    public Move(Player player, CustomImageIcon movingMan, Point originalCoordinate,
-                Point jumpedCoord, CustomImageIcon jumpedMan,
+    public Move(Player player, Piece movingMan, Point originalCoordinate,
+                Point jumpedCoord, Piece jumpedMan,
                 Point newCoordinate) {
         this(player, movingMan, originalCoordinate,
                 jumpedCoord, jumpedMan,
                 newCoordinate, true);
     }
-    public Move(Player player, CustomImageIcon movingMan, Point originalCoordinate,
-                Point jumpedCoordinate, CustomImageIcon jumpedMan,
+    public Move(Player player, Piece movingMan, Point originalCoordinate,
+                Point jumpedCoordinate, Piece jumpedMan,
                 Point newCoordinate, boolean isJump) {
         this.player = player;
         this.movingMan = movingMan;

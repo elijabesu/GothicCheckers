@@ -3,11 +3,11 @@ package gui.brain;
 import javax.swing.*;
 import java.awt.*;
 
-public class CustomImageIcon extends ImageIcon {
+public class Piece extends ImageIcon {
     private boolean isWhite;
     private boolean isKing;
 
-    public CustomImageIcon(Image image, boolean isWhite, boolean isKing) {
+    public Piece(Image image, boolean isWhite, boolean isKing) {
         super(image);
         this.isKing = isKing;
         this.isWhite = isWhite;
