@@ -5,6 +5,8 @@ import shared.Player;
 import shared.Utils;
 
 import javax.swing.*;
+import javax.swing.event.MenuEvent;
+import javax.swing.event.MenuListener;
 import javax.swing.filechooser.FileFilter;
 import java.awt.*;
 import java.awt.event.*;
@@ -130,8 +132,32 @@ public class GUI extends JFrame {
         helpMenu.setMnemonic(KeyEvent.VK_H);
 
         // TODO help menu
+//        HelpFrame help = new HelpFrame(this);
+
+        helpMenu.addMenuListener(new CustomMenuListener());
 
         return helpMenu;
+    }
+
+    class CustomMenuListener implements MenuListener {
+
+        @Override
+        public void menuSelected(MenuEvent e) {
+//            HelpFrame help = new HelpFrame(GUI.this);
+//            help.setVisible(true);
+            HelpDialog helpDialog = new HelpDialog(GUI.this);
+            helpDialog.setVisible(true);
+        }
+
+        @Override
+        public void menuDeselected(MenuEvent e) {
+
+        }
+
+        @Override
+        public void menuCanceled(MenuEvent e) {
+
+        }
     }
 
     private void saveOrLoad(boolean save) {
