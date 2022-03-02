@@ -2,6 +2,7 @@ package gui.brain;
 
 import shared.*;
 
+import javax.swing.*;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
@@ -18,6 +19,10 @@ public class History {
 
     public void add(Move move) {
         history.add(move);
+    }
+
+    public String getMostRecentMove() {
+        return history.get(history.size() - 1).toString();
     }
 
     public void save(String fileName) throws IOException {

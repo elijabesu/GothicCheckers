@@ -64,6 +64,10 @@ public class Utils {
     public static int convertRowToString(int row) {
         return 8 - row;
     }
+    public static String convertColumnToString(int column) {
+        String[] strings = new String[] {"A", "B", "C", "D", "E", "F", "G", "H"};
+        return strings[column];
+    }
 
     public static String whichMan(Pieces man) {
         switch (man) {

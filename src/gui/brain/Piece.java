@@ -20,4 +20,15 @@ public class Piece extends ImageIcon {
     public boolean isWhite() {
         return isWhite;
     }
+
+    @Override
+    public String toString() {
+        if (isWhite) {
+            if (isKing) return "O";
+            return "o";
+        } else {
+            if (isKing) return "X";
+            return "x";
+        }
+    }
 }
