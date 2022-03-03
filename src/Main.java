@@ -1,5 +1,3 @@
-import gui.old_GUI;
-import ui.UserInterface;
 import gui.GUI;
 
 public class Main {
@@ -8,7 +6,6 @@ public class Main {
 //        UserInterface ui = new UserInterface();
 //        ui.startGame();
 
-//        old_GUI gui = new old_GUI();
         GUI gui = new GUI();
         gui.startGame();
     }

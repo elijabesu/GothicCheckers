@@ -18,6 +18,7 @@ public class GUI extends JFrame {
     private Game game;
 
     private JLabel difficultyBar;
+    private JLabel playerLabel;
     private BoardPanel boardPanel;
     private RightPanel rightPanel;
 
@@ -83,10 +84,10 @@ public class GUI extends JFrame {
                     JOptionPane.YES_NO_OPTION,
                     JOptionPane.QUESTION_MESSAGE);
             if (result == JOptionPane.YES_OPTION) {
-                // TODO new game
                 game = new Game();
                 clearGui();
                 startNewGui();
+                validate();
                 getContentPane().repaint();
             }
         });
@@ -261,8 +262,14 @@ public class GUI extends JFrame {
         }
 
         private void switchPlayers() {
-            if (currentPlayer.equals(players[0])) currentPlayer = players[1];
-            else currentPlayer = players[0];
+            if (currentPlayer.equals(players[0])) {
+                currentPlayer = players[1];
+                playerLabel.setText("Player 2's turn.");
+            } else {
+                currentPlayer = players[0];
+                playerLabel.setText("Player 1's turn.");
+            }
+            game.switchPlayers();
         }
 
         @Override
@@ -373,10 +380,10 @@ public class GUI extends JFrame {
 
             // Pause
             JPanel pausePanel = new JPanel();
-            pausePanel.setPreferredSize(new Dimension(130,50));
+            pausePanel.setPreferredSize(new Dimension(130,70));
 
+            playerLabel = new JLabel("Player 1's turn.");
             JLabel stateLabel = new JLabel("Game in progress.");
-            pausePanel.add(stateLabel);
 
             JButton pauseButton = new JButton("Pause");
             pauseButton.setPreferredSize(new Dimension(130,20));
@@ -389,6 +396,9 @@ public class GUI extends JFrame {
                     pauseButton.setText("Pause");
                 }
             });
+
+            pausePanel.add(playerLabel);
+            pausePanel.add(stateLabel);
             pausePanel.add(pauseButton);
 
             add(pausePanel);
@@ -397,12 +407,13 @@ public class GUI extends JFrame {
             JPanel historyPanel = new JPanel();
             historyPanel.setLayout(new BoxLayout(historyPanel, BoxLayout.Y_AXIS));
             historyPanel.setPreferredSize(new Dimension(130,200));
-            historyPanel.add(new JLabel("History:"));
 
             historyDlm = new DefaultListModel<>();
             JScrollPane scrollPane = new JScrollPane(new JList<>(historyDlm));
             scrollPane.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS);
             scrollPane.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
+
+            historyPanel.add(new JLabel("History:"));
             historyPanel.add(scrollPane);
 
             add(historyPanel);
