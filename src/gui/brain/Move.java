@@ -1,6 +1,7 @@
 package gui.brain;
 
 import shared.Player;
+import shared.Utils;
 
 import javax.swing.*;
 import java.awt.*;
@@ -58,6 +59,11 @@ public class Move {
     }
 
     public String toStringWithoutPlayer() {
-        return "" + originalCoordinate.toString() + " -> " + newCoordinate.toString();
+        return
+                Utils.convertColumnToString(originalCoordinate.x) +
+                        Utils.convertRowToString(originalCoordinate.y) +
+                        " -> " +
+                        Utils.convertColumnToString(newCoordinate.x) +
+                        Utils.convertRowToString(newCoordinate.y);
     }
 }

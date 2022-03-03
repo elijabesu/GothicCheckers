@@ -4,8 +4,8 @@ import javax.swing.*;
 import java.awt.*;
 
 public class Piece extends ImageIcon {
-    private boolean isWhite;
-    private boolean isKing;
+    private final boolean isWhite;
+    private final boolean isKing;
 
     public Piece(Image image, boolean isWhite, boolean isKing) {
         super(image);
@@ -19,5 +19,16 @@ public class Piece extends ImageIcon {
 
     public boolean isWhite() {
         return isWhite;
+    }
+
+    @Override
+    public String toString() {
+        if (isWhite) {
+            if (isKing) return "O";
+            return "o";
+        } else {
+            if (isKing) return "X";
+            return "x";
+        }
     }
 }
