@@ -1,38 +1,27 @@
 package gui.brain;
+import gui.GUI.BoardPanel;
 import shared.*;
 
 import javax.swing.*;
-import java.awt.*;
 
 public class Game {
-//    private final BoardPanel board;
-//    private final Rules rules;
-//    private final History history;
+    private final Rules rules;
     private int movesWithoutJump;
     private int difficulty;
     private boolean playerBool;
 
-    private Piece[] pieces;
-
-//    public Game(BoardPanel boardPanel) {
-//        board = boardPanel;
-//        rules = new Rules(board);
-    public Game() {
-//        history = new History();
+    public Game(BoardPanel boardPanel) {
+        rules = new Rules(boardPanel);
         movesWithoutJump = 0;
         playerBool = true;
         difficulty = 2; // default being hard
 
         System.out.println("Game started."); // TODO delete
-
-//        generateMen();
     }
-
-    public void setPieces(Piece[] pieces) { this.pieces = pieces; }
 
     public void setDifficulty(int difficulty) {
         this.difficulty = difficulty;
-        System.out.println("Difficulty set to " + difficulty); // TODO delete
+        System.out.println("Difficulty set to " + difficulty + "."); // TODO delete
     }
 
     public boolean getPlayerBool() {
@@ -43,38 +32,73 @@ public class Game {
         playerBool = !playerBool;
     }
 
-    public boolean shouldEnd(Player player1, Player player2) {
-        return movesWithoutJump == 30 || player1.getPoints() == 16 || player2.getPoints() == 16;
+    public boolean shouldEnd(Player[] players) {
+        return movesWithoutJump == 30 || players[0].getPoints() == 16 || players[1].getPoints() == 16;
     }
 
-    public boolean canPlayerMoveThis(Piece piece, Player player) {
-        return player.isWhite() == piece.isWhite();
+    // MOVING
+    public boolean canPlayerMoveThis(Player player, Piece movingMan) {
+        return rules.canPlayerMoveThis(player, movingMan);
     }
-
-    public boolean canPlayerReplaceThis(Piece original, Piece moving) {
-        return moving.isWhite() != original.isWhite();
-    }
-
-    public boolean checkValidityAndMove(Piece originalPiece, Piece movingPiece,
-                                        Point originalPosition, Point newPosition, Player player,
-                                        DefaultListModel historyDlm) {
-        if (!canPlayerReplaceThis(originalPiece, movingPiece)) return false;
-        return checkValidityAndMove(movingPiece, originalPosition, newPosition, player, historyDlm);
-    }
-
-    public boolean checkValidityAndMove(Piece movingPiece,
-                                        Point originalPosition, Point newPosition, Player player,
-                                        DefaultListModel historyDlm) {
-        if (!canPlayerMoveThis(movingPiece, player)) return false;
-
-        Move move = new Move(player, movingPiece, originalPosition, newPosition);
-        System.out.println("Moved: " + move.toString()); // TODO delete
-        historyDlm.addElement(move.toStringWithoutPlayer());
-        if (move.isJump()) {
-            player.addPoint();
-            movesWithoutJump = 0;
+    public boolean checkValidityAndMove(Player player, Piece movingMan, Piece jumpedMan,
+                                        Coordinate originalCoordinate, Coordinate jumpedCoordinate, Coordinate newCoordinate,
+                                        DefaultListModel<String> historyDlm) {
+        if (!canPlayerMoveThis(player, movingMan)) {
+            System.out.println("Player cannot move this."); // TODO delete
+            return false;
         }
-        else ++movesWithoutJump;
+        System.out.println("Player can move this."); // TODO delete
+        if (jumpedCoordinate != null || jumpedMan != null) {
+            if (jump(player, movingMan, jumpedMan,
+                    originalCoordinate, jumpedCoordinate, newCoordinate,
+                    historyDlm) == null) return false;
+            return true;
+        }
+
+        if (move(player, movingMan, originalCoordinate, newCoordinate, historyDlm) == null) return false;
         return true;
+    }
+
+    private Move move(Player player, Piece movingMan,
+                     Coordinate originalCoordinate, Coordinate newCoordinate,
+                     DefaultListModel<String> historyDlm) {
+        Move move = new Move(player, movingMan, originalCoordinate, newCoordinate);
+        System.out.println("Generated move: " + move); // TODO delete
+
+        if (!(rules.isValid(player, movingMan, move))) {
+            System.out.println("Move is not valid."); // TODO delete
+            return null;
+        }
+
+        afterMove(move, historyDlm);
+        ++movesWithoutJump;
+
+        System.out.println("Moved " + move.toString() + "."); // TODO delete
+
+        return move;
+    }
+
+    private Jump jump(Player player, Piece movingMan, Piece jumpedMan,
+                      Coordinate originalCoordinate, Coordinate jumpedCoordinate, Coordinate newCoordinate,
+                      DefaultListModel<String> historyDlm) {
+        Jump jump = new Jump(player, movingMan, jumpedMan,
+                originalCoordinate, jumpedCoordinate, newCoordinate);
+        System.out.println("Generated jump: " + jump); // TODO delete
+
+        if (!(rules.isValid(player, movingMan, jump))) {
+            System.out.println("Jump is not valid."); // TODO delete
+            return null;
+        }
+
+        afterMove(jump, historyDlm);
+        player.addPoint();
+        movesWithoutJump = 0;
+
+        return jump;
+    }
+
+    private void afterMove(Move move, DefaultListModel<String> historyDlm) {
+        rules.maybePromote(move.getMan(), move.getNew());
+        historyDlm.addElement(move.toString());
     }
 }

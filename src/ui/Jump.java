@@ -1,5 +1,6 @@
 package ui;
 
+import shared.Coordinate;
 import shared.Player;
 
 import java.util.Objects;

@@ -1,6 +1,6 @@
-package ui;
+package shared;
 
-import shared.Utils;
+import ui.Columns;
 
 import java.util.Objects;
 

@@ -2,7 +2,9 @@ package gui;
 
 import gui.brain.Game;
 import gui.brain.Piece;
+import shared.Coordinate;
 import shared.Player;
+import shared.Utils;
 
 import javax.swing.*;
 import javax.swing.event.MenuEvent;
@@ -30,11 +32,11 @@ public class GUI extends JFrame {
         this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
         players = new Player[] {
-                new Player("White", true, false),
-                new Player("Black", false, false)
+                new Player("P1", true, false),
+                new Player("P2", false, false)
         };
-        game = new Game();
         startNewGui();
+        game = new Game(boardPanel);
 
         setSize(new Dimension(600, 500));
         setResizable(false);
@@ -84,9 +86,9 @@ public class GUI extends JFrame {
                     JOptionPane.YES_NO_OPTION,
                     JOptionPane.QUESTION_MESSAGE);
             if (result == JOptionPane.YES_OPTION) {
-                game = new Game();
                 clearGui();
                 startNewGui();
+                game = new Game(boardPanel);
                 validate();
                 getContentPane().repaint();
             }
@@ -195,8 +197,13 @@ public class GUI extends JFrame {
         }
     }
 
-    class BoardPanel extends JLayeredPane implements MouseListener, MouseMotionListener {
+    public class BoardPanel extends JLayeredPane implements MouseListener, MouseMotionListener {
         private final JPanel mainPanel;
+
+        private final Piece white;
+        private final Piece whiteKing;
+        private final Piece black;
+        private final Piece blackKing;
 
         private Player currentPlayer;
         private JLabel currentPiece;
@@ -204,8 +211,8 @@ public class GUI extends JFrame {
         private int x;
         private int y;
 
-        private Point originalCoordinate;
-        private Point newCoordinate;
+        private Coordinate originalCoordinate;
+        private Coordinate newCoordinate;
 
         public BoardPanel() {
             currentPlayer = players[0];
@@ -230,11 +237,10 @@ public class GUI extends JFrame {
             Image resizedBlackKing = new ImageIcon(Objects.requireNonNull(getClass().getResource("resources/blackKing.png")))
                     .getImage().getScaledInstance(45, 45, Image.SCALE_SMOOTH);
 
-            Piece white = new Piece(resizedWhite, true, false);
-            Piece whiteKing = new Piece(resizedWhiteKing, true, true);
-            Piece black = new Piece(resizedBlack, false, false);
-            Piece blackKing = new Piece(resizedBlackKing, false, true);
-            game.setPieces(new Piece[] {white, whiteKing, black, blackKing});
+            white = new Piece(resizedWhite, true, false);
+            whiteKing = new Piece(resizedWhiteKing, true, true);
+            black = new Piece(resizedBlack, false, false);
+            blackKing = new Piece(resizedBlackKing, false, true);
 
             // generate board tiles
             for (int i = 0; i < boardSize * boardSize; i++) {
@@ -255,6 +261,7 @@ public class GUI extends JFrame {
                         piece = new JLabel(black);
                     } else if (row > 5) {
                         piece = new JLabel(white);
+                    } else {
                     }
                     if (piece != null) tile.add(piece);
                 }
@@ -272,6 +279,35 @@ public class GUI extends JFrame {
             game.switchPlayers();
         }
 
+        public boolean isOccupied(Coordinate coordinate) {
+            return (getCoordinate(coordinate) != null);
+        }
+
+        public Piece getCoordinate(Coordinate coordinate) {
+            JPanel tile = (JPanel) mainPanel.getComponent(
+                    coordinate.getRow() * 8 + coordinate.getColumn()
+            );
+            Component[] components = tile.getComponents();
+            for (Component c: components) {
+                if (c instanceof JLabel) return (Piece) ((JLabel) c).getIcon();
+            }
+            return null;
+        }
+
+        public void promoteToKing(Piece movingMan, Coordinate coordinate) {
+            JPanel tile = (JPanel) mainPanel.getComponent(
+                    coordinate.getRow() * 8 + coordinate.getColumn()
+            );
+            Component[] components = tile.getComponents();
+            for (Component c: components) {
+                if (c instanceof JLabel) {
+                    tile.remove(c);
+                    if (movingMan.isWhite()) tile.add(new JLabel(whiteKing));
+                    else tile.add(new JLabel(black));
+                }
+            }
+        }
+
         @Override
         public void mouseClicked(MouseEvent e) {
             System.out.println("Click for hint."); // TODO delete
@@ -287,14 +323,16 @@ public class GUI extends JFrame {
             if (componentAt instanceof JPanel) return; // we only work with JLabels
 
             if (!game.canPlayerMoveThis(
-                    (Piece) ((JLabel) componentAt).getIcon(),
-                    currentPlayer
+                    currentPlayer,
+                    (Piece) ((JLabel) componentAt).getIcon()
             )) return;
 
             currentPieceOriginalPosition = componentAt.getParent().getLocation();
             x = currentPieceOriginalPosition.x - e.getX();
             y = currentPieceOriginalPosition.y - e.getY();
-            originalCoordinate = new Point(currentPieceOriginalPosition.x / 50, currentPieceOriginalPosition.y / 50);
+            originalCoordinate = new Coordinate(
+                    currentPieceOriginalPosition.y / 50, currentPieceOriginalPosition.x / 50
+            );
 
             currentPiece = (JLabel) componentAt;
             currentPiece.setLocation(currentPieceOriginalPosition);
@@ -314,24 +352,38 @@ public class GUI extends JFrame {
             if (componentAt.getLocation().equals(currentPieceOriginalPosition)) return;
             if (componentAt instanceof JLabel) return;
 
-            newCoordinate = new Point(componentAt.getX() / 50, componentAt.getY() / 50);
+            newCoordinate = new Coordinate(
+                    componentAt.getY() / 50, componentAt.getX() / 50
+            );
             currentPiece.setVisible(false);
 
             JPanel originalTile = (JPanel) mainPanel.getComponent(
-                    originalCoordinate.y * 8 + originalCoordinate.x
+                    originalCoordinate.getRow() * 8 + originalCoordinate.getColumn()
             );
             originalTile.remove(currentPiece);
 
             JPanel newTile = (JPanel) mainPanel.getComponent(
-                    newCoordinate.y * 8 + newCoordinate.x
+                    newCoordinate.getRow() * 8 + newCoordinate.getColumn()
             );
             boolean valid = false;
 
+            Coordinate jumpedCoordinate = Utils.getJumpedCoordinate(
+                    currentPlayer.isWhite(),originalCoordinate, newCoordinate
+            );
+
+            Piece jumpedMan = null;
+            if (jumpedCoordinate != null)
+                jumpedMan = getCoordinate(jumpedCoordinate);
+            System.out.println("Jumped coord: " + jumpedCoordinate); // TODO delete
+            System.out.println("Jumped man: " + jumpedMan); // TODO delete
+
             if (game.checkValidityAndMove(
-                    (Piece) currentPiece.getIcon(),
-                    originalCoordinate,
-                    newCoordinate,
                     currentPlayer,
+                    (Piece) currentPiece.getIcon(),
+                    jumpedMan,
+                    originalCoordinate,
+                    jumpedCoordinate,
+                    newCoordinate,
                     rightPanel.getHistoryDlm()
             )) {
                 valid = true;

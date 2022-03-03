@@ -1,35 +1,35 @@
 package gui.brain;
 
+import shared.Coordinate;
 import shared.Player;
 import shared.Utils;
 
-import javax.swing.*;
-import java.awt.*;
+import java.util.Objects;
 
 public class Move {
-    private final Player player;
-    private final Piece movingMan;
-    private final Point originalCoordinate;
-    private final Point jumpedCoordinate;
-    private final Piece jumpedMan;
-    private final Point newCoordinate;
-    private final boolean isJump;
+    protected final Player player;
+    protected final Piece movingMan;
+    protected final Coordinate originalCoordinate;
+    protected final Coordinate jumpedCoordinate;
+    protected final Piece jumpedMan;
+    protected final Coordinate newCoordinate;
+    protected final boolean isJump;
 
-    public Move(Player player, Piece movingMan, Point originalCoordinate,
-                Point newCoordinate) {
+    public Move(Player player, Piece movingMan, Coordinate originalCoordinate,
+                Coordinate newCoordinate) {
         this(player, movingMan, originalCoordinate, null, null, newCoordinate, false);
     }
 
-    public Move(Player player, Piece movingMan, Point originalCoordinate,
-                Point jumpedCoord, Piece jumpedMan,
-                Point newCoordinate) {
+    public Move(Player player, Piece movingMan, Coordinate originalCoordinate,
+                Coordinate jumpedCoord, Piece jumpedMan,
+                Coordinate newCoordinate) {
         this(player, movingMan, originalCoordinate,
                 jumpedCoord, jumpedMan,
                 newCoordinate, true);
     }
-    public Move(Player player, Piece movingMan, Point originalCoordinate,
-                Point jumpedCoordinate, Piece jumpedMan,
-                Point newCoordinate, boolean isJump) {
+    public Move(Player player, Piece movingMan, Coordinate originalCoordinate,
+                Coordinate jumpedCoordinate, Piece jumpedMan,
+                Coordinate newCoordinate, boolean isJump) {
         this.player = player;
         this.movingMan = movingMan;
         this.originalCoordinate = originalCoordinate;
@@ -39,17 +39,17 @@ public class Move {
         this.isJump = isJump;
     }
 
-    public Point getOriginal() { return originalCoordinate; }
+    public Coordinate getOriginal() { return originalCoordinate; }
 
-    public ImageIcon getMan() { return movingMan; }
+    public Piece getMan() { return movingMan; }
 
-    public Point getNew() { return newCoordinate; }
+    public Coordinate getNew() { return newCoordinate; }
 
     public boolean isJump() { return this.isJump; }
 
-    public Point getJumped() { return jumpedCoordinate; }
+    public Coordinate getJumped() { return jumpedCoordinate; }
 
-    public ImageIcon getJumpedMan() { return jumpedMan; }
+    public Piece getJumpedMan() { return jumpedMan; }
 
     public Player getPlayer() { return this.player; }
 
@@ -60,10 +60,28 @@ public class Move {
 
     public String toStringWithoutPlayer() {
         return
-                Utils.convertColumnToString(originalCoordinate.x) +
-                        Utils.convertRowToString(originalCoordinate.y) +
+                Utils.convertColumnToString(originalCoordinate.getColumn()) +
+                        Utils.convertRowToString(originalCoordinate.getRow()) +
                         " -> " +
-                        Utils.convertColumnToString(newCoordinate.x) +
-                        Utils.convertRowToString(newCoordinate.y);
+                        Utils.convertColumnToString(newCoordinate.getColumn()) +
+                        Utils.convertRowToString(newCoordinate.getRow());
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof Move)) return false;
+        Move move = (Move) o;
+        return isJump == move.isJump && player.equals(move.player) &&
+                movingMan.equals(move.movingMan) && Objects.equals(jumpedMan, move.jumpedMan) &&
+                originalCoordinate.equals(move.originalCoordinate) &&
+                Objects.equals(jumpedCoordinate, move.jumpedCoordinate) &&
+                newCoordinate.equals(move.newCoordinate);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(player, movingMan, jumpedMan,
+                originalCoordinate, jumpedCoordinate, newCoordinate, isJump);
     }
 }

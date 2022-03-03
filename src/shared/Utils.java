@@ -1,6 +1,7 @@
 package shared;
 
 import ui.*;
+import gui.*;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -37,6 +38,16 @@ public class Utils {
         if (difference != 2) return -1;
         if (original > next) return original - 1;
         return original + 1;
+    }
+
+    public static Coordinate getJumpedCoordinate(boolean isWhite, Coordinate original, Coordinate next) {
+        int jumpedRow = getJumpedRow(isWhite, original.getRow(), next.getRow());
+        int jumpedColumn = getJumpedColumn(original.getColumn(), next.getColumn());
+
+        if (jumpedRow == -1 || jumpedColumn == -1) return null;
+        Coordinate jumpedCoordinate = new Coordinate(jumpedRow, jumpedColumn);
+        if (jumpedCoordinate.equals(original) || jumpedCoordinate.equals(next)) return null;
+        return jumpedCoordinate;
     }
 
     public static Coordinate getCoordinate(String string, int row, int column) {
@@ -125,9 +136,14 @@ public class Utils {
         return false;
     }
 
-    public static Jump convertMoveIntoJump(Move move) {
-        return new Jump(move.getPlayer(), move.getMan(), move.getOriginal(),
+    public static ui.Jump convertMoveIntoJump(ui.Move move) {
+        return new ui.Jump(move.getPlayer(), move.getMan(), move.getOriginal(),
                 move.getJumped(), move.getJumpedMan(), move.getNew());
+    }
+
+    public static gui.brain.Jump convertMoveIntoJump(gui.brain.Move move) {
+        return new gui.brain.Jump(move.getPlayer(), move.getMan(), move.getJumpedMan(),
+                move.getOriginal(), move.getJumped(), move.getNew());
     }
 
     public static double getValueDependingOnColour(boolean isWhite, int white, int whiteKings,
