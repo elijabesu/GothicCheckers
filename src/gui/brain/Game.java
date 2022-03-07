@@ -56,6 +56,8 @@ public class Game {
         }
 
         if (move(player, movingMan, originalCoordinate, newCoordinate, historyDlm) == null) return false;
+
+        System.out.println(movesWithoutJump); // TODO delete
         return true;
     }
 
@@ -73,8 +75,7 @@ public class Game {
         afterMove(move, historyDlm);
         ++movesWithoutJump;
 
-        System.out.println("Moved " + move.toString() + "."); // TODO delete
-
+        System.out.println("Moved " + move + "."); // TODO delete
         return move;
     }
 
@@ -92,8 +93,10 @@ public class Game {
 
         afterMove(jump, historyDlm);
         player.addPoint();
+        System.out.println(player); // TODO delete
         movesWithoutJump = 0;
 
+        System.out.println("Jumped " + jump + "."); // TODO delete
         return jump;
     }
 

@@ -30,23 +30,31 @@ public class Jump extends Move {
                         " -> " +
                         Utils.convertColumnToString(jumpedCoordinate.getColumn()) +
                         Utils.convertRowToString(jumpedCoordinate.getRow()) +
-                        " (" + jumpedMan.toString() + ") ->" +
+                        " (" + jumpedMan.toString() + ") -> " +
                         Utils.convertColumnToString(newCoordinate.getColumn()) +
                         Utils.convertRowToString(newCoordinate.getRow());
     }
 
+    public String toStringWithEverything() {
+        return toStringWithoutPlayer() + ", player: " + player + ", moving man: " + movingMan;
+    }
+
+
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        if (!super.equals(o)) return false;
+        if (!(o instanceof Jump)) return false;
         Jump jump = (Jump) o;
-        return jumpedCoordinate == jump.jumpedCoordinate &&
-                jumpedMan == jump.jumpedMan;
+        return isJump == jump.isJump && player.equals(jump.player) &&
+                movingMan.equals(jump.movingMan) && jumpedMan.equals(jump.jumpedMan) &&
+                originalCoordinate.equals(jump.originalCoordinate) &&
+                jumpedCoordinate.equals(jump.jumpedCoordinate) &&
+                newCoordinate.equals(jump.newCoordinate);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(super.hashCode(), jumpedCoordinate, jumpedMan);
+        return Objects.hash(player, movingMan, jumpedMan, originalCoordinate, jumpedCoordinate, newCoordinate, isJump);
     }
 }

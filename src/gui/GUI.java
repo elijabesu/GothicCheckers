@@ -122,7 +122,6 @@ public class GUI extends JFrame {
         // Help
         JMenu helpMenu = new JMenu("Help");
         helpMenu.setMnemonic(KeyEvent.VK_H);
-//        helpMenu.addMenuListener(new CustomMenuListener());
         helpMenu.addMenuListener(new MenuListener() {
             @Override
             public void menuSelected(MenuEvent e) {

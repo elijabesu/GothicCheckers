@@ -209,12 +209,25 @@ public class BoardPanel extends JLayeredPane implements MouseListener, MouseMoti
         )) {
             valid = true;
             newTile.add(currentPiece);
+            if (jumpedCoordinate != null && jumpedMan != null) {
+                JPanel jumpedTile = (JPanel) mainPanel.getComponent(
+                        jumpedCoordinate.getRow() * 8 + jumpedCoordinate.getColumn()
+                );
+                Component[] components = jumpedTile.getComponents();
+                for (Component c: components) {
+                    if (c instanceof JLabel)
+                        jumpedTile.remove(c);
+                }
+            }
         } else {
             originalTile.add(currentPiece);
         }
 
         currentPiece.setVisible(true);
         if (valid) switchPlayers();
+
+        validate();
+        repaint();
     }
 
     @Override

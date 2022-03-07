@@ -72,16 +72,11 @@ public class Move {
         if (this == o) return true;
         if (!(o instanceof Move)) return false;
         Move move = (Move) o;
-        return isJump == move.isJump && player.equals(move.player) &&
-                movingMan.equals(move.movingMan) && Objects.equals(jumpedMan, move.jumpedMan) &&
-                originalCoordinate.equals(move.originalCoordinate) &&
-                Objects.equals(jumpedCoordinate, move.jumpedCoordinate) &&
-                newCoordinate.equals(move.newCoordinate);
+        return isJump == move.isJump && player.equals(move.player) && movingMan.equals(move.movingMan) && originalCoordinate.equals(move.originalCoordinate) && newCoordinate.equals(move.newCoordinate);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(player, movingMan, jumpedMan,
-                originalCoordinate, jumpedCoordinate, newCoordinate, isJump);
+        return Objects.hash(player, movingMan, originalCoordinate, newCoordinate, isJump);
     }
 }
