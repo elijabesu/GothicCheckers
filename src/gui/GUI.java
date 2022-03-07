@@ -194,7 +194,7 @@ public class GUI extends JFrame {
         else if (players[0].getPoints() < players[1].getPoints())
             index = 1;
         if (index != -1)
-            text = players[index].getName() + " won with " + players[index] + " points!";
+            text = players[index].getName() + " won with " + players[index].getPoints() + " point(s)!";
 
         JLabel label = new JLabel(text);
         label.setHorizontalAlignment(SwingConstants.CENTER);

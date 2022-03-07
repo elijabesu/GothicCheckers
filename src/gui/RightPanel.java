@@ -41,9 +41,11 @@ public class RightPanel extends JPanel {
             if (pauseButton.getText().equals("Pause")) {
                 stateLabel.setText("Game paused.");
                 pauseButton.setText("Resume");
+                guiParent.getGame().setStatus(0);
             } else {
                 stateLabel.setText("Game in progress.");
                 pauseButton.setText("Pause");
+                guiParent.getGame().setStatus(1);
             }
         });
 

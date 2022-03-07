@@ -3,12 +3,14 @@ import gui.BoardPanel;
 import shared.*;
 
 import javax.swing.*;
+import java.util.List;
 
 public class Game {
     private final Rules rules;
     private int movesWithoutJump;
     private int difficulty;
     private boolean playerBool;
+    private int status = 1; // 0 paused, 1 in progress
 
     public Game(BoardPanel boardPanel) {
         rules = new Rules(boardPanel);
@@ -22,6 +24,11 @@ public class Game {
     public void setDifficulty(int difficulty) {
         this.difficulty = difficulty;
         System.out.println("Difficulty set to " + difficulty + "."); // TODO delete
+    }
+
+    public void setStatus(int status) {
+        this.status = status;
+        System.out.println("Status set to " + status + "."); // TODO delete
     }
 
     public boolean getPlayerBool() {
@@ -45,6 +52,10 @@ public class Game {
                                         DefaultListModel<String> historyDlm) {
         if (!canPlayerMoveThis(player, movingMan)) {
             System.out.println("Player cannot move this."); // TODO delete
+            return false;
+        }
+        if (status == 0) {
+            System.out.println("Game is paused."); // TODO delete
             return false;
         }
         System.out.println("Player can move this."); // TODO delete
@@ -102,5 +113,10 @@ public class Game {
 
     public boolean needsPromotion(Piece movingMan, Coordinate coordinate) {
         return rules.needsPromotion(movingMan, coordinate);
+    }
+
+    public List<Move> hint(Player player, Piece movingMan, Coordinate originalCoordinate) {
+        // TODO hinting once minimax is implemented
+        return null;
     }
 }

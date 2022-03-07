@@ -15,6 +15,7 @@ import java.util.Objects;
 public class BoardPanel extends JLayeredPane implements MouseListener, MouseMotionListener {
     private final GUI guiParent;
     private final Player[] players;
+    private final int boardSize;
 
     private final JPanel mainPanel;
 
@@ -35,7 +36,7 @@ public class BoardPanel extends JLayeredPane implements MouseListener, MouseMoti
     public BoardPanel(GUI parent) {
         guiParent = parent;
         players = guiParent.getPlayers();
-        int boardSize = guiParent.getBoardSize();
+        boardSize = guiParent.getBoardSize();
 
         currentPlayer = players[0];
 
@@ -115,8 +116,13 @@ public class BoardPanel extends JLayeredPane implements MouseListener, MouseMoti
         return null;
     }
 
+    public int getBoardSize() {
+        return boardSize;
+    }
+
     @Override
     public void mouseClicked(MouseEvent e) {
+        // TODO implement hinting on clicking
         System.out.println("Click for hint."); // TODO delete
     }
 
