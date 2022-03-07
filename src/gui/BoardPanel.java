@@ -115,20 +115,6 @@ public class BoardPanel extends JLayeredPane implements MouseListener, MouseMoti
         return null;
     }
 
-    public void promoteToKing(Piece movingMan, Coordinate coordinate) {
-        JPanel tile = (JPanel) mainPanel.getComponent(
-                coordinate.getRow() * 8 + coordinate.getColumn()
-        );
-        Component[] components = tile.getComponents();
-        for (Component c : components) {
-            if (c instanceof JLabel) {
-                tile.remove(c);
-                if (movingMan.isWhite()) tile.add(new JLabel(whiteKing));
-                else tile.add(new JLabel(black));
-            }
-        }
-    }
-
     @Override
     public void mouseClicked(MouseEvent e) {
         System.out.println("Click for hint."); // TODO delete
@@ -208,6 +194,11 @@ public class BoardPanel extends JLayeredPane implements MouseListener, MouseMoti
                 guiParent.getRightPanel().getHistoryDlm()
         )) {
             valid = true;
+            if (guiParent.getGame().needsPromotion((Piece) currentPiece.getIcon(), newCoordinate)) {
+                if (((Piece) currentPiece.getIcon()).isWhite())
+                    currentPiece = new JLabel(whiteKing);
+                else currentPiece = new JLabel(blackKing);
+            }
             newTile.add(currentPiece);
             if (jumpedCoordinate != null && jumpedMan != null) {
                 JPanel jumpedTile = (JPanel) mainPanel.getComponent(

@@ -79,9 +79,8 @@ public class Rules {
         return possibilities.contains(move);
     }
 
-    public void maybePromote(Piece movingMan, Coordinate coordinate) {
-        if ((!movingMan.isWhite() && coordinate.getRow() == 7) || (movingMan.isWhite() && coordinate.getRow() == 0))
-            boardPanel.promoteToKing(movingMan, coordinate);
+    public boolean needsPromotion(Piece movingMan, Coordinate coordinate) {
+        return (!movingMan.isWhite() && coordinate.getRow() == 7) || (movingMan.isWhite() && coordinate.getRow() == 0);
     }
 
     // MOVING

@@ -72,7 +72,7 @@ public class Game {
             return null;
         }
 
-        afterMove(move, historyDlm);
+        historyDlm.addElement(move.toString());
         ++movesWithoutJump;
 
         System.out.println("Moved " + move + "."); // TODO delete
@@ -91,7 +91,7 @@ public class Game {
             return null;
         }
 
-        afterMove(jump, historyDlm);
+        historyDlm.addElement(jump.toString());
         player.addPoint();
         System.out.println(player); // TODO delete
         movesWithoutJump = 0;
@@ -100,8 +100,7 @@ public class Game {
         return jump;
     }
 
-    private void afterMove(Move move, DefaultListModel<String> historyDlm) {
-        rules.maybePromote(move.getMan(), move.getNew());
-        historyDlm.addElement(move.toString());
+    public boolean needsPromotion(Piece movingMan, Coordinate coordinate) {
+        return rules.needsPromotion(movingMan, coordinate);
     }
 }
