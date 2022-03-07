@@ -1,10 +1,7 @@
 package gui;
 
 import gui.brain.Game;
-import gui.brain.Piece;
-import shared.Coordinate;
 import shared.Player;
-import shared.Utils;
 
 import javax.swing.*;
 import javax.swing.event.MenuEvent;
@@ -12,7 +9,6 @@ import javax.swing.event.MenuListener;
 import java.awt.*;
 import java.awt.event.*;
 import java.util.Arrays;
-import java.util.Objects;
 
 public class GUI extends JFrame {
 
@@ -52,11 +48,11 @@ public class GUI extends JFrame {
         createMenuBar();
 
         // CENTER
-        boardPanel = new BoardPanel();
+        boardPanel = new BoardPanel(this);
         getContentPane().add(boardPanel, BorderLayout.CENTER);
 
         // RIGHT
-        rightPanel = new RightPanel();
+        rightPanel = new RightPanel(this);
         getContentPane().add(rightPanel, BorderLayout.EAST);
     }
 
@@ -126,7 +122,20 @@ public class GUI extends JFrame {
         // Help
         JMenu helpMenu = new JMenu("Help");
         helpMenu.setMnemonic(KeyEvent.VK_H);
-        helpMenu.addMenuListener(new CustomMenuListener());
+//        helpMenu.addMenuListener(new CustomMenuListener());
+        helpMenu.addMenuListener(new MenuListener() {
+            @Override
+            public void menuSelected(MenuEvent e) {
+                JDialog helpDialog = createHelpDialog();
+                helpDialog.setVisible(true);
+            }
+
+            @Override
+            public void menuDeselected(MenuEvent e) {}
+
+            @Override
+            public void menuCanceled(MenuEvent e) {}
+        });
 
         menuBar.add(Box.createHorizontalGlue());
         menuBar.add(helpMenu);
@@ -134,381 +143,68 @@ public class GUI extends JFrame {
         setJMenuBar(menuBar);
     }
 
-    class CustomMenuListener implements MenuListener {
-        @Override
-        public void menuSelected(MenuEvent e) {
-            HelpDialog helpDialog = new HelpDialog(GUI.this);
-            helpDialog.setVisible(true);
-        }
+    private JDialog createHelpDialog() {
+        JDialog helpDialog = new JDialog(this, "How to play");
+        String helpText = "<html><b>Goal:</b><br>Capture all of opponent's stones.<br><br>" +
+                "<b>Start:</b><br>" +
+                "At the beginning of the game, there are stones in the two outer ones rows.<br><br>" +
+                "<b>Rules:</b><br>" +
+                "- Players take turns.<br>" +
+                "- During a player's turn, they may move one of their stones one square to an adjacent free" +
+                " square that is in front of, beside or diagonally in front of it.<br>" +
+                "- A stone can also capture an opponent's stone by jumping over it. The opponent's stone must" +
+                "be on an adjacent square and immediately behind it must be a free square.<br>" +
+                "- During the jump, the stone is moved to this free square and the opponent stone is removed " +
+                "from the board. Stones may only jump forward, diagonally forward, or sideways.<br>" +
+                "- Multiple jumps are allowed.<br>" +
+                "- If a stone ends its turn in the last row on the opposite side of the board, it is promoted " +
+                "to a Queen.<br>" +
+                "- The Queen may move in all directions (even backwards) by any number of free squares. The " +
+                "Queen can take an opponent's stone by jumping over it, and can skip any number of free squares " +
+                "in front of the stone, the stone of interest, and any number of free squares behind this stone." +
+                "<br>" +
+                "- Capturing opponent's stones is mandatory and the player must capture as many stones as " +
+                "possible if there are more jumps available.<br>" +
+                "- If a player cannot make a move, his opponent continues to play.<br><br>" +
+                "<b>End:</b><br>" +
+                "The player who captures all the opponent's stones wins.<br>" +
+                "If no stone is captured for 30 moves, the player with more stones wins."
+                ;
 
-        @Override
-        public void menuDeselected(MenuEvent e) {
-        }
+        JTextPane helpPane = new JTextPane();
+        helpPane.setPreferredSize(new Dimension(400,300));
+        helpPane.setContentType("text/html");
+        helpPane.setText(helpText);
+        helpPane.setEditable(false);
+        JScrollPane scrollPane = new JScrollPane(helpPane);
+        scrollPane.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS);
+        scrollPane.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
+        helpDialog.add(scrollPane);
+        helpDialog.pack();
 
-        @Override
-        public void menuCanceled(MenuEvent e) {
-        }
-    }
-
-    static class HelpDialog extends JDialog {
-        public HelpDialog(GUI parent) {
-            super(parent, "How to play");
-            String helpText = "<html><b>Goal:</b><br>Capture all of opponent's stones.<br><br>" +
-                    "<b>Start:</b><br>" +
-                    "At the beginning of the game, there are stones in the two outer ones rows.<br><br>" +
-                    "<b>Rules:</b><br>" +
-                    "- Players take turns.<br>" +
-                    "- During a player's turn, they may move one of their stones one square to an adjacent free" +
-                    " square that is in front of, beside or diagonally in front of it.<br>" +
-                    "- A stone can also capture an opponent's stone by jumping over it. The opponent's stone must" +
-                    "be on an adjacent square and immediately behind it must be a free square.<br>" +
-                    "- During the jump, the stone is moved to this free square and the opponent stone is removed " +
-                    "from the board. Stones may only jump forward, diagonally forward, or sideways.<br>" +
-                    "- Multiple jumps are allowed.<br>" +
-                    "- If a stone ends its turn in the last row on the opposite side of the board, it is promoted " +
-                    "to a Queen.<br>" +
-                    "- The Queen may move in all directions (even backwards) by any number of free squares. The " +
-                    "Queen can take an opponent's stone by jumping over it, and can skip any number of free squares " +
-                    "in front of the stone, the stone of interest, and any number of free squares behind this stone." +
-                    "<br>" +
-                    "- Capturing opponent's stones is mandatory and the player must capture as many stones as " +
-                    "possible if there are more jumps available.<br>" +
-                    "- If a player cannot make a move, his opponent continues to play.<br><br>" +
-                    "<b>End:</b><br>" +
-                    "The player who captures all the opponent's stones wins.<br>" +
-                    "If no stone is captured for 30 moves, the player with more stones wins."
-
-                    ;
-            JTextPane helpPane = new JTextPane();
-            helpPane.setPreferredSize(new Dimension(400,300));
-            helpPane.setContentType("text/html");
-            helpPane.setText(helpText);
-            helpPane.setEditable(false);
-            JScrollPane scrollPane = new JScrollPane(helpPane);
-            scrollPane.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS);
-            scrollPane.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
-            add(scrollPane);
-            pack();
-
-            int x = parent.getX() + parent.getWidth() / 2 - getWidth() / 2;
-            int y = parent.getY() + parent.getHeight() / 2 - getHeight() / 2;
-            setLocation(x, y);
-            setModal(true);
-        }
-    }
-
-    public class BoardPanel extends JLayeredPane implements MouseListener, MouseMotionListener {
-        private final JPanel mainPanel;
-
-        private final Piece white;
-        private final Piece whiteKing;
-        private final Piece black;
-        private final Piece blackKing;
-
-        private Player currentPlayer;
-        private JLabel currentPiece;
-        private Point currentPieceOriginalPosition;
-        private int x;
-        private int y;
-
-        private Coordinate originalCoordinate;
-        private Coordinate newCoordinate;
-
-        public BoardPanel() {
-            currentPlayer = players[0];
-
-            setPreferredSize(new Dimension(boardSize * 50, boardSize * 50));
-            addMouseListener(this);
-            addMouseMotionListener(this);
-
-            mainPanel = new JPanel();
-            add(mainPanel, JLayeredPane.DEFAULT_LAYER);
-            mainPanel.setLayout(new GridLayout(boardSize, boardSize));
-            mainPanel.setPreferredSize(getPreferredSize());
-            mainPanel.setBounds(10,10, getPreferredSize().width, getPreferredSize().height);
-
-            // Pieces
-            Image resizedWhite = new ImageIcon(Objects.requireNonNull(getClass().getResource("resources/white.png")))
-                    .getImage().getScaledInstance(45,45,Image.SCALE_SMOOTH);
-            Image resizedWhiteKing = new ImageIcon(Objects.requireNonNull(getClass().getResource("resources/whiteKing.png")))
-                    .getImage().getScaledInstance(45, 45, Image.SCALE_SMOOTH);
-            Image resizedBlack = new ImageIcon(Objects.requireNonNull(getClass().getResource("resources/black.png")))
-                    .getImage().getScaledInstance(45, 45, Image.SCALE_SMOOTH);
-            Image resizedBlackKing = new ImageIcon(Objects.requireNonNull(getClass().getResource("resources/blackKing.png")))
-                    .getImage().getScaledInstance(45, 45, Image.SCALE_SMOOTH);
-
-            white = new Piece(resizedWhite, true, false);
-            whiteKing = new Piece(resizedWhiteKing, true, true);
-            black = new Piece(resizedBlack, false, false);
-            blackKing = new Piece(resizedBlackKing, false, true);
-
-            // generate board tiles
-            for (int i = 0; i < boardSize * boardSize; i++) {
-                JPanel tile = new JPanel(new BorderLayout());
-                mainPanel.add(tile);
-
-                int row = (i / boardSize) % 2;
-                if (row == 0) tile.setBackground(i % 2 == 0 ? Color.DARK_GRAY : Color.LIGHT_GRAY);
-                else tile.setBackground(i % 2 == 0 ? Color.LIGHT_GRAY : Color.DARK_GRAY);
-            }
-
-            // place men
-            for (int row = 0; row < boardSize; row++) {
-                for (int column = 0; column < boardSize; column++) {
-                    JPanel tile = (JPanel) mainPanel.getComponent(row * 8 + column);
-                    JLabel piece = null;
-                    if (row < 2) {
-                        piece = new JLabel(black);
-                    } else if (row > 5) {
-                        piece = new JLabel(white);
-                    } else {
-                    }
-                    if (piece != null) tile.add(piece);
-                }
-            }
-        }
-
-        private void switchPlayers() {
-            if (currentPlayer.equals(players[0])) {
-                currentPlayer = players[1];
-                playerLabel.setText("Player 2's turn.");
-            } else {
-                currentPlayer = players[0];
-                playerLabel.setText("Player 1's turn.");
-            }
-            game.switchPlayers();
-        }
-
-        public boolean isOccupied(Coordinate coordinate) {
-            return (getCoordinate(coordinate) != null);
-        }
-
-        public Piece getCoordinate(Coordinate coordinate) {
-            JPanel tile = (JPanel) mainPanel.getComponent(
-                    coordinate.getRow() * 8 + coordinate.getColumn()
-            );
-            Component[] components = tile.getComponents();
-            for (Component c: components) {
-                if (c instanceof JLabel) return (Piece) ((JLabel) c).getIcon();
-            }
-            return null;
-        }
-
-        public void promoteToKing(Piece movingMan, Coordinate coordinate) {
-            JPanel tile = (JPanel) mainPanel.getComponent(
-                    coordinate.getRow() * 8 + coordinate.getColumn()
-            );
-            Component[] components = tile.getComponents();
-            for (Component c: components) {
-                if (c instanceof JLabel) {
-                    tile.remove(c);
-                    if (movingMan.isWhite()) tile.add(new JLabel(whiteKing));
-                    else tile.add(new JLabel(black));
-                }
-            }
-        }
-
-        @Override
-        public void mouseClicked(MouseEvent e) {
-            System.out.println("Click for hint."); // TODO delete
-        }
-
-        @Override
-        public void mousePressed(MouseEvent e) {
-            currentPiece = null;
-
-            // get the component that was clicked on
-            Component componentAt = mainPanel.findComponentAt(e.getX(), e.getY());
-            if (componentAt == null) return;
-            if (componentAt instanceof JPanel) return; // we only work with JLabels
-
-            if (!game.canPlayerMoveThis(
-                    currentPlayer,
-                    (Piece) ((JLabel) componentAt).getIcon()
-            )) return;
-
-            currentPieceOriginalPosition = componentAt.getParent().getLocation();
-            x = currentPieceOriginalPosition.x - e.getX();
-            y = currentPieceOriginalPosition.y - e.getY();
-            originalCoordinate = new Coordinate(
-                    currentPieceOriginalPosition.y / 50, currentPieceOriginalPosition.x / 50
-            );
-
-            currentPiece = (JLabel) componentAt;
-            currentPiece.setLocation(currentPieceOriginalPosition);
-            currentPiece.setSize(currentPiece.getWidth(), currentPiece.getHeight());
-
-            // make it draggable
-            add(currentPiece, JLayeredPane.DRAG_LAYER);
-            setCursor(Cursor.getPredefinedCursor(Cursor.MOVE_CURSOR));
-        }
-
-        @Override
-        public void mouseReleased(MouseEvent e) {
-            if (currentPiece == null) return;
-
-            Component componentAt = mainPanel.findComponentAt(e.getX(), e.getY());
-            if (componentAt == null) return;
-            if (componentAt.getLocation().equals(currentPieceOriginalPosition)) return;
-            if (componentAt instanceof JLabel) return;
-
-            newCoordinate = new Coordinate(
-                    componentAt.getY() / 50, componentAt.getX() / 50
-            );
-            currentPiece.setVisible(false);
-
-            JPanel originalTile = (JPanel) mainPanel.getComponent(
-                    originalCoordinate.getRow() * 8 + originalCoordinate.getColumn()
-            );
-            originalTile.remove(currentPiece);
-
-            JPanel newTile = (JPanel) mainPanel.getComponent(
-                    newCoordinate.getRow() * 8 + newCoordinate.getColumn()
-            );
-            boolean valid = false;
-
-            Coordinate jumpedCoordinate = Utils.getJumpedCoordinate(
-                    currentPlayer.isWhite(),originalCoordinate, newCoordinate
-            );
-
-            Piece jumpedMan = null;
-            if (jumpedCoordinate != null)
-                jumpedMan = getCoordinate(jumpedCoordinate);
-            System.out.println("Jumped coord: " + jumpedCoordinate); // TODO delete
-            System.out.println("Jumped man: " + jumpedMan); // TODO delete
-
-            if (game.checkValidityAndMove(
-                    currentPlayer,
-                    (Piece) currentPiece.getIcon(),
-                    jumpedMan,
-                    originalCoordinate,
-                    jumpedCoordinate,
-                    newCoordinate,
-                    rightPanel.getHistoryDlm()
-            )) {
-                valid = true;
-                newTile.add(currentPiece);
-            } else {
-                originalTile.add(currentPiece);
-            }
-
-            currentPiece.setVisible(true);
-            if (valid) switchPlayers();
-        }
-
-        @Override
-        public void mouseEntered(MouseEvent e) {
-        }
-
-        @Override
-        public void mouseExited(MouseEvent e) {
-        }
-
-        @Override
-        public void mouseDragged(MouseEvent e) {
-            if (currentPiece == null) return;
-            currentPiece.setLocation(e.getX() + x, e.getY() + y);
-        }
-
-        @Override
-        public void mouseMoved(MouseEvent e) {
-        }
-    }
-
-    class RightPanel extends JPanel {
-        private final DefaultListModel<String> historyDlm;
-        public RightPanel() {
-            setPreferredSize(new Dimension(150,450));
-            setLayout(new FlowLayout(FlowLayout.LEFT));
-
-            // Players
-            JPanel playersPanel = new JPanel();
-            playersPanel.setPreferredSize(new Dimension(130,120));
-            playersPanel.add(new JLabel("Player 1:"));
-            playersPanel.add(createPlayerPanel(players[0]));
-            playersPanel.add(new JLabel("Player 2:"));
-            playersPanel.add(createPlayerPanel(players[1]));
-            add(playersPanel);
-
-            // Pause
-            JPanel pausePanel = new JPanel();
-            pausePanel.setPreferredSize(new Dimension(130,70));
-
-            playerLabel = new JLabel("Player 1's turn.");
-            JLabel stateLabel = new JLabel("Game in progress.");
-
-            JButton pauseButton = new JButton("Pause");
-            pauseButton.setPreferredSize(new Dimension(130,20));
-            pauseButton.addActionListener(e -> {
-                if (pauseButton.getText().equals("Pause")) {
-                    stateLabel.setText("Game paused.");
-                    pauseButton.setText("Resume");
-                } else {
-                    stateLabel.setText("Game in progress.");
-                    pauseButton.setText("Pause");
-                }
-            });
-
-            pausePanel.add(playerLabel);
-            pausePanel.add(stateLabel);
-            pausePanel.add(pauseButton);
-
-            add(pausePanel);
-
-            // History
-            JPanel historyPanel = new JPanel();
-            historyPanel.setLayout(new BoxLayout(historyPanel, BoxLayout.Y_AXIS));
-            historyPanel.setPreferredSize(new Dimension(130,200));
-
-            historyDlm = new DefaultListModel<>();
-            JScrollPane scrollPane = new JScrollPane(new JList<>(historyDlm));
-            scrollPane.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS);
-            scrollPane.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
-
-            historyPanel.add(new JLabel("History:"));
-            historyPanel.add(scrollPane);
-
-            add(historyPanel);
-
-            setFocusable(true);
-        }
-
-        public DefaultListModel<String> getHistoryDlm() {
-            return historyDlm;
-        }
-
-        private JPanel createPlayerPanel(Player player) {
-            JPanel playerPanel = new JPanel();
-
-            ButtonGroup playerGroup = new ButtonGroup();
-
-            for (int i = 0; i < 2; i++) {
-                String buttonText;
-                boolean isAI;
-                if (i == 0) {
-                    buttonText = "AI";
-                    isAI = true;
-                } else {
-                    buttonText = "Human";
-                    isAI = false;
-                }
-
-                JRadioButton radioButton = new JRadioButton(buttonText);
-                if (player.isComputer() == isAI) radioButton.setSelected(true);
-                radioButton.addItemListener(e -> {
-                    if (e.getStateChange() == ItemEvent.SELECTED) {
-                        player.changePlayer(player.getName(), isAI);
-                    }
-                });
-
-                playerGroup.add(radioButton);
-                playerPanel.add(radioButton);
-            }
-
-            return playerPanel;
-        }
+        int x = getX() + getWidth() / 2 - helpDialog.getWidth() / 2;
+        int y = getY() + getHeight() / 2 - helpDialog.getHeight() / 2;
+        helpDialog.setLocation(x, y);
+        helpDialog.setModal(true);
+        return helpDialog;
     }
 
     public void startGame() { this.setVisible(true); }
 
+    // getters for the BoardPanel class
+    public Player[] getPlayers() { return players; }
+
+    public Game getGame() { return game; }
+
+    public int getBoardSize() { return boardSize; }
+
+    public RightPanel getRightPanel() { return rightPanel; }
+
+    public JLabel getPlayerLabel() {
+        return playerLabel;
+    }
+
+    public void setPlayerLabel(JLabel playerLabel) {
+        this.playerLabel = playerLabel;
+    }
 }

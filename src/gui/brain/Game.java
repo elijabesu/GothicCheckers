@@ -1,5 +1,5 @@
 package gui.brain;
-import gui.GUI.BoardPanel;
+import gui.BoardPanel;
 import shared.*;
 
 import javax.swing.*;
@@ -48,7 +48,7 @@ public class Game {
             return false;
         }
         System.out.println("Player can move this."); // TODO delete
-        if (jumpedCoordinate != null || jumpedMan != null) {
+        if (jumpedCoordinate != null && jumpedMan != null) {
             if (jump(player, movingMan, jumpedMan,
                     originalCoordinate, jumpedCoordinate, newCoordinate,
                     historyDlm) == null) return false;

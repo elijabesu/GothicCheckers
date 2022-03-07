@@ -1,5 +1,5 @@
 package gui.brain;
-import gui.GUI.BoardPanel;
+import gui.BoardPanel;
 
 import shared.Coordinate;
 import shared.Player;
