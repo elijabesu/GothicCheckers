@@ -72,7 +72,10 @@ public class Move {
         if (this == o) return true;
         if (!(o instanceof Move)) return false;
         Move move = (Move) o;
-        return isJump == move.isJump && player.equals(move.player) && movingMan.equals(move.movingMan) && originalCoordinate.equals(move.originalCoordinate) && newCoordinate.equals(move.newCoordinate);
+        return isJump == move.isJump && player.equals(move.player) &&
+                movingMan.equals(move.movingMan) &&
+                originalCoordinate.equals(move.originalCoordinate) &&
+                newCoordinate.equals(move.newCoordinate);
     }
 
     @Override

@@ -82,11 +82,7 @@ public class GUI extends JFrame {
                     JOptionPane.YES_NO_OPTION,
                     JOptionPane.QUESTION_MESSAGE);
             if (result == JOptionPane.YES_OPTION) {
-                clearGui();
-                startNewGui();
-                game = new Game(boardPanel);
-                validate();
-                getContentPane().repaint();
+                newGame();
             }
         });
 //        saveGame.addActionListener(); TODO save game
@@ -190,7 +186,42 @@ public class GUI extends JFrame {
 
     public void startGame() { this.setVisible(true); }
 
-    // getters for the BoardPanel class
+    public void endGame() {
+        String text = "It's a draw!";
+        int index = -1;
+        if (players[0].getPoints() > players[1].getPoints())
+            index = 0;
+        else if (players[0].getPoints() < players[1].getPoints())
+            index = 1;
+        if (index != -1)
+            text = players[index].getName() + " won with " + players[index] + " points!";
+
+        JLabel label = new JLabel(text);
+        label.setHorizontalAlignment(SwingConstants.CENTER);
+
+        String[] buttons = {"New game"};
+
+        int result = JOptionPane.showOptionDialog(
+                this,
+                label,
+                "Game ended",
+                JOptionPane.DEFAULT_OPTION,
+                JOptionPane.PLAIN_MESSAGE,
+                null,
+                buttons, buttons[0]
+        );
+        if (result == 0) newGame();
+    }
+
+    private void newGame() {
+        clearGui();
+        startNewGui();
+        game = new Game(boardPanel);
+        validate();
+        getContentPane().repaint();
+    }
+
+    // getters for BoardPanel and RightPanel
     public Player[] getPlayers() { return players; }
 
     public Game getGame() { return game; }

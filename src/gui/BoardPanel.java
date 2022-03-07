@@ -228,6 +228,8 @@ public class BoardPanel extends JLayeredPane implements MouseListener, MouseMoti
 
         validate();
         repaint();
+
+        if (guiParent.getGame().shouldEnd(players)) guiParent.endGame();
     }
 
     @Override
