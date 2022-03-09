@@ -81,13 +81,13 @@ public class Utils {
     }
 
     public static String whichMan(Pieces man) {
-        switch (man) {
-            case BLACK: return "x";
-            case BLACK_KING: return "X";
-            case WHITE: return "o";
-            case WHITE_KING: return "O";
-        }
-        return "-";
+        return switch (man) {
+            case BLACK -> "x";
+            case BLACK_KING -> "X";
+            case WHITE -> "o";
+            case WHITE_KING -> "O";
+            default -> "-";
+        };
     }
 
     public static List<Integer> generateListOfAvailable(int middle, int extra) {

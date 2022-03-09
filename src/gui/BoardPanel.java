@@ -31,7 +31,6 @@ public class BoardPanel extends JLayeredPane implements MouseListener, MouseMoti
     private int y;
 
     private Coordinate originalCoordinate;
-    private Coordinate newCoordinate;
 
     public BoardPanel(GUI parent) {
         guiParent = parent;
@@ -98,7 +97,6 @@ public class BoardPanel extends JLayeredPane implements MouseListener, MouseMoti
             currentPlayer = players[0];
             guiParent.getPlayerLabel().setText("Player 1's turn.");
         }
-        guiParent.getGame().switchPlayers();
     }
 
     public boolean isOccupied(Coordinate coordinate) {
@@ -165,7 +163,7 @@ public class BoardPanel extends JLayeredPane implements MouseListener, MouseMoti
         if (componentAt.getLocation().equals(currentPieceOriginalPosition)) return;
         if (componentAt instanceof JLabel) return;
 
-        newCoordinate = new Coordinate(
+        Coordinate newCoordinate = new Coordinate(
                 componentAt.getY() / 50, componentAt.getX() / 50
         );
         currentPiece.setVisible(false);
@@ -187,8 +185,6 @@ public class BoardPanel extends JLayeredPane implements MouseListener, MouseMoti
         Piece jumpedMan = null;
         if (jumpedCoordinate != null)
             jumpedMan = getCoordinate(jumpedCoordinate);
-        System.out.println("Jumped coord: " + jumpedCoordinate); // TODO delete
-        System.out.println("Jumped man: " + jumpedMan); // TODO delete
 
         if (guiParent.getGame().checkValidityAndMove(
                 currentPlayer,

@@ -35,12 +35,6 @@ public class Jump extends Move {
                         Utils.convertRowToString(newCoordinate.getRow());
     }
 
-    public String toStringWithEverything() {
-        return toStringWithoutPlayer() + ", player: " + player + ", moving man: " + movingMan;
-    }
-
-
-
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;

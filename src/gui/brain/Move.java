@@ -21,10 +21,10 @@ public class Move {
     }
 
     public Move(Player player, Piece movingMan, Coordinate originalCoordinate,
-                Coordinate jumpedCoord, Piece jumpedMan,
+                Coordinate jumpedCoordinate, Piece jumpedMan,
                 Coordinate newCoordinate) {
         this(player, movingMan, originalCoordinate,
-                jumpedCoord, jumpedMan,
+                jumpedCoordinate, jumpedMan,
                 newCoordinate, true);
     }
     public Move(Player player, Piece movingMan, Coordinate originalCoordinate,
