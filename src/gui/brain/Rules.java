@@ -1,6 +1,6 @@
 package gui.brain;
-import gui.BoardPanel;
 
+import gui.BoardPanel;
 import shared.Coordinate;
 import shared.Player;
 import shared.Utils;
@@ -64,9 +64,7 @@ public class Rules {
     }
 
     public boolean isValid(Player player, Piece movingMan, Move move) {
-        List<List<? extends Move>> movesAndJumps = generateMoves(player, movingMan, move.getOriginal());
-        List<Move> possibilities = addIntoPossibilities((List<Move>) movesAndJumps.get(0),
-                (List<Jump>) movesAndJumps.get(1));
+        List<Move> possibilities = getAllPossibilities(player, movingMan, move.getOriginal());
         if (possibilities.isEmpty()) {
             System.out.println("No possible moves."); // TODO delete
             return false;
@@ -105,10 +103,7 @@ public class Rules {
                         coordinate, newCoordinate, possibleJumps);
                 else {
                     Move maybeMove = new Move(player, movingMan, coordinate, newCoordinate);
-                    if (isValidMove(player, maybeMove)) {
-                        possibleMoves.add(maybeMove);
-                        System.out.println("Possible move: " + maybeMove); // TODO delete
-                    }
+                    if (isValidMove(player, maybeMove)) possibleMoves.add(maybeMove);
                 }
             }
         }
@@ -124,7 +119,24 @@ public class Rules {
                                                          List<Move> possibleMoves, List<Jump> possibleJumps) {
         List<Coordinate> skipPositions = new ArrayList<>();
 
-        // TODO King moves
+        for (int i = 0; i < boardPanel.getBoardSize(); i++) {
+            for (int row: Utils.generateListOfAvailable(coordinate.getRow(), i)) {
+                for (int column: Utils.generateListOfAvailable(coordinate.getColumn(), i)) {
+                    if (Utils.listOfArraysContains(skipPositions, new Coordinate(row, column))) continue;
+                    Coordinate newCoordinate = new Coordinate(row, column);
+                    if (boardPanel.isOccupied(newCoordinate))
+                        generateKingJumps(player, movingMan, coordinate, newCoordinate, skipPositions, possibleJumps);
+                    else {
+                        Move move = new Move(player, movingMan, coordinate, newCoordinate);
+                        possibleMoves.add(move);
+                        System.out.println("Possible King move: " + move); // TODO delete
+                    }
+                }
+            }
+        }
+
+        possibilities.add(possibleMoves);
+        possibilities.add(possibleJumps);
 
         return possibilities;
     }
@@ -150,15 +162,39 @@ public class Rules {
         Move maybeJump = new Move(player, movingMan, originalCoordinate,
                 coordinate, boardPanel.getCoordinate(coordinate),
                 nextCoordinate);
-        if (isValidJump(player, Utils.convertMoveIntoJump(maybeJump), boardPanel.isOccupied(nextCoordinate))) {
+        if (isValidJump(player, Utils.convertMoveIntoJump(maybeJump), boardPanel.isOccupied(nextCoordinate)))
             possibleJumps.add(Utils.convertMoveIntoJump(maybeJump));
-            System.out.println("Possible jump: " + maybeJump); // TODO delete
-        }
     }
 
     private void generateKingJumps(Player player, Piece movingMan, Coordinate originalCoordinate,
                                    Coordinate coordinate, List<Coordinate> skipPositions, List<Jump> possibleJumps) {
-        // TODO King jumps
+        if (movingMan.isWhite() == boardPanel.getCoordinate(coordinate).isWhite()) return;
+
+        for (int i = 1; i < boardPanel.getBoardSize(); i++) {
+            int nextRow = coordinate.getRow();
+            if (originalCoordinate.getRow() - nextRow < 0) nextRow += i;
+            else if (originalCoordinate.getRow() - nextRow > 0) nextRow -= i;
+
+            int nextColumn = coordinate.getColumn();
+            if (originalCoordinate.getColumn() - nextColumn < 0) nextColumn += i;
+            else if (originalCoordinate.getColumn() - nextColumn > 0) nextColumn -= i;
+
+            if (nextRow < 0 || nextRow > 7 || nextColumn < 0 || nextColumn > 7) return;
+
+            Coordinate nextCoordinate = new Coordinate(nextRow, nextColumn);
+
+            if (boardPanel.isOccupied(nextCoordinate)) {
+                Utils.ignorePositions(coordinate, nextCoordinate, skipPositions);
+                return;
+            }
+
+            Jump jump = new Jump(player, movingMan, boardPanel.getCoordinate(coordinate),
+                    originalCoordinate, coordinate, nextCoordinate);
+            possibleJumps.add(jump);
+            System.out.println("Possible King jump: " + jump); // TODO delete
+
+            skipPositions.add(nextCoordinate);
+        }
     }
 
     private boolean anotherJumpPossible(Player player, Piece movingMan, Jump jump) {
@@ -172,12 +208,14 @@ public class Rules {
                 getPossibleJumps(player, movingMan, coordinate));
     }
 
+    @SuppressWarnings("unchecked")
     private List<Move> getPossibleMoves(Player player, Piece movingMan, Coordinate coordinate) {
         List<List<? extends Move>> possibilities = generateMoves(player, movingMan, coordinate);
         if (possibilities == null || possibilities.isEmpty()) return null;
         return (List<Move>) possibilities.get(0);
     }
 
+    @SuppressWarnings("unchecked")
     private List<Jump> getPossibleJumps(Player player, Piece movingMan, Coordinate coordinate) {
         List<List<? extends Move>> possibilities = generateMoves(player, movingMan, coordinate);
         if (possibilities == null || possibilities.isEmpty()) return null;
