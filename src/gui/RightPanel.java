@@ -1,5 +1,6 @@
 package gui;
 
+import gui.brain.Move;
 import shared.Player;
 
 import javax.swing.*;
@@ -8,13 +9,12 @@ import java.awt.event.ItemEvent;
 
 public class RightPanel extends JPanel {
     private final GUI guiParent;
-    private final Player[] players;
 
-    private final DefaultListModel<String> historyDlm;
+    private final DefaultListModel<Move> historyDlm;
 
     public RightPanel(GUI parent) {
         guiParent = parent;
-        players = parent.getPlayers();
+        Player[] players = parent.getPlayers();
 
         setPreferredSize(new Dimension(150,450));
         setLayout(new FlowLayout(FlowLayout.LEFT));
@@ -61,7 +61,18 @@ public class RightPanel extends JPanel {
         historyPanel.setPreferredSize(new Dimension(130,200));
 
         historyDlm = new DefaultListModel<>();
-        JScrollPane scrollPane = new JScrollPane(new JList<>(historyDlm));
+        JList<Move> historyJList = new JList<>(historyDlm);
+        historyJList.addListSelectionListener(e -> {
+            int index = historyJList.getSelectedIndex();
+            if (index > -1) {
+                for (int i = historyDlm.size() - 1; i > index; i--) {
+                    historyDlm.remove(i);
+                    // UNDO in BoardPanel and Game
+                }
+            }
+        });
+
+        JScrollPane scrollPane = new JScrollPane(historyJList);
         scrollPane.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS);
         scrollPane.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
 
@@ -73,7 +84,7 @@ public class RightPanel extends JPanel {
         setFocusable(true);
     }
 
-    public DefaultListModel<String> getHistoryDlm() {
+    public DefaultListModel<Move> getHistoryDlm() {
         return historyDlm;
     }
 
